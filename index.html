@@ -425,6 +425,24 @@ ol.steps li{margin:5px 0}
 .warn:empty{display:none}
 .mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
 .rule input[type=time]{width:118px}
+/* check a bet */
+.vchip{flex:none;font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap;background:var(--card2);color:var(--muted)}
+.vchip.good{background:rgba(52,199,89,.16);color:var(--green)}
+.vchip.fair{background:rgba(255,179,64,.16);color:var(--amber)}
+.vchip.poor{background:rgba(255,90,90,.16);color:var(--red)}
+.ckbig{font:800 40px/1 var(--num);margin-top:6px;font-variant-numeric:tabular-nums}
+.ckbig small{display:block;font:500 12.5px var(--ui);color:var(--muted);margin-top:4px}
+.ckstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px;text-align:center}
+.cksum .ckstats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ckstats > div{background:var(--bg);border-radius:10px;padding:8px 4px}
+.ckstats small{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.ckstats b{font:800 16px/1.15 var(--num);font-variant-numeric:tabular-nums}
+.ckstats b small{display:block;font:500 10.5px var(--ui);color:var(--faint);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ckstats input{width:64px;background:transparent;border:0;border-bottom:1px dashed var(--line);color:var(--text);font:800 16px var(--num);text-align:center;padding:0}
+.ckwhy{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.45}
+.ckwhy li + li{margin-top:3px}
+.ckleg .t1{font-weight:700}.ckleg .t2{font-size:14px;margin-top:1px}.ckleg .t3{font-size:12.5px;color:var(--muted);margin-top:2px}
+.tip .chev{font-size:24px;color:var(--faint);align-self:center}
 
 /* slips look like a bet ticket: a tear line with notches */
 .slip{position:relative}
@@ -530,6 +548,7 @@ table.mk td small{display:block;color:var(--muted);font-size:11.5px}
 <div class="toast" id="toast"><div class="ttl" id="toastt"></div><div class="body" id="toastb"></div></div>
 <div class="slipbar" id="slipbar" hidden><div class="in" id="slipbarin"></div></div>
 <input type="file" id="scanfile" accept="image/*" multiple hidden>
+<input type="file" id="chkfile" accept="image/*" multiple hidden>
 
 <nav class="tabs"><div class="in">
   <button data-tab="games" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.5 3.5 3.5 9.3 0 12.8M18.4 5.6c-3.5 3.5-3.5 9.3 0 12.8"/></svg>Games</button>
@@ -581,7 +600,7 @@ const LS = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.p
             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 S.filter = LS.get("filter", "all");
 S.picksSeg = ["picks","slips","results"].includes(LS.get("picksSeg", "picks")) ? LS.get("picksSeg", "picks") : "picks";
-S.playsSeg = ["tips","multi","ladder","screener","pickem","perfect"].includes(LS.get("playsSeg", "tips")) ? LS.get("playsSeg", "tips") : "tips";
+S.playsSeg = ["tips","multi","check","ladder","screener","pickem","perfect"].includes(LS.get("playsSeg", "tips")) ? LS.get("playsSeg", "tips") : "tips";
 S.feedQ = Object.assign({sport:"", sort:"picks", kind:"", min:1.3}, LS.get("feedQ", {}));
 S.mQ = Object.assign({legs:3, target:3, sport:""}, LS.get("mQ", {}));
 S.scoreQ = Object.assign({days:30, sport:"all"}, LS.get("scoreQ", {}));
@@ -1021,7 +1040,15 @@ function renderPicks(){
   if (S.selecting) h += '<div class="small muted" style="margin:8px 2px 0">Tap each leg that\'s on your slip, then tap Next.</div>';
   const groups = {};
   open.concat(fin).forEach(p => (groups[p.game_id] = groups[p.game_id] || []).push(p));
-  Object.keys(groups).forEach(gid => {
+  // Games with picks still going come first, the next to start at the top. Finished games go last, latest first.
+  const startOf = ps => { const t = Date.parse((ps[0].game || {}).start || ""); return isNaN(t) ? 8.64e15 : t; };
+  const doneAll = ps => ps.every(p => p.final);
+  const order = Object.keys(groups).sort((a, b) => {
+    const A = groups[a], B = groups[b], da = doneAll(A), db = doneAll(B);
+    if (da !== db) return da ? 1 : -1;
+    return da ? startOf(B) - startOf(A) : startOf(A) - startOf(B);
+  });
+  order.forEach(gid => {
     const ps = groups[gid], g = ps[0].game || {};
     h += '<div class="gamehead"><span class="t">' + gameHead(g) + (g.demo ? '<span class="badge demo">Demo</span>' : (g.league_short ? '<span class="badge lg">' + esc(g.league_short) + '</span>' : '')) + '</span><button class="btn small" data-open="' + esc(gid) + '">Add more</button></div>';
     h += '<div class="list">' + ps.map(pickCard).join("") + '</div>';
@@ -1301,6 +1328,7 @@ function renderLadder(){
   if (FEAT().screener && !playsList().some(x => x[0] === S.playsSeg)) S.playsSeg = playsList()[0][0];
   if (FEAT().screener && S.playsSeg === "tips") return renderFeed(el);
   if (FEAT().screener && S.playsSeg === "multi") return renderMulti(el);
+  if (FEAT().screener && S.playsSeg === "check") return renderCheck(el);
   if (FEAT().screener && S.playsSeg === "screener") return renderScreener(el);
   if (FEAT().screener && S.playsSeg === "pickem") return renderPickem(el);
   if (FEAT().perfect && S.playsSeg === "perfect") return renderPerfect(el);
@@ -1538,6 +1566,7 @@ function slipCard(s){
   const armed = S.armed === "s:" + s.id;
   h += '<div class="acts">';
   if (HOOK()) h += '<button class="btn small" data-spost="' + esc(s.id) + '">Post</button>';
+  if (open && FEAT().check) h += '<button class="btn small" data-schk="' + esc(s.id) + '">Check</button>';
   if (open) h += '<button class="btn small" data-sedit="' + esc(s.id) + '">Edit</button><button class="btn small" data-sset="' + esc(s.id) + '">Settle</button>';
   h += '<button class="btn small' + (armed ? " danger" : "") + '" data-sdel="' + esc(s.id) + '">' + (armed ? "Tap again to delete" : "Delete") + '</button></div>';
   return h + '</div>';
@@ -1545,6 +1574,19 @@ function slipCard(s){
 function renderSlips(el, top){
   const slips = S.state.slips || [];
   const open = slips.filter(s => s.status === "open"), done = slips.filter(s => s.status !== "open");
+  // open slips in the order their next leg starts
+  const byId = {};
+  (S.state.picks || []).forEach(p => { byId[p.id] = p; });
+  const nextStart = s => {
+    let t = 8.64e15;
+    (s.legs || []).forEach(l => {
+      if (["won", "lost", "void", "push"].includes(l.state)) return;
+      const v = Date.parse(((byId[l.pick] || {}).game || {}).start || "");
+      if (!isNaN(v) && v < t) t = v;
+    });
+    return t;
+  };
+  open.sort((a, b) => nextStart(a) - nextStart(b));
   let h = top + weekCard();
   if (!slips.length) h += '<div class="empty"><b>No slips yet</b>On the Picks tab, tap Make a slip and choose the legs you backed. The app follows the whole slip and tells you when it lands, or when it\'s one leg away.</div>';
   if (open.length) h += '<h2>Open</h2>' + open.map(slipCard).join("");
@@ -1553,6 +1595,7 @@ function renderSlips(el, top){
   bindSegs(el, "ks", setPicksSeg);
   const find = id => slips.find(s => s.id === id);
   el.querySelectorAll("[data-spost]").forEach(b => b.onclick = () => postDiscord({slip:b.dataset.spost}, b));
+  el.querySelectorAll("[data-schk]").forEach(b => b.onclick = () => checkSlip(b.dataset.schk));
   el.querySelectorAll("[data-sedit]").forEach(b => b.onclick = () => openSlipSheet(null, find(b.dataset.sedit)));
   el.querySelectorAll("[data-sset]").forEach(b => b.onclick = () => openSettleSheet(find(b.dataset.sset)));
   el.querySelectorAll("[data-sdel]").forEach(b => b.onclick = async () => {
@@ -1624,6 +1667,7 @@ function playsList(){
   const list = [];
   if (FEAT().feed) list.push(["tips", "Tips"]);
   if (FEAT().multi) list.push(["multi", "Multi"]);
+  if (FEAT().check) list.push(["check", "Check"]);
   list.push(["ladder", "Ladder"], ["screener", "Screener"], ["pickem", "Pick'em"]);
   if (FEAT().perfect) list.push(["perfect", "100%"]);
   return list;
@@ -2266,6 +2310,203 @@ function bindNewSettings(s){
   const wc = $("wclear"); if (wc) wc.onclick = async () => { await api("/api/settings", {weekly_limit:0}); await loadState(); renderSettings(); };
 }
 
+/* ---------- check a bet: upload a slip, see each leg's chance and value, and the whole bet's ---------- */
+const VERDICT = {good:["Good value", "good"], fair:["Fair price", "fair"], poor:["Poor value", "poor"], strong:["Good pick", "good"], even:["Coin flip", "fair"],
+  long:["Long shot", "poor"], out:["Ruled out", "poor"], won:["Landed", "good"], lost:["Missed", "poor"], "void":["Void", "fair"], unknown:["Can't rate", "none"]};
+function vchip(v){ const x = VERDICT[v] || VERDICT.unknown; return '<span class="vchip ' + x[1] + '">' + esc(x[0]) + '</span>'; }
+function evText(ev){ return ev == null ? "" : (ev >= 0 ? "+" : "") + Math.round(ev * 100) + "%"; }
+function chkFresh(){ return {phase:"start", legs:[], res:null, price:"", stake:"", err:"", lines:[], scan:null}; }
+async function checkImages(files){
+  const job = S.chk = Object.assign(chkFresh(), {phase:"reading", total:files.length, done:0, pct:0});
+  renderLadder();
+  const alive = () => S.chk === job;
+  try{
+    OCR.log = m => { if (alive() && m.status === "recognizing text"){ job.pct = m.progress || 0; chkProgress(); } };
+    const w = await ocrWorker();
+    const blobs = [];
+    for (let i = 0; i < files.length; i++){
+      if (!alive()) return;
+      job.done = i; job.pct = 0; chkProgress();
+      const blob = typeof files[i] === "string" ? await (await fetch(files[i])).blob() : files[i];
+      blobs.push(blob);
+      const r = await w.recognize(await prepImage(blob));
+      if (i) job.lines.push("---");
+      r.data.text.split("\n").forEach(l => job.lines.push(l));
+    }
+    if (!alive()) return;
+    job.phase = "matching"; renderLadder();
+    let res = await api("/api/scan", {lines:job.lines});
+    if (!res.legs.length && alive()){
+      job.phase = "reading"; job.again = true; renderLadder();
+      const more = [];
+      for (let i = 0; i < blobs.length; i++){
+        const r = await w.recognize(await prepImage(blobs[i], true));
+        more.push("---");
+        r.data.text.split("\n").forEach(l => more.push(l));
+      }
+      const res2 = await api("/api/scan", {lines:job.lines.concat(more)});
+      if (res2.legs.length){ res = res2; job.lines = job.lines.concat(more); }
+    }
+    ocrIdle();
+    if (!alive()) return;
+    job.scan = res;
+    job.legs = res.legs.map(l => Object.assign({}, l));
+    job.price = res.price != null ? res.price : "";
+    job.stake = res.stake != null ? res.stake : "";
+    job.bookie = res.bookie || "";
+    if (!job.legs.length){ job.phase = "error"; job.err = res.note || "Couldn't find any bets in that picture."; renderLadder(); return; }
+    await runCheck(job);
+  }catch(e){
+    if (!alive()) return;
+    job.phase = "error"; job.err = e.message || String(e); renderLadder();
+  }
+}
+function chkReady(l){ return l.stat && (l.line != null && l.line !== "" || l.yesno || l.stat === "HWIN" || l.stat === "AWIN" || l.stat === "DRAW"); }
+async function runCheck(job){
+  job.phase = "checking"; renderLadder();
+  const legs = job.legs.filter(chkReady).map(l => ({game_id:l.game_id, athlete_id:l.athlete_id, name:l.name, team:l.team, stat:l.stat, side:l.side, line:l.line, odds:l.odds, label:l.label || ""}));
+  if (!legs.length){ job.phase = "fix"; renderLadder(); return; }
+  try{
+    job.res = await api("/api/check", {legs, price:parseFloat(job.price) || 0, stake:parseFloat(job.stake) || 0});
+    if (S.chk === job){ job.phase = "done"; renderLadder(); }
+  }catch(e){ if (S.chk === job){ job.phase = "error"; job.err = e.message; renderLadder(); } }
+}
+function chkProgress(){
+  const j = S.chk, bar = $("chkbar"), txt = $("chktxt");
+  if (!j || !bar || !txt || j.phase !== "reading") return;
+  bar.style.width = Math.round((j.done + (j.pct || 0)) / Math.max(1, j.total) * 100) + "%";
+  txt.textContent = (j.again ? "Having another go, the text was hard to read" : j.total > 1 ? "Screenshot " + (j.done + 1) + " of " + j.total : "Picking out the text") + " · " + Math.round((j.pct || 0) * 100) + "%";
+}
+/** Check one of your open slips without a screenshot. */
+async function checkSlip(id){
+  const s = (S.state.slips || []).find(x => x.id === id);
+  if (!s) return;
+  const byId = {};
+  (S.state.picks || []).forEach(p => { byId[p.id] = p; });
+  const legs = (s.legs || []).map(l => byId[l.pick]).filter(Boolean).map(p => ({game_id:p.game_id, athlete_id:p.athlete_id, name:p.name, team:p.team, stat:p.stat, side:p.side, line:p.line, odds:p.odds, yesno:p.yesno, label:p.label || ""}));
+  if (!legs.length) return;
+  const job = S.chk = Object.assign(chkFresh(), {legs, price:s.price || "", stake:s.stake || "", fromSlip:s.id, bookie:s.book || ""});
+  S.playsSeg = "check"; LS.set("playsSeg", "check");
+  setTab("ladder");
+  await runCheck(job);
+}
+function chkLegCard(l, i){
+  const why = (l.why || []).map(w => '<li>' + esc(w) + '</li>').join("");
+  const pr = l.price ? money(l.price) + (l.book ? ' <small>' + esc(l.book) + '</small>' : '') : '-';
+  const stats = l.p == null ? '' : '<div class="ckstats"><div><small>Chance</small><b>' + pct(l.p) + '</b></div><div><small>Fair</small><b>' + (l.fair ? money(l.fair) : '-') + '</b></div>' +
+    '<div><small>Price</small><b>' + pr + '</b></div><div><small>Value</small><b class="' + (l.ev == null ? '' : l.ev >= 0 ? 'pos' : 'neg') + '">' + (l.ev == null ? '-' : evText(l.ev)) + '</b></div></div>';
+  return '<div class="card ckleg">' + '<div class="row" style="gap:10px;align-items:flex-start">' + avatarHtml(feedPick(l)) +
+    '<div class="grow" style="min-width:0"><div class="t1">' + esc(l.athlete_id === "match" ? l.label : l.name) + '</div>' + (l.athlete_id === "match" ? '' : '<div class="t2">' + esc(l.label) + '</div>') +
+    '<div class="t3">' + esc([l.matchup, l.start ? startText(l.start) : "", l.league_short].filter(Boolean).join(" · ")) + '</div></div>' + vchip(l.verdict) + '</div>' + stats +
+    (why ? '<ul class="ckwhy">' + why + '</ul>' : '') + '</div>';
+}
+function chkVerdictFor(R, price){
+  if (R.p == null) return {ev:null, verdict:"unknown"};
+  if (R.verdict === "won" || R.verdict === "lost") return {ev:R.ev, verdict:R.verdict};
+  if (!(price > 1)) return {ev:null, verdict:R.p >= 0.6 ? "strong" : R.p >= 0.4 ? "even" : "long"};
+  const ev = R.p * price - 1;
+  return {ev, verdict:ev >= 0.05 ? "good" : ev >= -0.08 ? "fair" : "poor"};
+}
+function chkFixHtml(j){
+  const bad = j.legs.map((l, i) => [l, i]).filter(([l]) => !chkReady(l));
+  if (!bad.length) return "";
+  const props = (j.scan && j.scan.props) || {};
+  return '<h2>Couldn\'t read all of these</h2><div class="small muted" style="margin:-4px 2px 8px">Fill in the market and line, then check again.</div>' + bad.map(([l, i]) => {
+    const list = (props[l.sport] || []).filter(p => (l.athlete_id === "match") === !!p.match);
+    return '<div class="card"><div style="font-weight:700">' + esc(l.name) + ' <span class="muted small">' + esc(l.matchup || "") + '</span></div>' +
+      (l.text ? '<div class="small muted" style="margin-top:2px;font-style:italic">Read: ' + esc(l.text) + '</div>' : '') +
+      '<div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap"><select data-cst="' + i + '" style="max-width:52%"><option value="">Market?</option>' + list.map(p => '<option value="' + esc(p.key) + '"' + (p.key === l.stat ? " selected" : "") + '>' + esc(p.name) + '</option>').join("") + '</select>' +
+      '<div class="seg" style="grid-template-columns:auto auto;padding:2px"><button class="more' + (l.side !== "less" ? " on" : "") + '" data-csd="' + i + ':more" style="padding:6px 10px">Over</button><button class="less' + (l.side === "less" ? " on" : "") + '" data-csd="' + i + ':less" style="padding:6px 10px">Under</button></div>' +
+      '<input data-cln="' + i + '" type="number" inputmode="decimal" step="0.5" min="0" value="' + (l.line == null ? "" : l.line) + '" placeholder="Line" style="width:72px;text-align:center;padding:7px;border-radius:9px;background:var(--bg);border:1px solid var(--line);font-weight:700"></div></div>';
+  }).join("") + '<button class="btn block" id="chkagain">Check again</button>';
+}
+function renderCheck(el){
+  const top = playsTop(), j = S.chk || (S.chk = chkFresh());
+  let h = top;
+  if (j.phase === "start" || j.phase === "error"){
+    h += '<div class="card"><div style="font-weight:700;font-size:17px">Check a bet</div><div class="small muted" style="margin-top:4px">Upload a screenshot of your slip. You\'ll see the chance of each leg, its fair price and whether the price is good value, then the same for the whole bet.</div>' +
+      '<button class="btn primary block" id="chkpick" style="margin-top:12px">Upload a slip</button><div class="small muted" style="margin-top:8px">It\'s read on your ' + (WEB ? "computer" : "phone") + '. Works best with the whole slip on screen, including the price.</div></div>';
+    if (j.phase === "error") h += '<div class="card err">' + esc(j.err) + '</div>';
+    const open = (S.state.slips || []).filter(s => s.status === "open");
+    if (open.length) h += '<h2>Or check one of your slips</h2><div class="list">' + open.slice(0, 8).map(s => '<div class="tip" data-chkslip="' + esc(s.id) + '"><div class="grow"><div class="t1">' + esc(slipName(s)) + '</div><div class="t3">' +
+      esc(s.legs.length + (s.legs.length === 1 ? " leg" : " legs") + (s.price ? " · " + money(s.price) : "") + (s.stake ? " · " + money(s.stake) + " stake" : "")) + '</div></div><span class="chev" aria-hidden="true">&rsaquo;</span></div>').join("") + '</div>';
+  } else if (j.phase === "reading" || j.phase === "matching" || j.phase === "checking"){
+    h += '<div class="card"><div style="font-weight:700">' + (j.phase === "checking" ? "Rating each leg" : j.phase === "matching" ? "Finding the players and games" : "Reading your slip") + '</div>' +
+      '<div class="prog" style="margin-top:12px"><i id="chkbar" style="width:' + (j.phase === "reading" ? 0 : 100) + '%"></i></div><div class="small muted" id="chktxt">' +
+      (j.phase === "checking" ? "Checking the prices and recent games..." : j.phase === "matching" ? "Matching names to today's games..." : "Getting the reader ready...") + '</div>' +
+      '<button class="btn small" id="chkcancel" style="margin-top:12px">Cancel</button></div>';
+  } else if (j.phase === "fix"){
+    h += chkFixHtml(j) + '<button class="btn block" id="chknew" style="margin-top:8px">Start again</button>';
+  } else {
+    const R = j.res, price = parseFloat(j.price), v = chkVerdictFor(R, price);
+    const kind = R.kind === "sgm" ? "Same game multi" : R.kind === "multi" ? "Multi" : "Single";
+    h += '<div class="card cksum"><div class="row" style="align-items:flex-start;gap:10px"><div class="grow"><div class="small muted">' + esc((j.bookie ? j.bookie + " · " : "") + kind + " · " + R.legs.length + (R.legs.length === 1 ? " leg" : " legs")) + '</div>' +
+      '<div class="ckbig">' + (R.p == null ? "-" : pct(R.p)) + '<small>' + (R.legs.length > 1 ? "chance they all land" : "chance it lands") + '</small></div></div>' + vchip(v.verdict) + '</div>' +
+      '<div class="ckstats"><div><small>Fair price</small><b>' + (R.fair ? money(R.fair) : "-") + '</b></div><div><small>Your price</small><b><span class="row" style="gap:2px;justify-content:center"><span class="muted">$</span><input id="chkprice" type="number" inputmode="decimal" step="0.01" min="1.01" value="' + esc(typeof j.price === "number" ? j.price.toFixed(2) : j.price) + '" placeholder="-"></span></b></div>' +
+      '<div><small>Value</small><b class="' + (v.ev == null ? "" : v.ev >= 0 ? "pos" : "neg") + '" id="chkev">' + (v.ev == null ? "-" : evText(v.ev)) + '</b></div></div>' +
+      '<div class="small" id="chksumtxt" style="margin-top:10px;line-height:1.45">' + esc(chkSummary(R, price, v)) + '</div>';
+    if (R.weakest && R.weakest.without > R.p) h += '<div class="small muted" style="margin-top:8px">Weakest leg: ' + esc((R.weakest.name && !/ v /.test(R.weakest.name) ? R.weakest.name + " " : "") + R.weakest.label) + ' at ' + pct(R.weakest.p) + '. Without it the chance goes from ' + pct(R.p) + ' to ' + pct(R.weakest.without) + '.</div>';
+    (R.notes || []).forEach(n => { h += '<div class="small muted" style="margin-top:6px">' + esc(n) + '</div>'; });
+    h += '</div>';
+    h += R.legs.map(chkLegCard).join("");
+    h += chkFixHtml(j);
+    const tracked = j.fromSlip;
+    h += '<div class="row" style="gap:8px;margin-top:10px">' + (tracked ? '' : '<button class="btn primary grow" id="chktrack">Track this bet</button>') + '<button class="btn grow" id="chknew">Check another</button></div>';
+    h += '<div class="small muted" style="margin:10px 2px 0">Value compares our chance with the price: +10% means you\'d get back $1.10 for every $1 over the long run. Chances are estimates, not promises.</div>';
+  }
+  el.innerHTML = h;
+  bindSegs(el, "ps", setPlaysSeg);
+  chkProgress();
+  const on = (id, f) => { const b = $(id); if (b) b.onclick = f; };
+  on("chkpick", () => { const f = $("chkfile"); f.value = ""; f.click(); });
+  on("chkcancel", () => { S.chk = chkFresh(); renderLadder(); });
+  on("chknew", () => { S.chk = chkFresh(); renderLadder(); });
+  on("chkagain", () => runCheck(j));
+  el.querySelectorAll("[data-chkslip]").forEach(r => r.onclick = () => checkSlip(r.dataset.chkslip));
+  const pi = $("chkprice");
+  if (pi) pi.oninput = () => {
+    j.price = pi.value;
+    const v = chkVerdictFor(j.res, parseFloat(pi.value)), ev = $("chkev");
+    if (ev){ ev.textContent = v.ev == null ? "-" : evText(v.ev); ev.className = v.ev == null ? "" : v.ev >= 0 ? "pos" : "neg"; }
+    const chip = el.querySelector(".cksum .vchip");
+    if (chip) chip.outerHTML = vchip(v.verdict);
+    const st = $("chksumtxt");
+    if (st) st.textContent = chkSummary(j.res, parseFloat(pi.value), v);
+  };
+  el.querySelectorAll("[data-cst]").forEach(s => s.onchange = () => {
+    const l = j.legs[+s.dataset.cst]; l.stat = s.value;
+    const p = (((j.scan || {}).props || {})[l.sport] || []).find(x => x.key === l.stat);
+    if (p && p.yesno){ l.line = 0.5; l.yesno = true; }
+  });
+  el.querySelectorAll("[data-csd]").forEach(b => b.onclick = () => { const [i, sd] = b.dataset.csd.split(":"); j.legs[+i].side = sd; renderLadder(); });
+  el.querySelectorAll("[data-cln]").forEach(inp => inp.oninput = () => { const v = parseFloat(inp.value); j.legs[+inp.dataset.cln].line = isNaN(v) ? null : v; });
+  on("chktrack", async () => {
+    const legs = j.legs.filter(chkReady);
+    const b = $("chktrack"); b.disabled = true; b.textContent = "Adding...";
+    try{
+      const stake = parseFloat(j.stake), price = parseFloat(j.price);
+      const r = await api("/api/scan/add", {legs:legs.map(l => ({game_id:l.game_id, athlete_id:l.athlete_id, name:l.name, team:l.team, stat:l.stat, side:l.side, line:l.line, odds:l.odds})),
+        slip:stake > 0, stake:stake > 0 ? stake : 0, price:price >= 1.01 ? price : 0, bookie:j.bookie || "", name:j.bookie ? j.bookie + " slip" : ""});
+      await loadState();
+      j.fromSlip = r.slip ? r.slip.id : "picks";
+      toast({kind:"event", title:"Tracking " + r.picks + (r.picks === 1 ? " pick" : " picks") + (r.slip ? " on a slip" : ""), body:r.slip ? "" : "Add your stake on the Slips tab to follow it as a bet"});
+      renderLadder();
+    }catch(e){ b.disabled = false; b.textContent = "Try again"; toast({kind:"bust", title:"Couldn't add it", body:e.message}); }
+  });
+}
+function chkSummary(R, price, v){
+  if (R.p == null) return R.summary || "Couldn't rate this one.";
+  if (v.verdict === "won") return "This one's already landed.";
+  if (v.verdict === "lost") return "A leg has already missed, so this one's gone.";
+  const n = R.legs.length, what = n === 1 ? "This bet lands" : "All " + n + " legs land";
+  let s = what + " about " + pct(R.p) + " of the time, so the fair price is " + money(R.fair) + ".";
+  if (price > 1){
+    const ev = v.ev;
+    s += " At " + money(price) + (ev >= 0.05 ? " that's good value, about " + Math.round(ev * 100) + "% better than fair." : ev >= 0 ? " that's about fair." : ev >= -0.08 ? " that's a little under fair, which is normal for a bookie's price." : " that's poor value, about " + Math.round(-ev * 100) + "% worse than fair.");
+  } else s += " Put in the price on your slip to see if it's good value.";
+  return s;
+}
+
 /* ---------- game extras ---------- */
 function periodText(g, p){
   if (!p) return "";
@@ -2399,10 +2640,15 @@ function ocrIdle(){
   clearTimeout(OCR.idle);
   OCR.idle = setTimeout(async () => { const w = OCR.worker; OCR.worker = null; OCR.loading = null; if (w) { try { await w.terminate(); } catch(e){} } }, 3 * 60e3);
 }
-/** Grey, upright contrast, and dark mode flipped to dark-on-light, which reads best. */
-async function prepImage(blob){
+/**
+ * Grey, with every dark band flipped to dark-on-light (dark mode, coloured headers, dark cards on a
+ * light page), which is what the reader handles best. strong: bigger and black and white, for a
+ * second go when the first read found nothing.
+ */
+async function prepImage(blob, strong){
   const bmp = await createImageBitmap(blob);
   let scale = bmp.width < 1000 ? Math.min(2, 1300 / bmp.width) : bmp.width > 2000 ? 2000 / bmp.width : 1;
+  if (strong) scale *= 1.5;
   if (bmp.width * bmp.height * scale * scale > 16e6) scale = Math.sqrt(16e6 / (bmp.width * bmp.height));
   const c = document.createElement("canvas");
   c.width = Math.max(1, Math.round(bmp.width * scale)); c.height = Math.max(1, Math.round(bmp.height * scale));
@@ -2410,10 +2656,33 @@ async function prepImage(blob){
   x.imageSmoothingQuality = "high";
   x.drawImage(bmp, 0, 0, c.width, c.height);
   if (bmp.close) bmp.close();
-  const im = x.getImageData(0, 0, c.width, c.height), d = im.data;
-  let sum = 0;
-  for (let i = 0; i < d.length; i += 4){ const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; d[i] = d[i + 1] = d[i + 2] = g; sum += g; }
-  if (sum / (d.length / 4) < 115) for (let i = 0; i < d.length; i += 4){ d[i] = d[i + 1] = d[i + 2] = 255 - d[i]; }
+  const W = c.width, H = c.height, im = x.getImageData(0, 0, W, H), d = im.data;
+  const rows = new Float64Array(H + 1);
+  for (let y = 0; y < H; y++){
+    let s = 0;
+    for (let i = y * W * 4, e = i + W * 4; i < e; i += 4){ const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; d[i] = g; s += g; }
+    rows[y + 1] = rows[y] + s / W;
+  }
+  // a band is dark when the rows around it are, so a line of light text inside a dark card flips with its card
+  const R = Math.max(4, Math.round(H / 250));
+  const hist = new Float64Array(256);
+  for (let y = 0; y < H; y++){
+    const a = Math.max(0, y - R), b = Math.min(H, y + R + 1), dark = (rows[b] - rows[a]) / (b - a) < 118;
+    for (let i = y * W * 4, e = i + W * 4; i < e; i += 4){ const g = dark ? 255 - d[i] : d[i]; d[i] = d[i + 1] = d[i + 2] = g; hist[g | 0]++; }
+  }
+  if (strong){
+    // black and white at the split that best separates ink from page (Otsu)
+    let total = W * H, sum = 0, sb = 0, wb = 0, best = 0, cut = 128;
+    for (let t = 0; t < 256; t++) sum += t * hist[t];
+    for (let t = 0; t < 256; t++){
+      wb += hist[t]; if (!wb) continue;
+      const wf = total - wb; if (!wf) break;
+      sb += t * hist[t];
+      const mb = sb / wb, mf = (sum - sb) / wf, v = wb * wf * (mb - mf) * (mb - mf);
+      if (v > best){ best = v; cut = t; }
+    }
+    for (let i = 0; i < d.length; i += 4){ const g = d[i] > cut ? 255 : 0; d[i] = d[i + 1] = d[i + 2] = g; }
+  }
   x.putImageData(im, 0, 0);
   return c;
 }
@@ -2427,6 +2696,7 @@ function openScan(force){
 }
 function pickScreenshots(){ const f = $("scanfile"); f.value = ""; f.click(); }
 $("scanfile").onchange = e => { const fs = [...e.target.files].slice(0, 6); if (fs.length) scanImages(fs); };
+$("chkfile").onchange = e => { const fs = [...e.target.files].slice(0, 6); if (fs.length) checkImages(fs); };
 window.appScan = function(urls){
   if (!Array.isArray(urls) || !urls.length) return;
   // A share can arrive while the app is still starting, so wait for it to be ready.
@@ -2443,19 +2713,38 @@ async function scanImages(srcs){
     OCR.log = m => { if (!alive()) return; if (m.status === "recognizing text"){ job.loadingReader = false; job.pct = m.progress || 0; scanProgress(); } };
     const w = await ocrWorker();
     job.loadingReader = false;
+    const blobs = [];
     for (let i = 0; i < srcs.length; i++){
       if (!alive()) return;
       job.done = i; job.pct = 0; scanProgress();
       const blob = typeof srcs[i] === "string" ? await (await fetch(srcs[i])).blob() : srcs[i];
+      blobs.push(blob);
       const r = await w.recognize(await prepImage(blob));
       if (i) job.lines.push("---");
       r.data.text.split("\n").forEach(l => job.lines.push(l));
     }
-    ocrIdle();
     if (!alive()) return;
     job.phase = "matching"; renderScan();
-    const res = await api("/api/scan", {lines:job.lines});
+    let res = await api("/api/scan", {lines:job.lines});
     if (!alive()) return;
+    if (!res.legs.length){
+      // nothing matched: read it again bigger and in black and white, and try with both reads
+      job.phase = "reading"; job.again = true; renderScan();
+      const more = [];
+      for (let i = 0; i < blobs.length; i++){
+        if (!alive()) return;
+        job.done = i; job.pct = 0; scanProgress();
+        const r = await w.recognize(await prepImage(blobs[i], true));
+        more.push("---");
+        r.data.text.split("\n").forEach(l => more.push(l));
+      }
+      if (!alive()) return;
+      job.phase = "matching"; renderScan();
+      const res2 = await api("/api/scan", {lines:job.lines.concat(more)});
+      if (!alive()) return;
+      if (res2.legs.length){ res = res2; job.lines = job.lines.concat(more); }
+    }
+    ocrIdle();
     job.res = res;
     job.legs = res.legs.map(l => Object.assign({}, l, {on: !l.tracked && !!l.stat && l.line != null}));
     job.stake = res.stake != null ? res.stake : "";
@@ -2473,7 +2762,7 @@ function scanProgress(){
   if (!j || !bar || !txt) return;
   const whole = (j.done + (j.pct || 0)) / Math.max(1, j.total);
   bar.style.width = Math.round(whole * 100) + "%";
-  txt.textContent = j.loadingReader ? "Getting the reader ready..." : "Reading " + (j.total > 1 ? "screenshot " + (j.done + 1) + " of " + j.total : "your screenshot") + " · " + Math.round((j.pct || 0) * 100) + "%";
+  txt.textContent = j.loadingReader ? "Getting the reader ready..." : (j.again ? "Having another go at " : "Reading ") + (j.total > 1 ? "screenshot " + (j.done + 1) + " of " + j.total : "your screenshot") + " · " + Math.round((j.pct || 0) * 100) + "%";
 }
 function scanStatOptions(l){
   const list = ((S.scan.res.props || {})[l.sport] || []).filter(p => (l.athlete_id === "match") === !!p.match);
@@ -2528,6 +2817,7 @@ function renderScan(){
     }
     h += '<div id="sheeterr" class="err" style="margin-top:8px"></div>';
     h += '<div class="row" style="margin-top:12px;gap:8px"><button class="btn" id="scanclose">Cancel</button>' + (n ? '<button class="btn primary grow" id="scanadd"' + (ready ? "" : " disabled") + '>' + (ready ? "Track " + ready + (ready === 1 ? " pick" : " picks") : "Tick a bet to add") + '</button>' : '<button class="btn primary grow" id="scanpick">Try another</button>') + '</div>';
+    if (n && FEAT().check) h += '<button class="linkbtn" id="scanchk" style="margin-top:12px;padding:0;display:block">Check this bet first</button>';
     h += '<button class="linkbtn" id="scanraw" style="margin-top:12px;padding:0">' + (j.raw ? "Hide what it read" : "Show what it read") + '</button>';
     if (j.raw) h += '<pre class="small muted" style="white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;max-height:240px;overflow:auto">' + esc(j.lines.join("\n").trim()) + '</pre>';
   }
@@ -2537,12 +2827,19 @@ function renderScan(){
   on("scanpick", pickScreenshots);
   on("scanclose", () => { S.scan = null; closeSheet(); });
   on("scanraw", () => { j.raw = !j.raw; renderScan(); });
+  on("scanchk", () => {
+    const job = S.chk = Object.assign(chkFresh(), {legs:j.legs.filter(l => l.on || !l.touched).map(l => Object.assign({}, l)), price:j.price, stake:j.stake, scan:j.res, bookie:j.res.bookie || "", lines:j.lines});
+    S.scan = null; closeSheet();
+    S.playsSeg = "check"; LS.set("playsSeg", "check");
+    setTab("ladder");
+    runCheck(job);
+  });
   on("scanslip", () => { j.slip = !j.slip; renderScan(); });
   const ret = () => { const r = $("scanret"); if (!r) return; const s = parseFloat(j.stake), p = parseFloat(j.price); r.textContent = s > 0 && p > 1 ? "Returns " + money(s * p) + " if it lands" : (s > 0 ? "Put in the price on your slip" : ""); };
   const st = $("scanstake"); if (st) st.oninput = () => { j.stake = st.value; ret(); };
   const pr = $("scanprice"); if (pr) pr.oninput = () => { j.price = pr.value; ret(); };
   ret();
-  el.querySelectorAll("[data-son]").forEach(b => b.onclick = () => { const l = j.legs[+b.dataset.son]; l.on = !l.on; renderScan(); });
+  el.querySelectorAll("[data-son]").forEach(b => b.onclick = () => { const l = j.legs[+b.dataset.son]; l.on = !l.on; l.touched = true; renderScan(); });
   el.querySelectorAll("[data-sst]").forEach(s => s.onchange = () => {
     const l = j.legs[+s.dataset.sst]; l.stat = s.value;
     const p = ((j.res.props || {})[l.sport] || []).find(x => x.key === l.stat);
@@ -2841,8 +3138,9 @@ function sgmCard(s, i){
     '<small>' + (s.price ? 'The leg prices multiplied, fair ' + money(s.fair) : 'Fair price ' + money(s.fair)) + '</small></div><div class="chance">' + pct(s.p) + '<small>chance</small></div></div>';
   s.legs.forEach(l => {
     const match = l.athlete_id === "match" || l.label.indexOf(l.name) === 0;
-    h += '<div class="lg">' + avatarHtml(tipPick(l)) + '<div class="grow">' + (match ? '<b>' + esc(l.label) + '</b>' : '<b>' + esc(l.name) + '</b><small>' + esc(l.label) + '</small>') + '</div><span class="price">' + (l.price ? money(l.price) : '') + '</span></div>';
+    h += '<div class="lg">' + avatarHtml(tipPick(l)) + '<div class="grow">' + (match ? '<b>' + esc(l.label) + '</b>' : '<b>' + esc(l.name) + '</b><small>' + esc(l.label) + '</small>') + '</div><span class="price">' + (l.price ? money(l.price) : l.fair ? '<span class="muted small" style="font-weight:600">fair ' + money(l.fair) + '</span>' : '') + '</span></div>';
   });
+  if (!s.price) h += '<div class="small muted" style="margin-top:6px">No bookie prices for these legs yet, so the fair price is ours. Check what your bookie offers.</div>';
   h += '<button class="btn small' + (done ? '' : ' primary') + '" data-sgm="' + k + '" style="margin-top:8px"' + (done ? ' disabled' : '') + '>' + (done ? "Tracking all legs" : "Track all " + s.legs.length + " legs") + '</button>';
   return h + '</div>';
 }
@@ -3198,7 +3496,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.4";
+    s.src = "engine.js?v=4.5";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
