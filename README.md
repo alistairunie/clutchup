@@ -10,14 +10,19 @@ Live tracking for your player props, multis and slips. It's free and runs in you
 - **Sends alerts.** You get a notification when a pick lands or busts, or when a multi is one leg away.
 - **Follows your slips.** Group your legs into the slip you actually placed. It tracks every leg, settles the slip when the games finish and keeps your profit and hit rate on the Results tab.
 - **Adds bets from a screenshot.** Screenshot your bet slip and ClutchUp reads it and adds the legs. The screenshot is read on your phone and never uploaded anywhere.
-- **Finds plays.** The Plays tab has four tools:
+- **Reads every game.** Open a game and the Tips view gives a predicted score, each side's chance, the calls on the main markets, the best bets and a same game multi. It weighs the prices, recent form, rest, who's out and, for outdoor games, the weather.
+- **Finds plays.** The Plays tab has six tools:
+  - **Tips** lists the best bets across every game in the next day and a half, with the chance of each and the best price found. Tap one to see the rest of that game.
+  - **Multi** builds a multi to the price you want, one leg per game, picked for the best chance of landing.
   - **Ladder** finds the next step for your ladder, a single or double in your price range with the best chance of landing.
   - **Screener** lists every prop on the next day's games, filtered by hit rate, price and average.
   - **Pick'em** builds More/Less entries for pick'em apps, one player per game.
   - **100%** shows the props that landed in every one of a player's last 5, 10 or 15 games, team by team.
-- **Covers lots of sports.** NBA, WNBA, NBL, NFL, NHL, soccer (EPL, A-League, Champions League and plenty more) and tennis (ATP and WTA singles).
-- **Shows prices.** Lines and prices come from DraftKings through ESPN for the US leagues and the bigger soccer leagues. For NBL and tennis, type in your bookie's price.
-- **Posts to Discord.** Share picks, slips and ladder steps to a Discord channel with a webhook.
+- **Keeps score on its tips.** Every tip is saved before its game and marked after, so you can see how often they land and whether the chances hold up.
+- **Covers lots of sports.** NBA, WNBA, NBL, NFL, NHL, AFL, NRL, soccer (EPL, A-League, Champions League and plenty more) and tennis (ATP and WTA singles).
+- **Compares prices.** DraftKings and Bet365 prices come through ESPN. Add your own free key from [The Odds API](https://the-odds-api.com) to compare Sportsbet, TAB, Ladbrokes, Neds and the other Aussie bookies, or from [PropLine](https://prop-line.com) for Pinnacle. Each tip then shows the best price and which bookie has it.
+- **Posts to Discord.** Share picks, slips and ladder steps to a Discord channel with a webhook. It can also post the day's best bets each morning, then edit the post with a tick or a cross as each one lands.
+- **Helps you stick to a budget.** Set a weekly limit and the Slips tab shows what's left, with a heads up before a slip goes past it.
 
 ## How to use it
 
@@ -37,7 +42,7 @@ A few more things to try:
 
 ## Good to know
 
-- **Keep the page open.** The web version only tracks while it's open, in any tab. Once you close it, nothing updates and no alerts come through. If you're on Android, you can get the app from **Settings**. It keeps tracking with your phone locked.
+- **Keep the page open.** The web version only tracks while it's open, in any tab. Once you close it, nothing updates, no alerts come through and the morning Discord post waits until you're back. If you're on Android, you can get the app from **Settings**. It keeps tracking with your phone locked and posts to Discord in the background.
 - **Your picks stay on your device.** There are no accounts. Everything is saved in your browser, so it won't carry over to another phone, and clearing your browser data wipes it.
 - **Use one tab at a time.** If it's open in two tabs, the second one waits until you close the first.
 - **Stats can lag.** Live stats come from ESPN and can be up to a minute behind the broadcast. Bookies settle on official stats, which sometimes differ.
@@ -49,7 +54,7 @@ A few more things to try:
 
 ## Privacy
 
-There are no accounts, ads or analytics. ClutchUp only connects to ESPN's public scores feeds, ESPN's image server for logos and headshots, and Discord if you add a webhook.
+There are no accounts, ads or analytics. ClutchUp only connects to ESPN's public scores feeds, ESPN's image server for logos and headshots, Open-Meteo for the weather at outdoor games, Discord if you add a webhook, and The Odds API or PropLine if you add a key. Your keys stay on your device.
 
 ## Bet responsibly
 
@@ -58,6 +63,7 @@ There are no accounts, ads or analytics. ClutchUp only connects to ESPN's public
 ## Credits
 
 - Live scores, stats and prices come from ESPN's public feeds. ClutchUp isn't affiliated with ESPN, any league or any bookmaker.
+- Weather forecasts come from [Open-Meteo](https://open-meteo.com) (CC BY 4.0).
 - Screenshots are read with [Tesseract.js](https://github.com/naptha/tesseract.js) (Apache 2.0).
 - The fonts are Big Shoulders Display and Figtree (SIL Open Font License).
 - The app's engine is compiled for the web with [TeaVM](https://teavm.org) (Apache 2.0).

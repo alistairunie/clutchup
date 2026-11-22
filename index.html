@@ -401,6 +401,31 @@ ol.steps li{margin:5px 0}
 .checker .out button.hi .v{color:var(--green)}
 .basis{font-size:12.5px;color:var(--muted);margin:2px 4px 14px;line-height:1.45}
 
+/* plays: with more than four views the switch scrolls sideways instead of squashing the names */
+.segs.many{overflow-x:auto;scrollbar-width:none}
+.segs.many::-webkit-scrollbar{display:none}
+.segs.many button{flex:1 0 auto;padding:9px 12px}
+/* the tips feed and the multi builder */
+.feedhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 10px;min-height:34px}
+.readbar{height:4px;border-radius:999px;background:var(--card2);overflow:hidden;margin:-4px 2px 12px}
+.readbar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .5s}
+.tip .pr small{display:block;font-size:11.5px;color:var(--faint);margin-top:1px;max-width:96px;overflow:hidden;text-overflow:ellipsis}
+.record{display:flex;align-items:center;gap:12px;cursor:pointer}
+.record .rline{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.record .rline .big2{margin:0}
+.record .chev{font-size:26px;line-height:1;color:var(--faint)}
+.recbar{display:grid;grid-template-columns:78px minmax(0,1fr) 58px;gap:10px;align-items:center;font-size:12.5px;color:var(--muted);padding:6px 0}
+.recbar .track{margin:0}
+.recbar .n{text-align:right;font:800 18px/1 var(--num);color:var(--text);font-variant-numeric:tabular-nums}
+.recbar .n small{display:block;font:500 11px var(--ui);color:var(--muted);margin-top:2px}
+.reclist .legrow{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:14px}
+.reclist .legrow + .legrow{border-top:1px solid var(--line)}
+.reclist .legrow .lm{margin-top:1px}
+.warn{color:var(--amber);font-size:13px}
+.warn:empty{display:none}
+.mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
+.rule input[type=time]{width:118px}
+
 /* slips look like a bet ticket: a tear line with notches */
 .slip{position:relative}
 .slip .tear{position:relative;border-top:2px dashed var(--line2);margin:12px -16px 4px}
@@ -542,7 +567,9 @@ const S = {tab:"games", games:null, state:null, gamesErr:"", lastAlertSeen:null,
            psearch:"", open:{}, armed:null, forms:{}, ladder:null, ladderAt:0, ladderLoading:false, ladderErr:"",
            lopen:{}, lplays:{}, picksSeg:"picks", playsSeg:"ladder", selecting:false, sel:{}, scr:null, pk:null,
            results:null, resAt:0, pbpAll:false, ledit:false, prevVals:{}, perfect:null, perfectErr:"", perfectLoading:false, pfTeam:"all", pfMin:5,
-           tips:{}, tipMap:{}, gview:"tips", tchk:{}};
+           tips:{}, tipMap:{}, gview:"tips", tchk:{},
+           feed:null, feedErr:"", feedLoading:false, feedAt:0, feedShow:30, feedDrawn:"", multi:null, multiErr:"", multiLoading:false,
+           score:null, scoreErr:"", scoreLoading:false};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -554,7 +581,10 @@ const LS = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.p
             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 S.filter = LS.get("filter", "all");
 S.picksSeg = ["picks","slips","results"].includes(LS.get("picksSeg", "picks")) ? LS.get("picksSeg", "picks") : "picks";
-S.playsSeg = ["ladder","screener","pickem","perfect"].includes(LS.get("playsSeg", "ladder")) ? LS.get("playsSeg", "ladder") : "ladder";
+S.playsSeg = ["tips","multi","ladder","screener","pickem","perfect"].includes(LS.get("playsSeg", "tips")) ? LS.get("playsSeg", "tips") : "tips";
+S.feedQ = Object.assign({sport:"", sort:"picks", kind:"", min:1.3}, LS.get("feedQ", {}));
+S.mQ = Object.assign({legs:3, target:3, sport:""}, LS.get("mQ", {}));
+S.scoreQ = Object.assign({days:30, sport:"all"}, LS.get("scoreQ", {}));
 S.pfK = [5, 10, 15].includes(LS.get("pfK", 10)) ? LS.get("pfK", 10) : 10;
 S.pfLeague = LS.get("pfLeague", ""); S.pfMin = LS.get("pfMin", 0);
 S.scrQ = Object.assign({league:"", prop:"", side:"", min_hit:80, avg:"1", main:"0", inj:"1", price_min:1.15, price_max:3, sort:"hit"}, LS.get("scrQ", {}));
@@ -826,7 +856,7 @@ function renderGames(){
   if (!S.games){ el.innerHTML = S.gamesErr ? '<div class="empty"><b>Couldn\'t load games</b>' + esc(S.gamesErr) + '</div>' : '<div class="spin"></div>'; return; }
   const on = (S.state && S.state.settings.leagues) || [];
   const chipsList = [["all", "All"]];
-  ["nbl","nba","wnba","nfl","nhl"].forEach(k => { if (on.includes(k)) chipsList.push([k, k.toUpperCase()]); });
+  ["nbl","nba","wnba","nfl","nhl","afl","nrl"].forEach(k => { if (on.includes(k)) chipsList.push([k, k.toUpperCase()]); });
   if (S.games.some(g => g.sport === "soccer") || on.some(k => k.includes("."))) chipsList.push(["soccer", "Soccer"]);
   if (S.games.some(g => g.sport === "tennis") || on.some(k => k === "atp" || k === "wta")) chipsList.push(["tennis", "Tennis"]);
   if (!chipsList.some(c => c[0] === S.filter)) S.filter = "all";
@@ -913,12 +943,12 @@ function gameHead(g){
 function trackHtml(p){
   const g = p.game || {};
   if (isCap(p) && p.line != null){
-    const v = +p.value || 0, span = {basketball:16, football:17, soccer:3, hockey:3, tennis:8}[g.sport || p.sport] || 10;
+    const v = +p.value || 0, span = {basketball:16, football:17, soccer:3, hockey:3, tennis:8, aussie:30, league:12}[g.sport || p.sport] || 10;
     const max = Math.max(span, Math.abs(v) * 1.15, +p.line * 1.4), w = Math.min(50, Math.abs(v) / max * 50);
     return '<div class="track mid"><i style="left:' + (v >= 0 ? 50 : 50 - w).toFixed(1) + '%;width:' + w.toFixed(1) + '%"></i><b style="left:' + (50 + Math.min(50, +p.line / max * 50)).toFixed(1) + '%"></b></div>';
   }
   if (isWin(p)){
-    const v = +p.value || 0, span = {basketball:12, football:14, soccer:3, hockey:3, tennis:2}[g.sport || p.sport] || 10;
+    const v = +p.value || 0, span = {basketball:12, football:14, soccer:3, hockey:3, tennis:2, aussie:24, league:10}[g.sport || p.sport] || 10;
     const max = Math.max(span, Math.abs(v) * 1.15), w = Math.min(50, Math.abs(v) / max * 50);
     return '<div class="track mid"><i style="left:' + (v >= 0 ? 50 : 50 - w).toFixed(1) + '%;width:' + w.toFixed(1) + '%"></i><b></b></div>';
   }
@@ -1049,13 +1079,14 @@ function renderSettings(){
     '<div class="toggle" style="margin-top:14px"><div><b>Push alerts</b><div class="small muted">Turn off to pause phone alerts</div></div><button class="switch' + (s.ntfy_on ? " on" : "") + '" id="pushon"></button></div>' +
     '<div class="small muted" style="margin-top:10px">Keep the topic to yourself. Anyone who knows it can see your alerts.</div></div>';
   h += '<h2>Leagues</h2><div class="card"><div class="small muted" style="margin-bottom:10px">Pick the leagues that show up under Games. Your picks keep tracking either way.</div>';
-  ["basketball","football","hockey","soccer","tennis"].forEach(sp => {
+  ["basketball","football","hockey","soccer","tennis","aussie","league"].forEach(sp => {
     const ls = S.state.leagues.filter(l => l.sport === sp);
     if (!ls.length) return;
     h += '<div class="label">' + esc(S.state.sports[sp]) + '</div><div class="lgrid">' + ls.map(l => '<button class="' + (s.leagues.includes(l.key) ? "on" : "") + '" data-lg="' + esc(l.key) + '"><span class="tick">' + (s.leagues.includes(l.key) ? "&#10003;" : "") + '</span>' + esc(l.name) + '</button>').join("") + '</div>';
   });
   h += '</div>';
   h += extraSettings(s);
+  h += pricesSettings(s) + limitSettings(s);
   if (!APP && !WEB) h += '<h2>Open on your phone</h2><div class="card">';
   if (APP || WEB){}
   else if (S.state.phone_url){
@@ -1066,11 +1097,12 @@ function renderSettings(){
   h += '<h2>Update speed</h2><div class="card toggle"><div><b>Check live stats every</b><div class="small muted">Faster means quicker alerts</div></div><select id="interval">' +
     [10,15,20,30].map(v => '<option value="' + v + '"' + (s.interval == v ? " selected" : "") + '>' + v + ' sec</option>').join("") + '</select></div>';
   h += '<h2>Try it out</h2><div class="card"><div class="small muted" style="margin-bottom:10px">Runs a fake three minute basketball game in fast motion. Add a few picks from it and you\'ll get real alerts, so you can check everything works before a real game.</div><button class="btn block" id="demo">Start demo game</button></div>';
-  h += '<h2>About</h2><div class="card small muted">Live stats come from ESPN\'s public feeds and can lag the broadcast by up to a minute. Bookies settle on official stats, which occasionally differ. Soccer picks settle on 90 minutes, so extra time doesn\'t count. NFL yardage picks can still drop on a loss, so they only settle at full time. ClutchUp ' + esc(S.state.version) + (WEB ? ', web version' : '') + '.' + (WEB ? ' Your picks, slips and settings are saved in this browser only.' : '') + '</div>';
+  h += '<h2>About</h2><div class="card small muted">Live stats come from ESPN\'s public feeds and can lag the broadcast by up to a minute. Bookies settle on official stats, which occasionally differ. Soccer picks settle on 90 minutes, so extra time doesn\'t count. NFL yardage picks can still drop on a loss, so they only settle at full time. Weather forecasts come from Open-Meteo. ClutchUp ' + esc(S.state.version) + (WEB ? ', web version' : '') + '.' + (WEB ? ' Your picks, slips and settings are saved in this browser only.' : '') + '</div>';
   el.innerHTML = h;
   if (APP) bindAppSettings(s);
   if (WEB) bindWebSettings();
   bindExtraSettings(s);
+  bindNewSettings(s);
   const rs = $("rsave"); if (rs) rs.onclick = saveRules;
   const ct = $("copytopic"); if (ct) ct.onclick = async () => { try{ await navigator.clipboard.writeText(s.ntfy_topic); ct.textContent = "Copied"; }catch(e){ ct.textContent = "Select it above to copy"; } };
   if (!APP && !WEB) $("testpush").onclick = async () => { $("testpush").disabled = true; $("testpush").textContent = "Sent, check your phone"; await api("/api/test", {}); setTimeout(async () => { await loadState(); const b = $("testpush"); if (b) { b.disabled = false; b.textContent = "Send test alert"; } if (S.state.feed.push_error) renderSettings(); }, 4000); };
@@ -1266,6 +1298,9 @@ function bindPlayButtons(el){
 }
 function renderLadder(){
   const el = $("tab-ladder");
+  if (FEAT().screener && !playsList().some(x => x[0] === S.playsSeg)) S.playsSeg = playsList()[0][0];
+  if (FEAT().screener && S.playsSeg === "tips") return renderFeed(el);
+  if (FEAT().screener && S.playsSeg === "multi") return renderMulti(el);
   if (FEAT().screener && S.playsSeg === "screener") return renderScreener(el);
   if (FEAT().screener && S.playsSeg === "pickem") return renderPickem(el);
   if (FEAT().perfect && S.playsSeg === "perfect") return renderPerfect(el);
@@ -1339,7 +1374,13 @@ const HOOK = () => !!(S.state && S.state.settings && S.state.settings.discord_we
 function segs(list, cur, attr){
   return '<div class="segs">' + list.map(([k, l, n]) => '<button data-' + attr + '="' + k + '" class="' + (cur === k ? "on" : "") + '">' + esc(l) + (n ? '<span class="n">' + n + '</span>' : '') + '</button>').join("") + '</div>';
 }
-function bindSegs(el, attr, fn){ el.querySelectorAll("[data-" + attr + "]").forEach(b => b.onclick = () => fn(b.dataset[attr])); }
+function bindSegs(el, attr, fn){
+  el.querySelectorAll("[data-" + attr + "]").forEach(b => b.onclick = () => fn(b.dataset[attr]));
+  el.querySelectorAll(".segs.many").forEach(row => {
+    const on = row.querySelector("button.on");
+    if (on && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, on.offsetLeft - (row.clientWidth - on.offsetWidth) / 2);
+  });
+}
 function injBadge(st){
   if (!st) return "";
   return ' <span class="badge ' + (/out|reserve|suspend/i.test(st) ? "inj" : "q") + '">' + esc(st) + '</span>';
@@ -1413,16 +1454,23 @@ function openSlipSheet(ids, slip){
   h += '<div class="label">Price</div><div class="linebox"><span class="muted" style="font-size:22px">$</span><input id="sprice" type="number" inputmode="decimal" step="0.01" min="1.01" placeholder="Price on your slip" value="' + (slip ? (+slip.price).toFixed(2) : prod ? (Math.round(prod * 100) / 100).toFixed(2) : "") + '"></div>';
   if (!slip && legs.length > 1) h += '<div class="small muted" style="margin-top:6px">' + (prod ? "That's the legs multiplied together. " : "") + 'Bookies price same game multis lower, so put in the price on your slip.</div>';
   h += '<div class="label">Name (optional)</div><input class="inp" id="sname" maxlength="40" placeholder="Saturday NBA multi" value="' + esc(slip ? slip.name : "") + '">';
-  h += '<div class="small" id="sret" style="margin-top:10px"></div><div id="sheeterr" class="err" style="margin-top:8px"></div>';
+  h += '<div class="small" id="sret" style="margin-top:10px"></div><div id="swarn" class="warn" style="margin-top:6px"></div><div id="sheeterr" class="err" style="margin-top:8px"></div>';
   h += '<div class="row" style="margin-top:14px;gap:8px"><button class="btn" id="scancel">Cancel</button><button class="btn primary grow" id="ssave">' + (slip ? "Save" : "Add slip") + '</button></div>';
   $("sheetin").innerHTML = h;
-  const ret = () => { const s = parseFloat($("sstake").value), p = parseFloat($("sprice").value); $("sret").textContent = s > 0 && p > 1 ? "Returns " + money(s * p) + " if it lands" : ""; };
+  const ret = () => {
+    const s = parseFloat($("sstake").value), p = parseFloat($("sprice").value), ov = s > 0 ? overLimit(s, slip) : 0;
+    $("sret").textContent = s > 0 && p > 1 ? "Returns " + money(s * p) + " if it lands" : "";
+    $("swarn").textContent = ov > 0.004 ? "That takes you " + money(ov) + " past your " + money(S.state.weekly.limit) + " weekly limit." : "";
+    if (S.sheet) S.sheet.okOver = false;
+    $("ssave").textContent = slip ? "Save" : "Add slip";
+  };
   $("sstake").oninput = ret; $("sprice").oninput = ret; ret();
   $("scancel").onclick = () => { closeSheet(); updateSlipBar(); };
   $("ssave").onclick = async () => {
     const stake = parseFloat($("sstake").value), price = parseFloat($("sprice").value), name = $("sname").value.trim();
     if (!(stake > 0)) { $("sheeterr").textContent = "Put in your stake."; return; }
     if (!(price >= 1.01)) { $("sheeterr").textContent = "Put in the price on your slip."; return; }
+    if (overLimit(stake, slip) > 0.004 && S.sheet && !S.sheet.okOver){ S.sheet.okOver = true; $("ssave").textContent = slip ? "Save anyway" : "Add anyway"; return; }
     $("ssave").disabled = true;
     try{
       if (slip) await api("/api/slips/update", {id:slip.id, stake, price, name});
@@ -1497,7 +1545,7 @@ function slipCard(s){
 function renderSlips(el, top){
   const slips = S.state.slips || [];
   const open = slips.filter(s => s.status === "open"), done = slips.filter(s => s.status !== "open");
-  let h = top;
+  let h = top + weekCard();
   if (!slips.length) h += '<div class="empty"><b>No slips yet</b>On the Picks tab, tap Make a slip and choose the legs you backed. The app follows the whole slip and tells you when it lands, or when it\'s one leg away.</div>';
   if (open.length) h += '<h2>Open</h2>' + open.map(slipCard).join("");
   if (done.length) h += '<h2>Settled lately</h2>' + done.map(slipCard).join("");
@@ -1572,9 +1620,18 @@ function renderResults(el, top){
 }
 
 /* ---------- plays tab: ladder, screener, pick'em ---------- */
+function playsList(){
+  const list = [];
+  if (FEAT().feed) list.push(["tips", "Tips"]);
+  if (FEAT().multi) list.push(["multi", "Multi"]);
+  list.push(["ladder", "Ladder"], ["screener", "Screener"], ["pickem", "Pick'em"]);
+  if (FEAT().perfect) list.push(["perfect", "100%"]);
+  return list;
+}
 function playsTop(){
   if (!FEAT().screener) return "";
-  return segs([["ladder", "Ladder"], ["screener", "Screener"], ["pickem", "Pick'em"]].concat(FEAT().perfect ? [["perfect", "100%"]] : []), S.playsSeg, "ps");
+  const list = playsList();
+  return segs(list, S.playsSeg, "ps").replace('<div class="segs">', '<div class="segs' + (list.length > 4 ? " many" : "") + '">');
 }
 function setPlaysSeg(k){
   S.playsSeg = k; LS.set("playsSeg", k);
@@ -1824,10 +1881,396 @@ function renderPickem(el){
   };
 }
 
+/* ---------- plays tab: the tips from every game, a multi built from them, and how they went ---------- */
+const SPORT_NAME = sp => (S.state && S.state.sports && S.state.sports[sp]) || sp;
+const KIND_NAME = {call:"The calls", best:"Best bets", value:"Value picks", sgm:"Same game multis"};
+const fopt = (v, l, cur) => '<option value="' + esc(v) + '"' + (String(cur) === String(v) ? " selected" : "") + '>' + esc(l) + '</option>';
+function feedHere(){ return S.tab === "ladder" && (S.playsSeg === "tips" || S.playsSeg === "multi"); }
+function feedSig(){ const F = S.feed; return F ? [F.building, F.done, F.total, (F.tips || []).length, F.at].join(":") : "e:" + S.feedErr; }
+async function loadFeed(force){
+  if (S.feedLoading) return;
+  S.feedLoading = true;
+  try{ S.feed = await api("/api/tips?hours=36" + (force ? "&refresh=1" : "")); S.feedErr = ""; S.feedAt = Date.now(); }
+  catch(e){ S.feedErr = e.message; }
+  S.feedLoading = false;
+  clearTimeout(S.feedTimer);
+  if (S.feed && S.feed.building) S.feedTimer = setTimeout(() => { if (feedHere()) loadFeed(false); }, 2500);
+  if (!feedHere()) return;
+  if (S.playsSeg === "multi" && S.feed && !S.feed.building){ S.multi = null; loadMulti(); return; }
+  // while the games are being read, only redraw when there's something new to show
+  if (feedSig() !== S.feedDrawn && !busyTyping()) renderLadder();
+}
+function busyTyping(){ const a = document.activeElement; return !!(a && /INPUT|SELECT/.test(a.tagName)); }
+function feedPick(t){
+  return {athlete_id:t.athlete_id, name:t.name, team:t.team, league:t.league, sport:t.sport,
+    game:{home:t.home_abbr, away:t.away_abbr, home_logo:t.home_logo, away_logo:t.away_logo, home_color:t.home_color, away_color:t.away_color,
+          home_name:t.home_name, away_name:t.away_name, sport:t.sport}};
+}
+// One row per bet: the same bet can be a best bet and a call, so keep the first by kind.
+function feedList(){
+  const F = S.feed, q = S.feedQ;
+  if (!F) return [];
+  const rank = {best:0, call:1, value:2}, seen = {}, out = [];
+  (F.tips || []).slice().sort((a, b) => (rank[a.kind_tip] || 0) - (rank[b.kind_tip] || 0)).forEach(t => {
+    const k = [t.game_id, t.athlete_id, t.stat, t.side, t.line].join("|");
+    if (seen[k]) return;
+    seen[k] = 1;
+    if ((!q.sport || t.sport === q.sport) && (!q.kind || t.kind_tip === q.kind)) out.push(t);
+  });
+  const edge = t => t.price ? t.p * t.price - 1 : -9;
+  // best picks: the chance, nudged by the value at the price (capped, so a long shot's big edge can't run away with it)
+  const pick = t => t.p + 0.5 * (t.price ? Math.max(-0.15, Math.min(0.25, t.p * t.price - 1)) : -0.03);
+  if (q.sort === "value") out.sort((a, b) => edge(b) - edge(a) || b.p - a.p);
+  else if (q.sort === "soon") out.sort((a, b) => String(a.start).localeCompare(String(b.start)) || pick(b) - pick(a));
+  else if (q.sort === "chance") out.sort((a, b) => b.p - a.p || edge(b) - edge(a));
+  else out.sort((a, b) => pick(b) - pick(a));
+  const floor = +q.min || 0, per = {};
+  return out.filter(t => {
+    if ((t.price || t.fair || 0) < floor - 1e-9) return false;
+    per[t.game_id] = (per[t.game_id] || 0) + 1;
+    return per[t.game_id] <= 3;
+  });
+}
+function feedSports(){
+  const out = [];
+  ((S.feed && S.feed.tips) || []).forEach(t => { if (t.sport && !out.includes(t.sport)) out.push(t.sport); });
+  return out;
+}
+function feedGame(t){ return (t.away_abbr || t.away_name) + " @ " + (t.home_abbr || t.home_name) + " · " + startText(t.start) + " · " + t.league_short; }
+function feedRow(t){
+  const k = "fd" + Object.keys(S.tipMap).length;
+  S.tipMap[k] = t;
+  const done = legTracked(t), hi = t.p >= 0.6;
+  const lab = t.title && t.label.indexOf(t.title + ": ") === 0 ? t.label.slice(t.title.length + 2) : t.label;
+  const own = t.athlete_id === "match" || lab.indexOf(t.name) === 0;
+  const tag = t.kind_tip === "call" ? t.title : t.kind_tip === "value" ? "Value at the price" : "";
+  const why = t.why || t.note || "";
+  return '<div class="tip" data-ftip="' + k + '">' + avatarHtml(feedPick(t)) + '<div class="grow">' + (tag ? '<div class="tk">' + esc(tag) + '</div>' : '') +
+    '<div class="t1">' + (own ? esc(lab) : esc(t.name) + injBadge(t.injury)) + '</div>' + (own ? '' : '<div class="t2">' + esc(lab) + '</div>') +
+    '<div class="t3">' + esc(feedGame(t)) + '</div>' + (why ? '<div class="t3">' + esc(why) + '</div>' : '') + '</div>' +
+    '<div class="r"><div class="pc' + (hi ? " hi" : "") + '">' + pct(t.p) + '</div><div class="pr">' + tipPrice(t) + '</div></div>' +
+    '<button class="iconbtn add' + (done ? " on" : "") + '" data-fadd="' + k + '" aria-label="' + (done ? "Tracking" : "Track this") + '">' + (done ? "&#10003;" : "+") + '</button></div>';
+}
+function pricesNote(){
+  const s = (S.state && S.state.settings) || {};
+  return s.odds_api_key || s.propline_key ? "Each price is the best one found across the bookies, and the chance takes their margin out."
+    : "Prices are DraftKings and Bet365 via ESPN, so your bookie's will differ a little. Add a free key under Settings, Prices to compare the Aussie bookies.";
+}
+function readingHtml(F, what){
+  return '<div class="feedhead"><span class="small muted">' + esc(what) + F.done + ' of ' + F.total + (F.total === 1 ? " game" : " games") + '</span></div>' +
+    '<div class="readbar"><i style="width:' + (F.total ? Math.max(4, Math.round(F.done / F.total * 100)) : 4) + '%"></i></div>';
+}
+function renderFeed(el){
+  const top = playsTop(), F = S.feed, q = S.feedQ;
+  if (!S.feedLoading && !S.feedErr && (!F || (!F.building && Date.now() - (S.feedAt || 0) > 10 * 60e3))) loadFeed(false);
+  if (!S.score && !S.scoreLoading && !S.scoreErr) loadScore();
+  S.tipMap = {};
+  S.feedDrawn = feedSig();
+  let h = top;
+  if (!F){
+    el.innerHTML = h + (S.feedErr ? '<div class="empty"><b>Couldn\'t read the games</b>' + esc(S.feedErr) + '</div><button class="btn block" id="fdretry">Try again</button>'
+      : '<div class="spin"></div><div class="empty" style="padding-top:0">Reading every game in the next day and a half.<br>The first look takes a minute or two.</div>');
+    bindSegs(el, "ps", setPlaysSeg);
+    const rt = $("fdretry"); if (rt) rt.onclick = () => { S.feedErr = ""; loadFeed(true); renderLadder(); };
+    return;
+  }
+  const sports = feedSports();
+  if (q.sport && !sports.includes(q.sport) && !F.building) q.sport = "";
+  if (sports.length > 1) h += '<div class="fchips"><button data-fs="" class="' + (!q.sport ? "on" : "") + '">All sports</button>' +
+    sports.map(sp => '<button data-fs="' + esc(sp) + '" class="' + (q.sport === sp ? "on" : "") + '">' + esc(SPORT_NAME(sp)) + '</button>').join("") + '</div>';
+  h += '<div class="filters"><select id="fd_sort">' + fopt("picks", "Best picks", q.sort) + fopt("chance", "Best chance", q.sort) + fopt("value", "Best value", q.sort) + fopt("soon", "Starting soonest", q.sort) + '</select>' +
+    '<select id="fd_min" aria-label="Lowest price">' + [[0, "Any price"], [1.3, "$1.30+"], [1.5, "$1.50+"], [2, "$2.00+"]].map(([v, l]) => fopt(v, l, +q.min)).join("") + '</select>' +
+    '<select id="fd_kind">' + fopt("", "All tips", q.kind) + fopt("best", "Best bets", q.kind) + fopt("call", "The calls", q.kind) + fopt("value", "Value picks", q.kind) + '</select></div>';
+  h += recordCard();
+  if (F.building) h += readingHtml(F, "Reading games: ");
+  else h += '<div class="feedhead"><span class="small muted">' + (F.total ? F.total + (F.total === 1 ? " game" : " games") + " in the next 36 hours" : "No games in the next 36 hours") + (F.at ? ", checked " + esc(clockText(F.at)) : "") + '</span>' +
+    '<button class="btn small" id="fdref"' + (S.feedLoading ? " disabled" : "") + '>Refresh</button></div>';
+  const all = feedList(), show = all.slice(0, S.feedShow);
+  if (show.length) h += '<div class="list">' + show.map(feedRow).join("") + '</div>';
+  if (all.length > show.length) h += '<button class="showall" id="fdmore">Show ' + Math.min(30, all.length - show.length) + ' more</button>';
+  if (!all.length && !F.building) h += '<div class="empty"><b>' + (F.total ? "Nothing stands out yet" : "No games coming up") + '</b>' +
+    (F.total ? (q.sport || q.kind || q.min ? "Try all sports, any price, or every kind of tip." : "More prices go up closer to game time, so check back later.") : "Turn on more leagues in Settings, or check back later.") + '</div>';
+  if (all.length) h += '<div class="card small muted" style="margin-top:12px">Up to three tips a game here. Tap one to see the rest of that game. ' + esc(pricesNote()) + ' Chances are estimates, not promises.</div>';
+  el.innerHTML = h;
+  bindSegs(el, "ps", setPlaysSeg);
+  const save = () => { LS.set("feedQ", S.feedQ); S.feedShow = 30; renderLadder(); };
+  el.querySelectorAll("[data-fs]").forEach(b => b.onclick = () => { S.feedQ.sport = b.dataset.fs; save(); });
+  const so = $("fd_sort"); if (so) so.onchange = () => { S.feedQ.sort = so.value; save(); };
+  const ki = $("fd_kind"); if (ki) ki.onchange = () => { S.feedQ.kind = ki.value; save(); };
+  const mi = $("fd_min"); if (mi) mi.onchange = () => { S.feedQ.min = +mi.value; save(); };
+  const mo = $("fdmore"); if (mo) mo.onclick = () => { S.feedShow += 30; renderLadder(); };
+  const rf = $("fdref"); if (rf) rf.onclick = () => { rf.disabled = true; loadFeed(true); };
+  const rc = $("fdrec"); if (rc) rc.onclick = openRecord;
+  el.querySelectorAll("[data-ftip]").forEach(r => r.onclick = e => {
+    if (e.target.closest("button")) return;
+    const t = S.tipMap[r.dataset.ftip];
+    if (t){ S.gview = "tips"; openGame(t.game_id); }
+  });
+  el.querySelectorAll("[data-fadd]").forEach(b => b.onclick = async e => {
+    e.stopPropagation();
+    const t = S.tipMap[b.dataset.fadd];
+    if (legTracked(t)) { setTab("picks"); return; }
+    const pk = await trackTip(t, b);
+    if (!pk) return;
+    await loadState();
+    toast({kind:"event", title:"Tracking it", body:tipText(t) + (t.price ? " @ " + money(t.price) : "")});
+    renderLadder();
+  });
+}
+
+/* the multi builder: one leg a game, picked for the best chance at the price you want */
+async function loadMulti(){
+  if (S.multiLoading){ S.multiAgain = true; return; }
+  S.multiLoading = true; S.multiErr = "";
+  const q = S.mQ, want = JSON.stringify(q);
+  if (S.tab === "ladder" && S.playsSeg === "multi") renderLadder();
+  try{ S.multi = await api("/api/multi?legs=" + q.legs + "&target=" + q.target + (q.sport ? "&sport=" + encodeURIComponent(q.sport) : "")); S.multiFor = want; S.multiAt = Date.now(); }
+  catch(e){ S.multiErr = e.message; }
+  S.multiLoading = false;
+  if (S.multiAgain){ S.multiAgain = false; return loadMulti(); }
+  if (S.tab === "ladder" && S.playsSeg === "multi") renderLadder();
+}
+function multiLeg(l){
+  const own = l.athlete_id === "match" || l.label.indexOf(l.name) === 0;
+  return '<div class="leg"><div class="l1"><span>' + (own ? esc(l.label) : esc(l.name) + (l.team ? ' <span class="muted small">' + esc(l.team) + '</span>' : '') + injBadge(l.injury)) + '</span>' +
+    '<span class="price">' + (l.price ? money(l.price) : 'fair ' + money(l.fair)) + '</span></div>' +
+    (own ? '' : '<div class="l2">' + esc(l.label) + '</div>') +
+    '<div class="l3">' + esc(feedGame(l)) + (l.book && l.price ? ' · ' + esc(l.book) : '') + '</div>' +
+    '<div class="why">' + pct(l.p) + ' chance' + (l.why ? ' · ' + esc(l.why) : '') + '</div></div>';
+}
+function multiText(M){
+  return "🎯 **" + M.legs.length + "-leg multi @ $" + (+M.price).toFixed(2) + "** (" + pct(M.p) + " chance all land)\n" +
+    M.legs.map(l => "• " + (l.athlete_id === "match" || l.label.indexOf(l.name) === 0 ? "" : "**" + l.name + "** ") + l.label +
+      (l.price ? " @ $" + (+l.price).toFixed(2) + (l.book ? " " + l.book : "") : "") + " (" + (l.away_abbr || l.away_name) + " @ " + (l.home_abbr || l.home_name) + ")").join("\n") +
+    "\n_Chances are estimates, not locks. Bet what you can afford._";
+}
+function renderMulti(el){
+  const top = playsTop(), q = S.mQ, F = S.feed, M = S.multi;
+  if (!S.feedLoading && !S.feedErr && (!F || (!F.building && Date.now() - (S.feedAt || 0) > 10 * 60e3))) loadFeed(false);
+  else if (F && !F.building && !S.multiLoading && !S.multiErr && (!M || S.multiFor !== JSON.stringify(q))) loadMulti();
+  S.feedDrawn = feedSig();
+  let h = top + '<div class="small muted" style="margin:-4px 2px 10px">Each leg comes from a different game, so one result doesn\'t drag the others down. The legs are the likeliest mix that gets to your price.</div>';
+  h += '<div class="fchips">' + [2, 3, 4, 5, 6].map(n => '<button data-ml="' + n + '" class="' + (+q.legs === n ? "on" : "") + '">' + n + ' legs</button>').join("") + '</div>';
+  const sports = feedSports();
+  h += '<div class="filters"><span class="row small muted" style="gap:6px">Price at least $<input id="m_target" type="number" step="0.5" min="1.5" max="100" inputmode="decimal" value="' + (+q.target).toFixed(2) + '"></span>' +
+    (sports.length > 1 || q.sport ? '<select id="m_sport">' + fopt("", "All sports", q.sport) + sports.map(sp => fopt(sp, SPORT_NAME(sp), q.sport)).join("") + '</select>' : '') + '</div>';
+  if (!F || F.building){
+    h += F ? readingHtml(F, "Reading the games first: ") : S.feedErr ? '<div class="empty"><b>Couldn\'t read the games</b>' + esc(S.feedErr) + '</div><button class="btn block" id="mretry">Try again</button>' : '<div class="spin"></div>';
+  } else if (!M || S.multiFor !== JSON.stringify(q)){
+    h += S.multiErr ? '<div class="empty"><b>Couldn\'t build it</b>' + esc(S.multiErr) + '</div><button class="btn block" id="mretry">Try again</button>' : '<div class="spin"></div>';
+  } else if (M.none){
+    h += '<div class="empty"><b>No multi to show</b>' + esc(M.none) + '</div>';
+  } else {
+    const done = M.legs.every(legTracked), fair = M.legs.some(l => !l.price);
+    h += '<div class="card play"><div class="top"><div><span class="badge best">' + M.legs.length + '-leg multi</span><div class="kind">At <span class="price" style="color:var(--text)">' + money(M.price) + '</span> · fair ' + money(M.fair) + '</div></div>' +
+      '<div class="chance">' + pct(M.p) + '<small>all land</small></div></div>' + M.legs.map(multiLeg).join("") +
+      '<div class="row" style="gap:7px;margin-top:8px;flex-wrap:wrap"><button class="btn small' + (done ? '' : ' primary') + '" id="mtrack"' + (done ? " disabled" : "") + '>' + (done ? "Tracking all legs" : "Track all " + M.legs.length + " legs") + '</button>' +
+      (HOOK() ? '<button class="btn small" id="mpost">Post</button>' : '') + '<button class="btn small" id="mref">Read the games again</button></div></div>';
+    h += '<div class="small muted" style="margin:0 2px 12px">' + (fair ? "A leg without a price is counted at its fair price. " : "The price is the legs multiplied. ") + 'Bookies sometimes pay a little less on multis, so go by the price on your slip.</div>';
+  }
+  h += '<div class="card small muted">' + esc(pricesNote()) + '</div>';
+  el.innerHTML = h;
+  bindSegs(el, "ps", setPlaysSeg);
+  const upd = (k, v) => { S.mQ[k] = v; LS.set("mQ", S.mQ); S.multi = null; S.multiErr = ""; if (S.feed && !S.feed.building) loadMulti(); else renderLadder(); };
+  el.querySelectorAll("[data-ml]").forEach(b => b.onclick = () => upd("legs", +b.dataset.ml));
+  const tg = $("m_target"); if (tg) tg.onchange = () => { const v = parseFloat(tg.value); if (v >= 1.5 && v <= 100) upd("target", Math.round(v * 100) / 100); else tg.value = (+S.mQ.target).toFixed(2); };
+  const sp = $("m_sport"); if (sp) sp.onchange = () => upd("sport", sp.value);
+  const rt = $("mretry"); if (rt) rt.onclick = () => { S.feedErr = ""; S.multiErr = ""; if (!S.feed || S.feed.building) loadFeed(true); else loadMulti(); renderLadder(); };
+  const rf = $("mref"); if (rf) rf.onclick = () => { S.multi = null; loadFeed(true); renderLadder(); };
+  const mp = $("mpost"); if (mp) mp.onclick = () => postDiscord({text:multiText(M)}, mp);
+  const mt = $("mtrack");
+  if (mt) mt.onclick = async () => {
+    mt.disabled = true; mt.textContent = "Adding...";
+    const ids = [];
+    for (const l of M.legs){
+      const have = S.state && S.state.picks.find(p => !p.final && p.game_id === l.game_id && p.athlete_id === l.athlete_id && p.stat === l.stat && p.side === l.side && Math.abs((+p.line || 0) - (+l.line || 0)) < 1e-6);
+      if (have){ ids.push(have.id); continue; }
+      const pk = await trackTip(l, null);
+      if (pk) ids.push(pk.id);
+    }
+    await loadState();
+    renderLadder();
+    if (FEAT().slips && ids.length === M.legs.length) openSlipSheet(ids, null);
+    else toast({kind:"event", title:"Tracking the multi", body:ids.length + " legs added"});
+  };
+}
+
+/* the record: every tip saved before its game and marked after, so you can see if the chances hold up */
+async function loadScore(){
+  if (S.scoreLoading) return;
+  S.scoreLoading = true;
+  try{ S.score = await api("/api/scorecard?days=" + S.scoreQ.days + "&sport=" + encodeURIComponent(S.scoreQ.sport || "all")); S.scoreErr = ""; }
+  catch(e){ S.scoreErr = e.message; }
+  S.scoreLoading = false;
+  if (S.sheet && S.sheet.record) renderRecord();
+  else if (S.tab === "ladder" && S.playsSeg === "tips" && !busyTyping()) renderLadder();
+}
+function scoreTotal(R){
+  return (R.kinds || []).filter(k => k.key !== "sgm").reduce((a, k) => ({n:a.n + k.n, won:a.won + k.won, priced:a.priced + k.priced, units:a.units + k.units}), {n:0, won:0, priced:0, units:0});
+}
+function recordCard(){
+  const R = S.score;
+  if (!R || !R.ok) return "";
+  const t = scoreTotal(R);
+  if (!t.n && !R.pending) return "";
+  const one = S.scoreQ.sport && S.scoreQ.sport !== "all";
+  return '<div class="card record" id="fdrec" role="button" tabindex="0"><div class="grow"><div class="small muted">' + esc(one ? SPORT_NAME(S.scoreQ.sport) + " tips" : "How the tips went") + ', last ' + R.days + ' days</div>' +
+    (t.n ? '<div class="rline"><span class="big2">' + t.won + ' of ' + t.n + '</span><span class="small muted">landed, ' + pct(t.won / t.n) + '</span></div>' + (R.pending ? '<div class="small muted">' + R.pending + ' more waiting on results</div>' : '')
+         : '<div style="font-weight:650;margin-top:3px">The first results come in as games finish</div><div class="small muted">' + R.pending + (R.pending === 1 ? " tip" : " tips") + ' waiting on results</div>') +
+    '</div><span class="chev" aria-hidden="true">&rsaquo;</span></div>';
+}
+function openRecord(){
+  S.sheet = {record:true};
+  renderRecord();
+  openSheetPanel();
+  loadScore();
+}
+function unitsText(u){ return (u >= 0 ? "+" : "") + (+u).toFixed(2); }
+function renderRecord(){
+  if (!S.sheet || !S.sheet.record) return;
+  const R = S.score, q = S.scoreQ;
+  let h = '<div class="grab"></div><div style="font-weight:700;font-size:18px">How the tips went</div>' +
+    '<div class="small muted" style="margin-top:2px">Every tip is saved before its game starts and marked when it finishes.</div>';
+  h += '<div class="fchips" style="margin-top:12px">' + [7, 30, 90].map(d => '<button data-rd="' + d + '" class="' + (+q.days === d ? "on" : "") + '">Last ' + d + ' days</button>').join("") + '</div>';
+  if (!R || S.scoreLoading && !R.ok){
+    h += S.scoreErr ? '<div class="err">' + esc(S.scoreErr) + '</div>' : '<div class="spin"></div>';
+  } else {
+    const sports = (R.sports || []).map(x => x.key);
+    if (q.sport && q.sport !== "all" && !sports.includes(q.sport)) sports.push(q.sport);
+    if (sports.length > 1 || (q.sport && q.sport !== "all")) h += '<div class="filters"><select id="rsport">' + fopt("all", "All sports", q.sport || "all") + sports.map(sp => fopt(sp, SPORT_NAME(sp), q.sport)).join("") + '</select></div>';
+    const t = scoreTotal(R), kinds = R.kinds || [];
+    if (!t.n && !kinds.length){
+      h += '<div class="empty" style="padding:22px 8px"><b>Nothing marked yet</b>' + (R.pending ? R.pending + (R.pending === 1 ? " tip is" : " tips are") + " waiting on their games to finish." : "Tips get saved when you open the Tips feed or a game's tips, then marked once the game is over.") + '</div>';
+    } else {
+      const said = kinds.filter(k => k.key !== "sgm").reduce((a, k) => a + k.n * k.said, 0) / Math.max(1, t.n);
+      h += '<div class="statgrid" style="margin-top:4px"><div><small>Landed</small><span class="big2">' + t.won + '/' + t.n + '</span></div><div><small>Hit rate</small><span class="big2">' + pct(t.n ? t.won / t.n : 0) + '</span><small>we said ' + pct(said) + '</small></div>' +
+        '<div><small>$1 on each</small><span class="big2 ' + (t.units >= 0 ? "pos" : "neg") + '">' + (t.priced ? smoney(t.units) : "-") + '</span></div></div>';
+      h += '<table class="mk" style="margin-top:12px"><tr><th>Kind</th><th>Tips</th><th>Landed</th><th>Units</th></tr>' +
+        kinds.map(k => '<tr><td>' + esc(KIND_NAME[k.key] || k.key) + '<small>We said ' + pct(k.said) + ' on average</small></td><td>' + k.n + '</td><td>' + pct(k.rate) + '</td><td class="' + (k.units >= 0 ? "pos" : "neg") + '">' + (k.priced ? unitsText(k.units) : "-") + '</td></tr>').join("") + '</table>';
+      if ((R.sports || []).length > 1) h += '<table class="mk" style="margin-top:12px"><tr><th>Sport</th><th>Tips</th><th>Landed</th><th>Units</th></tr>' +
+        R.sports.map(k => '<tr><td>' + esc(SPORT_NAME(k.key)) + '</td><td>' + k.n + '</td><td>' + pct(k.rate) + '</td><td class="' + (k.units >= 0 ? "pos" : "neg") + '">' + (k.priced ? unitsText(k.units) : "-") + '</td></tr>').join("") + '</table>';
+      if ((R.buckets || []).length){
+        h += '<h3 style="margin-top:18px">Do the chances hold up?</h3><div class="small muted" style="margin:-2px 2px 8px">The bar is how often they landed. The line is the chance we gave them.</div>';
+        h += R.buckets.map(b => '<div class="recbar"><span>' + esc(b.range) + '</span><div class="track"><i style="width:' + Math.round(b.landed * 100) + '%;background:' + (b.landed + 0.05 >= b.said ? "var(--green)" : "var(--amber)") + '"></i><b style="left:' + Math.round(b.said * 100) + '%"></b></div>' +
+          '<span class="n">' + pct(b.landed) + '<small>' + b.n + ' tips</small></span></div>').join("");
+      }
+      const rec = (R.recent || []).slice(0, 25);
+      if (rec.length) h += '<h3 style="margin-top:18px">Latest results</h3><div class="reclist">' + rec.map(x => '<div class="legrow">' + legMark(x.result) + '<div class="grow"><div>' +
+        esc(x.kind === "sgm" ? x.label : (x.name && x.label.indexOf(x.name) !== 0 ? x.name + " " : "") + x.label) + (x.price ? ' <span class="muted small">@ ' + (+x.price).toFixed(2) + '</span>' : '') + '</div>' +
+        '<div class="small muted">' + esc(x.game) + ' · ' + esc(new Date(x.start).toLocaleDateString("en-AU", {day:"numeric", month:"short"})) + ' · we said ' + pct(x.p) + '</div></div></div>').join("") + '</div>';
+    }
+    if (R.pending && (t.n || kinds.length)) h += '<div class="small muted" style="margin-top:10px">' + R.pending + ' more waiting on results.</div>';
+  }
+  h += '<button class="btn block" id="rclose" style="margin-top:14px">Close</button>';
+  $("sheetin").innerHTML = h;
+  $("sheetin").querySelectorAll("[data-rd]").forEach(b => b.onclick = () => { S.scoreQ.days = +b.dataset.rd; LS.set("scoreQ", S.scoreQ); S.score = null; renderRecord(); loadScore(); });
+  const rs = $("rsport"); if (rs) rs.onchange = () => { S.scoreQ.sport = rs.value; LS.set("scoreQ", S.scoreQ); S.score = null; renderRecord(); loadScore(); };
+  $("rclose").onclick = closeSheet;
+}
+
+/* this week's spending, and the limit if you set one */
+function weekCard(){
+  const W = S.state && S.state.weekly;
+  if (!W || !FEAT().weekly) return "";
+  const lim = +W.limit || 0, last = W.last || {};
+  if (!W.bets && !last.bets && !lim) return "";
+  let h = '<div class="card week"><div class="row" style="align-items:flex-start"><div class="grow"><div class="small muted">This week</div><span class="big2">' + money(W.staked) + '</span>' +
+    '<div class="small muted">on ' + W.bets + (W.bets === 1 ? " bet" : " bets") + (W.open ? ", " + W.open + " still open" : "") + '</div></div>' +
+    (W.bets > W.open ? '<div style="text-align:right"><div class="small muted">Profit so far</div><span class="big2 ' + (W.profit >= 0 ? "pos" : "neg") + '">' + smoney(W.profit) + '</span><div class="small muted">' + money(W.returned) + ' back</div></div>'
+      : '<div class="small muted" style="text-align:right;max-width:120px">Nothing settled yet</div>') + '</div>';
+  if (lim){
+    const used = W.staked / lim, over = W.staked > lim + 1e-9;
+    h += '<div class="prog"><i style="width:' + Math.min(100, Math.round(used * 100)) + '%;background:' + (over ? "var(--red)" : used >= 0.8 ? "var(--amber)" : "var(--green)") + '"></i></div>' +
+      '<div class="small ' + (over ? "neg" : "muted") + '">' + (over ? "Over your " + money(lim) + " weekly limit by " + money(W.staked - lim) : money(W.left) + " left of your " + money(lim) + " weekly limit") + '</div>';
+  }
+  if (last.bets) h += '<div class="small muted" style="margin-top:8px">Last week: ' + money(last.staked) + ' on ' + last.bets + (last.bets === 1 ? " bet" : " bets") + ', ' + smoney(last.profit) + '</div>';
+  return h + '</div>';
+}
+// How far a new stake would go past the weekly limit (0 or less means it fits).
+function overLimit(stake, slip){
+  const W = S.state && S.state.weekly, lim = W ? +W.limit || 0 : 0;
+  if (!lim) return 0;
+  const mine = slip && (!slip.created || slip.created >= (W.week_start || 0)) ? +slip.stake || 0 : 0;
+  return (+W.staked || 0) - mine + stake - lim;
+}
+
+/* settings: prices, the morning post and the weekly limit */
+function pricesSettings(s){
+  if (!FEAT().prices) return "";
+  const P = S.state.prices || {};
+  const left = (v, what) => v !== "" && v != null && !isNaN(+v) ? " " + Math.round(+v) + " " + what + "." : "";
+  return '<h2 id="pricesh">Prices</h2><div class="card"><div class="small muted" style="margin-bottom:12px">DraftKings and Bet365 come through ESPN by themselves. Add your own free keys to compare more bookies. The tips then show the best price for each bet and which bookie has it.</div>' +
+    '<div class="label" style="margin-top:0">The Odds API key</div><input class="inp" id="koa" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(s.odds_api_key || "") + '">' +
+    '<div class="small muted" style="margin-top:6px">Adds Sportsbet, TAB, Ladbrokes, Neds and the other Aussie bookies. The free plan at the-odds-api.com has 500 credits a month, and the app spreads them over the month.' + (P.odds_api_error ? "" : left(P.odds_api_left, "credits left")) + '</div>' +
+    (P.odds_api_error ? '<div class="err" style="margin-top:4px">' + esc(P.odds_api_error) + '</div>' : '') +
+    (s.odds_api_key ? '<div style="margin-top:12px">' + tog("aup", "Player bets from the Aussie bookies", "When you open a game's tips. Each read costs a few credits.", s.au_props) + '</div>' : '') +
+    '<div class="label">PropLine key</div><input class="inp" id="kpl" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(s.propline_key || "") + '">' +
+    '<div class="small muted" style="margin-top:6px">Adds Pinnacle, whose prices are the sharpest around, plus FanDuel and others for player bets. Free at prop-line.com, 1,000 reads a day.' + (P.propline_error ? "" : left(P.propline_left, "reads left today")) + '</div>' +
+    (P.propline_error ? '<div class="err" style="margin-top:4px">' + esc(P.propline_error) + '</div>' : '') +
+    '<button class="btn small primary" id="ksave" style="margin-top:12px">Save keys</button><div class="err" id="kerr" style="margin-top:6px"></div>' +
+    '<div class="small muted" style="margin-top:10px">Keys stay on this ' + (WEB ? "browser" : "phone") + ' and only go to the service they belong to.</div></div>';
+}
+function morningSettings(s){
+  if (!FEAT().morning || !s.discord_webhook) return "";
+  const posts = (S.state.posts || []);
+  let h = '<div class="label" style="margin-top:16px">Morning tips</div>' +
+    tog("mon", "Post the day's best bets", "Once a day, with a tick or a cross added to the post as each one lands", s.morning_on);
+  if (s.morning_on){
+    h += '<div class="rule" style="margin-top:8px"><span>Post at</span><input id="mtime" type="time" value="' + esc(s.morning_time || "10:00") + '"></div>' +
+      '<div class="rule"><span>How many bets</span><select id="mcount">' + [3, 4, 5, 6, 7, 8, 10].map(n => '<option value="' + n + '"' + (+s.morning_count === n ? " selected" : "") + '>' + n + '</option>').join("") + '</select></div>' +
+      '<div style="margin-top:6px">' + tog("mmulti", "Add a 3-leg multi", "Built from different games, at about $3.50 or more", s.morning_multi) + '</div>';
+  }
+  h += '<button class="btn small" id="mnow" style="margin-top:10px">Post today\'s tips now</button>';
+  if (posts.length) h += '<div style="margin-top:10px">' + posts.map(p => '<div class="mrow"><span>' + esc(p.title || p.day) + '</span><span class="small ' + (p.error ? "neg" : "muted") + '">' +
+    esc(p.error ? p.error : p.posted ? (p.won || p.lost ? p.won + " of " + (p.won + p.lost) + " landed" + (p.n > p.won + p.lost ? ", " + (p.n - p.won - p.lost) + " to go" : "") : p.n + " bets posted") : "Not posted") + '</span></div>').join("") + '</div>';
+  h += '<div class="small muted" style="margin-top:10px">' + (WEB ? "The web version only posts while this page is open. The Android app posts in the background." : "Posts in the background around your time, even with the app closed. If your phone is asleep it can run a few minutes late.") + '</div>';
+  return h;
+}
+function limitSettings(s){
+  if (!FEAT().weekly) return "";
+  const v = +s.weekly_limit || 0;
+  return '<h2>Weekly limit</h2><div class="card"><div class="small muted" style="margin-bottom:10px">Set what you\'re happy to spend on bets each week, Monday to Sunday. The Slips tab shows how much is left, and you\'ll get a heads up before a slip goes past it.</div>' +
+    '<div class="rule"><span>Limit</span><span class="row" style="gap:6px"><span class="muted">$</span><input id="wlimit" type="number" inputmode="decimal" step="5" min="0" placeholder="None" value="' + (v > 0 ? v : "") + '"></span></div>' +
+    '<button class="btn small primary" id="wsave" style="margin-top:8px">' + (v > 0 ? "Save limit" : "Set limit") + '</button>' + (v > 0 ? ' <button class="btn small" id="wclear" style="margin-top:8px">Remove it</button>' : '') + '</div>';
+}
+function bindNewSettings(s){
+  const t = (id, key) => { const b = $(id); if (b) b.onclick = async () => { await api("/api/settings", {[key]: !s[key]}); await loadState(); renderSettings(); }; };
+  t("aup", "au_props"); t("mon", "morning_on"); t("mmulti", "morning_multi");
+  const ks = $("ksave");
+  if (ks) ks.onclick = async () => {
+    ks.disabled = true;
+    try{
+      await api("/api/settings", {odds_api_key:$("koa").value.trim(), propline_key:$("kpl").value.trim()});
+      S.feed = null; S.multi = null; S.tips = {};
+      await loadState(); renderSettings();
+      toast({kind:"event", title:"Keys saved", body:"Prices from them show up next time the tips are read"});
+    }catch(e){ ks.disabled = false; $("kerr").textContent = e.message; }
+  };
+  const mt = $("mtime"); if (mt) mt.onchange = async () => { if (!/^\d{1,2}:\d{2}$/.test(mt.value)) return; await api("/api/settings", {morning_time:mt.value}); await loadState(); };
+  const mc = $("mcount"); if (mc) mc.onchange = async () => { await api("/api/settings", {morning_count:+mc.value}); await loadState(); };
+  const mn = $("mnow");
+  if (mn) mn.onclick = async () => {
+    mn.disabled = true; mn.textContent = "Reading today's games...";
+    try{
+      await api("/api/morning/now", {});
+      toast({kind:"event", title:"Posting today's tips", body:"It reads the games first, so give it a minute or two"});
+      setTimeout(async () => { await loadState(); if (S.tab === "settings") renderSettings(); }, 90000);
+    }catch(e){ mn.disabled = false; mn.textContent = "Post today's tips now"; toast({kind:"bust", title:"Couldn't post", body:e.message}); }
+  };
+  const ws = $("wsave");
+  if (ws) ws.onclick = async () => {
+    const v = parseFloat($("wlimit").value);
+    try{ await api("/api/settings", {weekly_limit: v > 0 ? v : 0}); await loadState(); renderSettings(); toast({kind:"event", title:v > 0 ? "Weekly limit set to " + money(v) : "Weekly limit removed", body:""}); }
+    catch(e){ toast({kind:"bust", title:"Couldn't save", body:e.message}); }
+  };
+  const wc = $("wclear"); if (wc) wc.onclick = async () => { await api("/api/settings", {weekly_limit:0}); await loadState(); renderSettings(); };
+}
+
 /* ---------- game extras ---------- */
 function periodText(g, p){
   if (!p) return "";
   if (g.sport === "soccer") return p === 1 ? "1H" : p === 2 ? "2H" : "ET";
+  if (g.sport === "league") return p === 1 ? "1H" : p === 2 ? "2H" : "GP";
   if (g.sport === "hockey") return p <= 3 ? "P" + p : "OT";
   return p <= 4 ? "Q" + p : "OT";
 }
@@ -1901,6 +2344,7 @@ function extraSettings(s){
       '<input class="inp" id="dhook" type="url" autocomplete="off" spellcheck="false" placeholder="https://discord.com/api/webhooks/..." value="' + esc(hook) + '">' +
       '<div class="row" style="gap:8px;margin-top:8px"><button class="btn small primary" id="dsave">Save</button>' + (hook ? '<button class="btn small" id="dtest">Send a test post</button>' : '') + '</div><div class="err" id="derr" style="margin-top:6px"></div>' +
       (hook ? '<div style="margin-top:10px">' + tog("dauto", "Post results by themselves", "Ladder steps, slip results and finished ladder runs go to the channel as they happen", s.discord_auto) + '</div>' : '') +
+      morningSettings(s) +
       '<div class="small muted" style="margin-top:10px">Anyone with the link can post to that channel, so keep it to yourself.</div></div>';
   }
   return h;
@@ -2161,7 +2605,7 @@ async function refreshGame(){
   catch(e){ S.gameErr = e.message; }
   if (S.gameId) renderGame();
 }
-const followText = sp => sp === "soccer" ? "Goals, half time and full time" : sp === "football" ? "Every score, quarter breaks and the final" : sp === "tennis" ? "Each set and the result" : sp === "hockey" ? "Goals, period breaks and the final" : "Quarter breaks and the final score";
+const followText = sp => sp === "soccer" ? "Goals, half time and full time" : sp === "football" ? "Every score, quarter breaks and the final" : sp === "tennis" ? "Each set and the result" : sp === "hockey" ? "Goals, period breaks and the final" : sp === "league" ? "Half time and the final score" : "Quarter breaks and the final score";
 function renderGame(keepSearch){
   const w = $("gamewrap");
   let h = '<button class="back" id="gback">&#8249; Back</button>';
@@ -2199,7 +2643,7 @@ function renderGame(keepSearch){
     return;
   }
   h += '<input class="search" id="psearch" type="search" placeholder="Search players" value="' + esc(S.psearch) + '">';
-  if (g.roster_only) h += '<div class="small muted" style="margin:4px 2px 10px">' + (g.sport === "soccer" ? "Line-ups aren't out yet, so these are the full squads." : "Box score isn't out yet, so these are the full team lists.") + ' Pick now and tracking starts at ' + (g.sport === "basketball" ? "tip-off" : "kick-off") + '.</div>';
+  if (g.roster_only) h += '<div class="small muted" style="margin:4px 2px 10px">' + (g.roster_last ? "Teams aren't named yet, so these are the players from each side's last game." : g.sport === "soccer" ? "Line-ups aren't out yet, so these are the full squads." : "Box score isn't out yet, so these are the full team lists.") + ' Pick now and tracking starts at ' + (g.sport === "basketball" ? "tip-off" : "kick-off") + '.</div>';
   const q = norm(S.psearch.trim());
   if (q && !S.game.teams.some(t => t.players.some(p => norm(p.name).includes(q) || String(p.jersey) === q))) h += '<div class="empty"><b>No players match that</b>Check the spelling, or search by shirt number.</div>';
   const teams = tennis ? [{name:"Players", side:"all", players:[].concat(...S.game.teams.map(t => t.players))}] : S.game.teams;
@@ -2276,7 +2720,7 @@ function tipPick(t){
           home_name:g.home.short || g.home.name, away_name:g.away.short || g.away.name, sport:g.sport, demo:g.demo}};
 }
 const tipText = t => t.athlete_id === "match" ? t.label : (t.name + " " + t.label.replace(t.name + " ", ""));
-function tipPrice(t){ return t.price ? '<b>' + money(t.price) + '</b>' : t.fair ? 'fair <b>' + money(t.fair) + '</b>' : ''; }
+function tipPrice(t){ return t.price ? '<b>' + money(t.price) + '</b>' + (t.book ? '<small>' + esc(t.book) + '</small>' : '') : t.fair ? 'fair <b>' + money(t.fair) + '</b>' : ''; }
 function tipRow(t, title, extra){
   const k = "tp" + Object.keys(S.tipMap).length;
   S.tipMap[k] = t;
@@ -2314,6 +2758,8 @@ function predictCard(d, g){
     if (sc.unit === "points"){
       const by = Math.abs(+sc.margin || 0), lead = (+sc.margin || 0) >= 0 ? g.home : g.away;
       sub = by < 0.5 ? "Too close to split, total " + fmt(sc.total) : esc(lead.short || lead.name) + " by " + fmt(by) + ", total " + fmt(sc.total);
+      if (sc.h1) alsos.push('<span><b>' + fmt(sc.h1) + '</b>first half total</span>');
+      if (sc.q1) alsos.push('<span><b>' + fmt(sc.q1) + '</b>first quarter total</span>');
     } else if (sc.unit === "goals"){
       sub = "Expecting " + fmt(sc.exp[0]) + " v " + fmt(sc.exp[1]) + " goals";
       alsos = (sc.top || []).filter(x => !(x.h === sc.home && x.a === sc.away)).slice(0, 3).map(x => '<span><b>' + x.h + '-' + x.a + '</b>' + pct(x.p) + '</span>');
@@ -2327,8 +2773,14 @@ function predictCard(d, g){
   if (tennis){
     const rk = pr.ranks || {}, fs = +pr.first_set || 0, fav = fs >= 0.5 ? g.home : g.away;
     const rank = r => r ? "No. " + r : "outside 150";
-    h += '<div class="facts"><div><b>' + rank(rk.home) + ' v ' + rank(rk.away) + '</b>World ranking</div><div><b>' + fmt(sc.exp_games) + '</b>Games expected</div>' +
-      '<div><b>' + pct(Math.max(fs, 1 - fs)) + '</b>' + esc(fav.short || fav.name) + ' takes the 1st set</div><div><b>' + pct(pr.tiebreak) + '</b>At least one tiebreak</div></div>';
+    const cells = ['<div><b>' + rank(rk.home) + ' v ' + rank(rk.away) + '</b>World ranking</div>', '<div><b>' + fmt(sc.exp_games) + '</b>Games expected</div>',
+      '<div><b>' + pct(Math.max(fs, 1 - fs)) + '</b>' + esc(fav.short || fav.name) + ' takes the 1st set</div>', '<div><b>' + pct(pr.tiebreak) + '</b>At least one tiebreak</div>'];
+    const fo = pr.form, hh = pr.h2h, won = x => esc(String(x || "-").replace(" of ", "/"));
+    if (fo) cells.push('<div><b>' + won(fo.home) + ' v ' + won(fo.away) + '</b>Wins, last 10 matches</div>');
+    if (hh) cells.push('<div><b>' + (+hh.home || 0) + '-' + (+hh.away || 0) + '</b>Head to head, lately</div>');
+    h += '<div class="facts">' + cells.join("") + '</div>';
+    const SURF = {clay:"On clay", grass:"On grass", "hard indoor":"Indoor hard court", hard:"Hard court"};
+    if (pr.surface) h += '<div class="small muted" style="margin-top:8px">' + esc(SURF[pr.surface] || pr.surface) + (+pr.best_of === 5 ? ", best of five sets" : "") + '</div>';
   }
   const fm = d.form || {};
   if (fm.home || fm.away){
@@ -2336,6 +2788,16 @@ function predictCard(d, g){
     const row = (t, f) => f ? '<div class="who">' + teamLogo(t, g.sport) + '<span>' + esc(t.abbr) + ' <small>' + fmt(f.pf) + ' for, ' + fmt(f.pa) + ' against</small></span></div><div class="wl">' + f.last.split("").map(c => '<i class="' + c + '">' + c + '</i>').join("") + '</div>' : '';
     h += '<div class="formrow">' + row(g.home, fm.home) + row(g.away, fm.away) + '</div><div class="small muted" style="margin-top:8px">Last ' + Math.min((fm.home || {}).n || 0, (fm.away || {}).n || 0) + ' results, newest first, average ' + unit + ' a game.</div>';
   }
+  // rest only when it matters: a back to back (a short week in the NFL), or one side a lot fresher
+  const rs = d.rest || {}, fb = g.sport === "football", short = fb ? 5 : 1, gap = fb ? 3 : 2;
+  const days = x => !x ? null : /yesterday/i.test(x) ? 1 : (parseInt(x, 10) || null);
+  const dh = days(rs.home), da = days(rs.away);
+  const tired = (dh != null && dh <= short) || (da != null && da <= short), fresher = dh != null && da != null && Math.abs(dh - da) >= gap;
+  if (tired || fresher){
+    const one = (t, x) => x ? esc(t.abbr) + " " + esc(x.charAt(0).toLowerCase() + x.slice(1)) : "";
+    h += '<div class="small muted" style="margin-top:6px">Rest: ' + [one(g.home, rs.home), one(g.away, rs.away)].filter(Boolean).join(", ") + '</div>';
+  }
+  if (d.weather) h += '<div class="small muted" style="margin-top:6px">Weather at the start: ' + esc(d.weather) + '</div>';
   const src = (pr.sources || []).filter(x => x.home != null);
   if (src.length > 1) h += '<div class="srcs">' + esc(g.home.short || g.home.name) + ' win chance: ' + src.map(x => esc(x.name === "Bookie" ? "bookie" : x.name.charAt(0) === "L" ? x.name.toLowerCase() : x.name) + ' ' + pct(x.home)).join(", ") + '</div>';
   return h + '</div>';
@@ -2506,7 +2968,7 @@ function matchLineRow(g){
   if (!bits.length) return "";
   return '<div class="lines" style="justify-content:center">' + bits.map(b => '<span>' + b + '</span>').join("") + '<span>' + esc(L.provider || "") + '</span></div>';
 }
-const SUMMARY_KEYS = {basketball:["PTS","REB","AST","3PM"], football:["PASS_YDS","RUSH_YDS","REC_YDS","REC","ATD"], soccer:["G","SOT","SH"]};
+const SUMMARY_KEYS = {basketball:["PTS","REB","AST","3PM"], football:["PASS_YDS","RUSH_YDS","REC_YDS","REC","ATD"], soccer:["G","SOT","SH"], aussie:["D","G","M","T"], league:["TRY","MR","TK"]};
 function lineSummary(eid, sport){
   const L = gameLines(), pm = L && L.players && L.players[eid];
   if (!pm) return "";
@@ -2736,7 +3198,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.3";
+    s.src = "engine.js?v=4.4";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
