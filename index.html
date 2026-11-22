@@ -140,6 +140,8 @@ nav.tabs svg{width:22px;height:22px}
 .pick .who .small{font-weight:500}
 .pick .what{color:var(--muted);font-size:13.5px;margin-top:2px}
 .pick .what .price{color:var(--text)}
+.pick .subl{font-size:12.5px;color:var(--blue);margin-top:3px}
+.pick .foot .linkbtn.subon{color:var(--blue)}
 .numrow{display:flex;align-items:flex-end;gap:8px;margin-top:12px}
 .pick .val{font:800 48px/.86 var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.005em}
 .pick .of{font:700 21px/1 var(--num);color:var(--muted);padding-bottom:2px}
@@ -941,6 +943,7 @@ function pickChip(p){
   }
   return '<span class="chip ' + esc(p.status) + '">' + esc(map[p.status] || p.status) + '</span>';
 }
+function shortName(p){ return p.short || p.name || ""; }
 function pickWhat(p){
   const at = p.odds ? ' <span class="price">@ ' + money(p.odds) + '</span>' : '';
   if (isWin(p)) return esc(p.stat_name).replace(" to win", p.side === "more" ? " to win" : " not to win") + at;
@@ -986,7 +989,8 @@ function pickCard(p){
   const mv = FEAT().pace ? moveHtml(p) : "";
   if (mv) foot.push(mv);
   if (p.alerts === "key") foot.push('<span>Result alerts only</span>');
-  if (HOOK() && !S.selecting) foot.push('<button class="linkbtn" data-ppick="' + esc(p.id) + '">Post</button>');
+  if (p.sub_on != null && !p.sub && !p.final && !S.selecting) foot.push('<button class="linkbtn' + (p.sub_on ? " subon" : "") + '" data-psub="' + esc(p.id) + '">' + (p.sub_on ? "&#10003; Sub on, play on" : "No sub cover") + '</button>');
+  if (p.sub && p.sub_split && p.sub_split[1] != null) foot.push('<span>' + esc(shortName(p)) + ' ' + fmt(p.sub_split[0]) + ' + ' + esc(p.sub.short) + ' ' + fmt(p.sub_split[1]) + '</span>');
   const sel = S.selecting && !p.final;
   const who = p.athlete_id === "match" ? (String(p.name || "").includes(" v ") ? p.name : "Match") : p.name;
   const prev = S.prevVals[p.id], bump = prev != null && prev !== p.value && p.value > prev && !p.final ? " bump" : "";
@@ -995,7 +999,7 @@ function pickCard(p){
     (sel ? '<span class="sel' + (S.sel[p.id] ? " on" : "") + '">' + (S.sel[p.id] ? "&#10003;" : "") + '</span>'
       : S.selecting ? '' : (S.armed === p.id ? '<button class="x armed" data-del="' + esc(p.id) + '">Remove</button>' : '<button class="x" data-del="' + esc(p.id) + '" aria-label="Remove">&#x2715;</button>')) +
     '<div class="head">' + avatarHtml(p) + '<div class="grow"><div class="who">' + esc(who) + (p.athlete_id !== "match" && p.team ? ' <span class="muted small">' + esc(p.team) + '</span>' : '') + (p.source === "ladder" ? ' <span class="badge ladder">Ladder</span>' : '') + '</div>' +
-    '<div class="what">' + pickWhat(p) + '</div></div></div>' +
+    '<div class="what">' + pickWhat(p) + '</div>' + (p.sub ? '<div class="subl">Off ' + esc(p.sub.min || "") + ', ' + esc(p.sub.short || p.sub.name) + ' took over the bet</div>' : '') + '</div></div>' +
     '<div class="numrow"><span class="val' + bump + '">' + ((isWin(p) || isCap(p)) && +p.value > 0 ? "+" : "") + fmt(p.value) + '</span>' + of + pickChip(p) + '</div>' +
     (trackHtml(p) || '<div style="height:10px"></div>') + paceHtml(p) +
     '<div class="foot">' + foot.join("") + '</div></div>';
@@ -1061,7 +1065,15 @@ function renderPicks(){
   const mk = $("mkslip"); if (mk) mk.onclick = () => { S.selecting = !S.selecting; S.sel = {}; renderPicks(); };
   const scb = $("scanbtn"); if (scb) scb.onclick = openScan;
   el.querySelectorAll("[data-selp]").forEach(c => c.onclick = () => { const id = c.dataset.selp; S.sel[id] = !S.sel[id]; renderPicks(); });
-  el.querySelectorAll("[data-ppick]").forEach(b => b.onclick = e => { e.stopPropagation(); postDiscord({pick:b.dataset.ppick}, b); });
+  el.querySelectorAll("[data-psub]").forEach(b => b.onclick = async e => {
+    e.stopPropagation();
+    const p = (S.state.picks || []).find(x => x.id === b.dataset.psub); if (!p) return;
+    try{
+      await api("/api/picks/sub", {id:p.id, on:!p.sub_on});
+      await loadState(); renderPicks();
+      toast({kind:"event", title:!p.sub_on ? "Sub on, play on is on" : "Sub on, play on is off", body:!p.sub_on ? "If " + shortName(p) + " comes off, the bet moves to whoever replaces him" : "This bet stays on " + shortName(p)});
+    }catch(err){ toast({kind:"bust", title:"Couldn't change it", body:err.message}); }
+  });
   updateSlipBar();
   el.querySelectorAll("[data-del]").forEach(b => b.onclick = async e => {
     e.stopPropagation();
@@ -1282,7 +1294,7 @@ function trackBtn(play, key){
   const done = !auto && play.legs.every(legTracked);
   const label = done ? "Tracking" : auto ? "Put " + money(L.balance) + " on it" : play.legs.length > 1 ? "Track both legs" : "Track it";
   return '<button class="btn small' + (done ? '' : ' primary') + '" data-track="' + key + '" style="margin-top:8px"' + (done ? ' disabled' : '') + '>' + label + '</button>' +
-    (HOOK() ? ' <button class="btn small" data-ppost="' + key + '" style="margin-top:8px">Post</button>' : '');
+    '';
 }
 function playCard(play, title, key){
   return '<div class="card play"><div class="top"><div><span class="badge best">' + esc(title) + '</span><div class="kind">' + (play.kind === "single" ? "Single" : "Double") + ' · <span class="price" style="color:var(--text)">' + money(play.price) + '</span></div></div>' +
@@ -1321,7 +1333,6 @@ function stepsHtml(L){
 }
 function bindPlayButtons(el){
   el.querySelectorAll("[data-track]").forEach(b => b.onclick = () => trackPlay(S.lplays[b.dataset.track], b));
-  el.querySelectorAll("[data-ppost]").forEach(b => b.onclick = () => { const L2 = S.state && S.state.ladder; postDiscord({play:S.lplays[b.dataset.ppost], stake:L2 ? L2.balance : 0}, b); });
 }
 function renderLadder(){
   const el = $("tab-ladder");
@@ -1565,7 +1576,6 @@ function slipCard(s){
   });
   const armed = S.armed === "s:" + s.id;
   h += '<div class="acts">';
-  if (HOOK()) h += '<button class="btn small" data-spost="' + esc(s.id) + '">Post</button>';
   if (open && FEAT().check) h += '<button class="btn small" data-schk="' + esc(s.id) + '">Check</button>';
   if (open) h += '<button class="btn small" data-sedit="' + esc(s.id) + '">Edit</button><button class="btn small" data-sset="' + esc(s.id) + '">Settle</button>';
   h += '<button class="btn small' + (armed ? " danger" : "") + '" data-sdel="' + esc(s.id) + '">' + (armed ? "Tap again to delete" : "Delete") + '</button></div>';
@@ -1594,7 +1604,6 @@ function renderSlips(el, top){
   el.innerHTML = h;
   bindSegs(el, "ks", setPicksSeg);
   const find = id => slips.find(s => s.id === id);
-  el.querySelectorAll("[data-spost]").forEach(b => b.onclick = () => postDiscord({slip:b.dataset.spost}, b));
   el.querySelectorAll("[data-schk]").forEach(b => b.onclick = () => checkSlip(b.dataset.schk));
   el.querySelectorAll("[data-sedit]").forEach(b => b.onclick = () => openSlipSheet(null, find(b.dataset.sedit)));
   el.querySelectorAll("[data-sset]").forEach(b => b.onclick = () => openSettleSheet(find(b.dataset.sset)));
@@ -2579,12 +2588,13 @@ function extraSettings(s){
   if (FEAT().pace) h += '<h2>Extra alerts</h2><div class="card">' +
     tog("htc", "Half time check", "At the break, tells you which picks are well behind", s.halftime_check) +
     '<div style="height:12px"></div>' + tog("lna", "Price moves", "Before the game, tells you when the DraftKings price on a pick moves 8% or more", s.line_alerts) + '</div>';
+  if (FEAT().subs) h += '<h2>Soccer</h2><div class="card">' +
+    tog("subon", "Sub on, play on", "If your player comes off, the bet moves to the player who replaced him and both their numbers count, like bet365's offer. It moves once. Turn this off if your bookie doesn't do it. You can also change it on each pick.", s.sub_on !== false) + '</div>';
   if (FEAT().discord){
     const hook = s.discord_webhook || "";
-    h += '<h2>Discord</h2><div class="card"><div class="small muted" style="margin-bottom:8px">Post picks, slips and ladder steps to your Discord channel. In Discord open Server Settings, Integrations, Webhooks, make a new webhook for the channel, then Copy Webhook URL and paste it here.</div>' +
+    h += '<h2>Discord</h2><div class="card"><div class="small muted" style="margin-bottom:8px">Posts ClutchUp\'s best bets to your Discord channel and ticks them off as they land. Your own picks and slips never go there. In Discord open Server Settings, Integrations, Webhooks, make a new webhook for the channel, then Copy Webhook URL and paste it here.</div>' +
       '<input class="inp" id="dhook" type="url" autocomplete="off" spellcheck="false" placeholder="https://discord.com/api/webhooks/..." value="' + esc(hook) + '">' +
       '<div class="row" style="gap:8px;margin-top:8px"><button class="btn small primary" id="dsave">Save</button>' + (hook ? '<button class="btn small" id="dtest">Send a test post</button>' : '') + '</div><div class="err" id="derr" style="margin-top:6px"></div>' +
-      (hook ? '<div style="margin-top:10px">' + tog("dauto", "Post results by themselves", "Ladder steps, slip results and finished ladder runs go to the channel as they happen", s.discord_auto) + '</div>' : '') +
       morningSettings(s) +
       '<div class="small muted" style="margin-top:10px">Anyone with the link can post to that channel, so keep it to yourself.</div></div>';
   }
@@ -2592,7 +2602,8 @@ function extraSettings(s){
 }
 function bindExtraSettings(s){
   const t = (id, key) => { const b = $(id); if (b) b.onclick = async () => { await api("/api/settings", {[key]: !s[key]}); await loadState(); renderSettings(); }; };
-  t("htc", "halftime_check"); t("lna", "line_alerts"); t("dauto", "discord_auto");
+  t("htc", "halftime_check"); t("lna", "line_alerts");
+  const so = $("subon"); if (so) so.onclick = async () => { await api("/api/settings", {sub_on: s.sub_on === false}); await loadState(); renderSettings(); };
   const ds = $("dsave");
   if (ds) ds.onclick = async () => {
     const v = $("dhook").value.trim();
@@ -3430,6 +3441,11 @@ function renderSheet(){
   } else {
     h += '<div class="label">' + esc(pr.name) + '</div><div class="seg"><button class="more' + (x.side === "more" ? " on" : "") + '" data-side="more">Yes</button><button class="less' + (x.side === "less" ? " on" : "") + '" data-side="less">No</button></div>';
   }
+  const subOk = FEAT().subs && g.sport === "soccer" && !p.isMatch && x.side === "more";
+  if (subOk){
+    if (x.subs == null) x.subs = ((S.state || {}).settings || {}).sub_on !== false;
+    h += '<div class="label">Sub on, play on</div><div class="toggle"><div class="small muted">If he comes off, the bet moves to the player who replaces him</div><button class="switch' + (x.subs ? " on" : "") + '" id="ssub" aria-label="Sub on, play on"></button></div>';
+  }
   if (!SETTLE[x.stat]) h += '<div class="label">Alerts</div><div class="seg"><button data-al="all" class="' + (x.alerts === "all" ? "on" : "") + '">' + (p.isMatch && g.sport === "basketball" ? "Every score" : "Every change") + '</button><button data-al="key" class="' + (x.alerts === "key" ? "on" : "") + '">Result only</button></div>';
   if (!p.isMatch && FEAT().form && !g.demo && g.sport !== "tennis") h += '<div class="label">Form</div><div class="formbox" id="formbox">' + formInner(x, pr) + '</div>';
   if (x.stat === "HCAP" || x.stat === "ACAP") h += '<div class="small muted" style="margin-top:8px">Settles on the final margin' + (g.sport === "tennis" ? " in games" : "") + '. You get one alert with the result.</div>';
@@ -3460,13 +3476,14 @@ function renderSheet(){
   $("sheetin").querySelectorAll("[data-stat]").forEach(b => b.onclick = () => { setStat(b.dataset.stat); renderSheet(); });
   $("sheetin").querySelectorAll("[data-side]").forEach(b => b.onclick = () => { x.side = b.dataset.side; x.odds = x.market ? priceAt(x.market, pr.yesno ? 0.5 : parseFloat(x.line), x.side) : null; renderSheet(); });
   $("sheetin").querySelectorAll("[data-al]").forEach(b => b.onclick = () => { x.alerts = b.dataset.al; renderSheet(); });
+  const ss = $("ssub"); if (ss) ss.onclick = () => { x.subs = !x.subs; renderSheet(); };
   $("scancel").onclick = closeSheet;
   $("sadd").onclick = async () => {
     const raw = pr.yesno ? "0.5" : (inp ? inp.value.trim() : "");
     if (raw !== "" && (isNaN(parseFloat(raw)) || parseFloat(raw) < 0)) { $("sheeterr").textContent = "That line doesn't look right."; return; }
     $("sadd").disabled = true;
     try{
-      await api("/api/picks", {game_id:g.id, athlete_id:p.id, name:p.name, short:p.short, team:p.team, stat:x.stat, side:x.side, alerts:x.alerts, line: raw === "" ? null : parseFloat(raw), odds: x.odds || null});
+      await api("/api/picks", {game_id:g.id, athlete_id:p.id, name:p.name, short:p.short, team:p.team, stat:x.stat, side:x.side, alerts:x.alerts, line: raw === "" ? null : parseFloat(raw), odds: x.odds || null, sub_on: subOk ? !!x.subs : undefined});
       LS.set("last-" + (g.sport || "basketball") + (p.isMatch ? "-m" : ""), {stat:x.stat, side:x.side});
       closeSheet(); await loadState(); renderGame();
       const what = (pr.yesno ? pr.name + ": " + (x.side === "more" ? "Yes" : "No") : (raw === "" ? pr.name : (x.side === "more" ? "More " : "Less ") + raw + " " + pr.name)) + (x.odds ? " @ " + money(x.odds) : "");
@@ -3496,7 +3513,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.5";
+    s.src = "engine.js?v=4.6";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
