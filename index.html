@@ -1011,7 +1011,7 @@ function renderPicks(){
   const top = picksTop();
   if (top && S.picksSeg === "slips") return renderSlips(el, top);
   if (top && S.picksSeg === "results") return renderResults(el, top);
-  let h = top;
+  let h = crashCard() + top;
   const an = S.state.android;
   if (APP && an && !an.notif) h += '<div class="card" style="border-color:rgba(255,122,26,.45)"><b>Turn on notifications</b><div class="small muted" style="margin:4px 0 10px">Alerts can\'t reach your lock screen until notifications are allowed.</div><button class="btn small primary" id="allownotif">Allow notifications</button></div>';
   else if (APP && an && !an.battery && picks.some(p => !p.final) && !LS.get("batteryHint", false)) h += '<div class="card" style="border-color:rgba(255,122,26,.45)"><b>Let it run with the screen off</b><div class="small muted" style="margin:4px 0 10px">Some phones pause apps to save battery, which stops alerts mid-game.</div><div class="row" style="gap:8px"><button class="btn small primary" id="allowbatt">Allow background use</button><button class="btn small" id="hidebatt">Not now</button></div></div>';
@@ -1086,6 +1086,26 @@ function renderPicks(){
   const s = $("gosetup"); if (s) s.onclick = () => setTab("settings");
   appBanners();
 }
+// After a crash the app keeps the details, so they can be copied and sent over.
+function crashCard(){
+  const an = S.state && S.state.android;
+  if (!APP || !an || !an.crash) return "";
+  return '<div class="card" style="border-color:rgba(255,77,99,.5)"><b>ClutchUp closed unexpectedly last time</b><div class="small muted" style="margin:4px 0 10px">Copy the details and send them through so it can be fixed.</div>' +
+    '<div class="row" style="gap:8px"><button class="btn small primary" id="crashcopy">Copy details</button><button class="btn small" id="crashhide">Dismiss</button></div></div>';
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("#crashcopy, #crashhide"); if (!b) return;
+  const an = (S.state && S.state.android) || {};
+  if (b.id === "crashcopy"){
+    if (window.AndroidBridge && window.AndroidBridge.copyText) window.AndroidBridge.copyText(an.crash || "");
+    else { try{ await navigator.clipboard.writeText(an.crash || ""); }catch(err){} }
+    b.textContent = "Copied";
+    return;
+  }
+  if (window.AndroidBridge && window.AndroidBridge.clearCrash) window.AndroidBridge.clearCrash();
+  if (S.state && S.state.android) S.state.android.crash = "";
+  if (S.tab === "picks") renderPicks(); else if (S.tab === "ladder") renderLadder();
+});
 function appBanners(){
   const n = $("allownotif"); if (n) n.onclick = () => { window.AndroidBridge.requestNotifications(); setTimeout(loadState, 1500); };
   const b = $("allowbatt"); if (b) b.onclick = () => { window.AndroidBridge.openBatterySettings(); };
@@ -1682,9 +1702,9 @@ function playsList(){
   return list;
 }
 function playsTop(){
-  if (!FEAT().screener) return "";
+  if (!FEAT().screener) return crashCard();
   const list = playsList();
-  return segs(list, S.playsSeg, "ps").replace('<div class="segs">', '<div class="segs' + (list.length > 4 ? " many" : "") + '">');
+  return crashCard() + segs(list, S.playsSeg, "ps").replace('<div class="segs">', '<div class="segs' + (list.length > 4 ? " many" : "") + '">');
 }
 function setPlaysSeg(k){
   S.playsSeg = k; LS.set("playsSeg", k);
@@ -3513,7 +3533,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.6";
+    s.src = "engine.js?v=4.6.1";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
