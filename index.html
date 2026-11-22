@@ -1097,8 +1097,8 @@ function renderPicks(){
 async function openPlayerGame(gid, aid){
   if (!gid) return;
   const player = aid && aid !== "match" ? String(aid) : "";
-  S.gameId = gid; S.game = null; S.psearch = ""; S.open = {}; S.pbpAll = false;
-  S.gview = player ? "players" : "tips"; S.focusPlayer = player;
+  S.gameId = gid; S.game = null; S.psearch = ""; S.open = {}; S.pbpAll = false; S.likelyAgain = null;
+  S.gview = player ? "players" : "tips"; S.focusPlayer = player; S.keepOpen = player;
   $("gamepanel").classList.add("show");
   document.body.style.overflow = "hidden";
   renderGame();
@@ -2984,7 +2984,7 @@ function renderScan(){
 
 /* ---------- game view ---------- */
 async function openGame(id){
-  S.gameId = id; S.game = null; S.psearch = ""; S.open = {}; S.pbpAll = false; S.gview = "tips";
+  S.gameId = id; S.game = null; S.psearch = ""; S.open = {}; S.pbpAll = false; S.gview = "tips"; S.likelyAgain = null; S.keepOpen = "";
   $("gamepanel").classList.add("show");
   document.body.style.overflow = "hidden";
   renderGame();
@@ -2999,9 +2999,13 @@ function closeGame(){
 }
 async function refreshGame(){
   if (!S.gameId) return;
-  try{ S.game = await api("/api/game?id=" + encodeURIComponent(S.gameId)); S.gameErr = ""; }
+  const id = S.gameId;
+  try{ S.game = await api("/api/game?id=" + encodeURIComponent(id)); S.gameErr = ""; }
   catch(e){ S.gameErr = e.message; }
   if (S.gameId) renderGame();
+  // team lists still being sorted by the last game: look again soon rather than at the next 10 second refresh
+  const g = S.game && S.game.game;
+  if (g && S.gameId === id && g.roster_only && !g.likely && !g.demo && S.likelyAgain !== id){ S.likelyAgain = id; setTimeout(() => { if (S.gameId === id && !S.sheet) refreshGame(); }, 3000); }
 }
 const followText = sp => sp === "soccer" ? "Goals, half time and full time" : sp === "football" ? "Every score, quarter breaks and the final" : sp === "tennis" ? "Each set and the result" : sp === "hockey" ? "Goals, period breaks and the final" : sp === "league" ? "Half time and the final score" : "Quarter breaks and the final score";
 function renderGame(keepSearch){
@@ -3041,21 +3045,27 @@ function renderGame(keepSearch){
     return;
   }
   h += '<input class="search" id="psearch" type="search" placeholder="Search players" value="' + esc(S.psearch) + '">';
-  if (g.roster_only) h += '<div class="small muted" style="margin:4px 2px 10px">' + (g.roster_last ? "Teams aren't named yet, so these are the players from each side's last game." : g.sport === "soccer" ? "Line-ups aren't out yet, so these are the full squads." : "Box score isn't out yet, so these are the full team lists.") + ' Pick now and tracking starts at ' + (g.sport === "basketball" ? "tip-off" : "kick-off") + '.</div>';
+  if (g.roster_only) h += '<div class="small muted" style="margin:4px 2px 10px">' + esc(rosterNote(g)) + '</div>';
   const q = norm(S.psearch.trim());
   if (q && !S.game.teams.some(t => t.players.some(p => norm(p.name).includes(q) || String(p.jersey) === q))) h += '<div class="empty"><b>No players match that</b>Check the spelling, or search by shirt number.</div>';
   const teams = tennis ? [{name:"Players", side:"all", players:[].concat(...S.game.teams.map(t => t.players))}] : S.game.teams;
-  if (S.focusPlayer) teams.forEach(t => t.players.forEach(p => { if (String(p.id) === S.focusPlayer) S.open[t.side + ":" + p.group] = true; }));
+  // the player you came to see stays in view, even if a refresh moves him to a folded group
+  const keep = S.focusPlayer || S.keepOpen;
+  if (keep) teams.forEach(t => t.players.forEach(p => {
+    const k = t.side + ":" + p.group;
+    if (String(p.id) === keep && (S.focusPlayer || S.keepKey !== k)){ S.open[k] = true; S.keepKey = k; }
+  }));
   teams.forEach(t => {
     const players = t.players.filter(p => !q || norm(p.name).includes(q) || String(p.jersey) === q);
     if (q && !players.length) return;
-    h += '<h2>' + esc(t.name) + '</h2><div class="card" style="padding:2px 14px 4px">';
+    const lg = g.roster_only && t.last_game;
+    h += '<h2' + (lg ? ' style="margin-bottom:2px"' : '') + '>' + esc(t.name) + '</h2>' + (lg ? '<div class="small muted" style="margin:0 2px 10px">Last game v ' + esc(lg.opp_name || lg.opp) + (lg.comp ? ' (' + esc(lg.comp) + ')' : '') + ', ' + esc(shortDay(lg.date)) + '</div>' : '') + '<div class="card" style="padding:2px 14px 4px">';
     if (!t.players.length) h += '<div class="small muted" style="padding:12px 0">No players listed yet.</div>';
     let last = null;
     const counts = {};
     players.forEach(p => counts[p.group] = (counts[p.group] || 0) + 1);
     players.forEach(p => {
-      const big = p.group === "Defence and others" && counts[p.group] > 8 && !q;
+      const big = FOLD[p.group] != null && counts[p.group] > FOLD[p.group] && !q;
       const openKey = t.side + ":" + p.group;
       if (p.group !== last){
         last = p.group;
@@ -3069,7 +3079,7 @@ function renderGame(keepSearch){
       const flag = tennis ? [g.home, g.away].find(x => String(x.id) === String(p.id)) : null;
       h += '<div class="player' + (p.dnp ? " dnp" : "") + '" data-p="' + esc(p.id) + '"><div class="num' + (face ? " img" : "") + '">' + esc(tennis ? initials(p.name) : p.jersey || "-") + (face ? '<img src="' + esc(face) + '" alt="" ' + NOIMG + '>' : '') + '</div><div class="grow"><div class="nm">' + esc(p.name) +
         (flag ? ' ' + teamLogo(flag, "tennis") : '') + (p.pos ? ' <span class="muted small">' + esc(p.pos) + '</span>' : '') + (face && p.jersey ? '<span class="jn">#' + esc(p.jersey) + '</span>' : '') + (FEAT().screener ? injBadge(p.inj) : '') + (n ? ' <span class="tracked">' + n + ' tracked</span>' : '') + '</div>' +
-        (p.line ? '<div class="ln">' + esc(p.line) + '</div>' : '') + (ls ? '<div class="ln" style="color:var(--accent2)">' + esc(ls) + '</div>' : '') + '</div><span class="iconbtn" aria-hidden="true">+</span></div>';
+        (p.line ? '<div class="ln">' + esc(p.line) + '</div>' : '') + (p.last ? '<div class="ln">' + esc(p.last) + '</div>' : '') + (ls ? '<div class="ln" style="color:var(--accent2)">' + esc(ls) + '</div>' : '') + '</div><span class="iconbtn" aria-hidden="true">+</span></div>';
     });
     h += '</div>';
   });
@@ -3093,6 +3103,27 @@ function renderGame(keepSearch){
   w.querySelectorAll("[data-p]").forEach(r => r.onclick = () => {
     for (const t of S.game.teams){ const p = t.players.find(x => x.id === r.dataset.p); if (p) { openSheet(p, g); break; } }
   });
+}
+// Groups on the team list that fold away once they're longer than this.
+const FOLD = {"Defence and others":8, "Rest of the squad":4, "Rest of the list":4, "Didn't play last game":5};
+// What the team lists show before the line-ups are out.
+function rosterNote(g){
+  const start = g.sport === "basketball" ? "tip-off" : g.sport === "hockey" ? "puck drop" : g.sport === "aussie" ? "the first bounce" : "kick-off";
+  let t;
+  if (g.likely){
+    const how = "players are grouped by what they did last game, with anyone ruled out at the bottom.";
+    if (g.sport === "soccer") t = "Line-ups aren't out yet, so players are grouped by what they did last game. The real line-ups show here about an hour before kick-off.";
+    else if (g.sport === "football") t = "Players are grouped by position, busiest last game first, with anyone ruled out at the bottom.";
+    else if (g.sport === "basketball") t = "Starting fives aren't out yet, so " + how;
+    else if (g.sport === "aussie" || g.sport === "league") t = "Teams aren't named yet, so " + how;
+    else t = "Line-ups aren't out yet, so " + how;
+  }
+  else t = g.roster_last ? "Teams aren't named yet, so these are the players from each side's last game." : g.sport === "soccer" ? "Line-ups aren't out yet, so these are the full squads." : "Box score isn't out yet, so these are the full team lists.";
+  return t + " Pick now and tracking starts at " + start + ".";
+}
+function shortDay(iso){
+  const d = new Date(iso);
+  return isNaN(d) ? "" : d.toLocaleDateString("en-AU", {weekday:"short", day:"numeric", month:"short"}).replace(",", "");
 }
 // The parts of the game screen both views share: back, alerts switch, match bet buttons, the view switch.
 function bindGameTop(g){
@@ -3613,7 +3644,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.7";
+    s.src = "engine.js?v=4.7.1";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
