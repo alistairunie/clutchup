@@ -325,6 +325,82 @@ ol.steps li{margin:5px 0}
 .slipbar{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 84px);z-index:25;padding:0 14px}
 .slipbar .in{max-width:612px;margin:0 auto;background:#203051;border-radius:18px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 12px 30px rgba(3,7,16,.6)}
 
+/* tips: one game read like a form guide. The predicted score is set in the scoreboard face,
+   the chance is the number to look at, the price sits under it. */
+.gseg{margin:2px 0 12px}
+.wbar .ends{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.wbar .end{display:flex;align-items:center;gap:9px;min-width:0}
+.wbar .end.r{flex-direction:row-reverse;text-align:right}
+.wbar .end b{font:800 34px/.9 var(--num);font-variant-numeric:tabular-nums;color:var(--muted)}
+.wbar .end.fav b{color:var(--text)}
+.wbar .end small{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.wbar .dr{font-size:12.5px;color:var(--muted);font-weight:650;padding-bottom:4px;text-align:center}
+.wbar .dr b{display:block;font:800 20px/1 var(--num);color:var(--muted)}
+.wbar .bar{display:flex;height:9px;border-radius:999px;overflow:hidden;margin-top:12px;gap:3px}
+.wbar .bar i{display:block;height:100%;border-radius:2px;min-width:3px}
+.pscore{text-align:center;margin:18px 0 2px}
+.pscore .lab{font-size:12.5px;color:var(--muted);font-weight:650}
+.pscore .sc{font:800 54px/1 var(--num);font-variant-numeric:tabular-nums;margin:3px 0 2px;letter-spacing:.01em}
+.pscore .sc span{color:var(--faint);margin:0 .12em}
+.pscore .sub{font-size:13px;color:var(--muted)}
+.alsos{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px}
+.alsos span{font-size:12.5px;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--muted);font-variant-numeric:tabular-nums}
+.alsos span b{color:var(--text);font-weight:700;margin-right:5px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.facts div{background:var(--sunk);border-radius:12px;padding:9px 11px;font-size:12.5px;color:var(--muted);min-width:0}
+.facts div b{display:block;font:800 20px/1.05 var(--num);color:var(--text);font-variant-numeric:tabular-nums;margin-bottom:1px}
+.formrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;align-items:center;border-top:1px solid var(--line);margin-top:14px;padding-top:12px;font-size:12.5px;color:var(--muted)}
+.formrow .who{display:flex;align-items:center;gap:8px;min-width:0;color:var(--text);font-weight:650;font-size:13px}
+.formrow .who .tlogo{width:20px;height:20px}
+.formrow .who .tlogo.flag{width:21px;height:14px;border-radius:3px}
+.formrow .who small{color:var(--muted);font-weight:500;font-size:12px}
+.wl{display:inline-flex;gap:3px}
+.wl i{width:19px;height:19px;border-radius:6px;font:800 10.5px/19px var(--ui);text-align:center;font-style:normal;background:var(--card2);color:var(--muted)}
+.wl i.W{background:rgba(47,224,138,.18);color:var(--green)}
+.wl i.L{background:rgba(255,77,99,.16);color:var(--red)}
+.srcs{font-size:12.5px;color:var(--muted);margin-top:10px;text-align:center}
+.tip{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;cursor:pointer}
+.list > .tip + .tip{border-top:1px solid var(--line)}
+.tip .av{width:40px;height:40px}
+.tip .av .mono{font-size:13.5px}
+.tip .av.pair .tlogo{width:27px;height:27px}
+.tip .av.pair .tlogo + .tlogo{top:13px;left:13px}
+.tip .tk{font-size:12px;color:var(--muted);font-weight:650;margin-bottom:1px}
+.tip .t1{font-weight:700;line-height:1.25}
+.tip .t2{font-size:14px;font-weight:600;margin-top:1px;line-height:1.3}
+.tip .t3{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+.tip .r{text-align:right;flex:none;min-width:52px}
+.tip .pc{font:800 27px/.95 var(--num);font-variant-numeric:tabular-nums}
+.tip .pc.hi{color:var(--green)}
+.tip .pr{font-size:12.5px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.tip .pr b{color:var(--text);font-weight:750}
+.tip .add{width:32px;height:32px;border-radius:11px;font-size:18px;font-weight:700}
+.tip .add.on{color:var(--green)}
+.meter{height:4px;border-radius:999px;background:var(--card2);margin-top:7px;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:999px;background:var(--text)}
+.meter.hi i{background:var(--green)}
+.sgm .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.sgm .kind{font-weight:700}
+.sgm .kind small{display:block;font-size:12.5px;color:var(--muted);font-weight:500;margin-top:2px}
+.sgm .chance{font:800 36px/.9 var(--num);font-variant-numeric:tabular-nums;color:var(--green);text-align:right}
+.sgm .chance small{display:block;font:600 11.5px var(--ui);color:var(--muted);margin-top:4px}
+.sgm .lg{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.sgm .lg:first-of-type{margin-top:10px}
+.sgm .lg .grow{font-size:14px;line-height:1.3}
+.sgm .lg .grow small{display:block;font-size:12.5px;color:var(--muted)}
+.sgm .lg .price{font-size:14px}
+.checker .row2{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.checker .row2:first-of-type{border-top:0;padding-top:4px}
+.checker .stp{display:flex;align-items:center;gap:6px}
+.checker .stp button{width:34px;height:34px;border-radius:11px;background:var(--card2);font-size:18px;font-weight:700;color:var(--muted)}
+.checker .stp b{font:800 24px/1 var(--num);min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
+.checker .out{display:grid;grid-template-columns:1fr 1fr;gap:8px;grid-column:1 / -1}
+.checker .out button{text-align:left;padding:9px 11px;border-radius:12px;background:var(--sunk);font-size:12.5px;color:var(--muted)}
+.checker .out button b{display:block;color:var(--text);font-size:13.5px;font-weight:700;margin-bottom:1px}
+.checker .out button .v{font:800 19px/1.1 var(--num);color:var(--text)}
+.checker .out button.hi .v{color:var(--green)}
+.basis{font-size:12.5px;color:var(--muted);margin:2px 4px 14px;line-height:1.45}
+
 /* slips look like a bet ticket: a tear line with notches */
 .slip{position:relative}
 .slip .tear{position:relative;border-top:2px dashed var(--line2);margin:12px -16px 4px}
@@ -465,7 +541,8 @@ const S = {tab:"games", games:null, state:null, gamesErr:"", lastAlertSeen:null,
            sheet:null, sound:false, audio:null, firstState:true, gamesLoading:false, filter:"all", search:"",
            psearch:"", open:{}, armed:null, forms:{}, ladder:null, ladderAt:0, ladderLoading:false, ladderErr:"",
            lopen:{}, lplays:{}, picksSeg:"picks", playsSeg:"ladder", selecting:false, sel:{}, scr:null, pk:null,
-           results:null, resAt:0, pbpAll:false, ledit:false, prevVals:{}, perfect:null, perfectErr:"", perfectLoading:false, pfTeam:"all", pfMin:5};
+           results:null, resAt:0, pbpAll:false, ledit:false, prevVals:{}, perfect:null, perfectErr:"", perfectLoading:false, pfTeam:"all", pfMin:5,
+           tips:{}, tipMap:{}, gview:"tips", tchk:{}};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -785,7 +862,21 @@ function renderGames(){
 }
 
 const isWin = p => p.stat === "HWIN" || p.stat === "AWIN";
+const isCap = p => p.stat === "HCAP" || p.stat === "ACAP";
+// A line or handicap as a bookie writes it: More = the side giving the start, Less = the side getting it.
+function capText(p){
+  const g = p.game || {}, h = p.stat === "HCAP", a = g.home_name || g.home || "Home", b = g.away_name || g.away || "Away";
+  return (p.side === "more" ? (h ? a : b) + " -" : (h ? b : a) + " +") + fmt(p.line) + ((p.sport || g.sport) === "tennis" ? " games" : "");
+}
 function pickChip(p){
+  if (isCap(p) && !p.final && p.status !== "waiting" && p.line != null){
+    const v = +p.value || 0, ok = p.side === "more" ? v > p.line : v < p.line;
+    return '<span class="chip ' + (ok ? "hit" : "live") + '">' + (ok ? "Covering" : "Not covering") + '</span>';
+  }
+  if (p.stat === "DRAW" && !p.final && p.status !== "waiting"){
+    const lvl = (+p.value || 0) > 0.5, ok = p.side === "more" ? lvl : !lvl;
+    return '<span class="chip ' + (ok ? "hit" : "live") + '">' + (lvl ? "Level" : "Not level") + '</span>';
+  }
   if (isWin(p) && !p.final && p.status !== "waiting"){
     const v = +p.value || 0, good = p.side === "more" ? v > 0 : v <= 0;
     const sets = n => n === 1 ? "a set" : fmt(n) + " sets";
@@ -804,6 +895,8 @@ function pickChip(p){
 function pickWhat(p){
   const at = p.odds ? ' <span class="price">@ ' + money(p.odds) + '</span>' : '';
   if (isWin(p)) return esc(p.stat_name).replace(" to win", p.side === "more" ? " to win" : " not to win") + at;
+  if (isCap(p) && p.line != null) return esc(capText(p)) + at;
+  if (p.stat === "DRAW") return (p.side === "more" ? "Draw" : "No draw") + at;
   if (p.yesno) return esc(p.stat_name) + ": " + (p.side === "more" ? "Yes" : "No") + at;
   if (p.line == null) return "Tracking " + esc(p.stat_name);
   return (p.side === "more" ? "More " : "Less ") + fmt(p.line) + " " + esc(p.stat_name) + at;
@@ -819,6 +912,11 @@ function gameHead(g){
 // The line track: the fill is where the stat is now, the tick is the line. Win picks centre the tick at level.
 function trackHtml(p){
   const g = p.game || {};
+  if (isCap(p) && p.line != null){
+    const v = +p.value || 0, span = {basketball:16, football:17, soccer:3, hockey:3, tennis:8}[g.sport || p.sport] || 10;
+    const max = Math.max(span, Math.abs(v) * 1.15, +p.line * 1.4), w = Math.min(50, Math.abs(v) / max * 50);
+    return '<div class="track mid"><i style="left:' + (v >= 0 ? 50 : 50 - w).toFixed(1) + '%;width:' + w.toFixed(1) + '%"></i><b style="left:' + (50 + Math.min(50, +p.line / max * 50)).toFixed(1) + '%"></b></div>';
+  }
   if (isWin(p)){
     const v = +p.value || 0, span = {basketball:12, football:14, soccer:3, hockey:3, tennis:2}[g.sport || p.sport] || 10;
     const max = Math.max(span, Math.abs(v) * 1.15), w = Math.min(50, Math.abs(v) / max * 50);
@@ -843,13 +941,13 @@ function pickCard(p){
   const sel = S.selecting && !p.final;
   const who = p.athlete_id === "match" ? (String(p.name || "").includes(" v ") ? p.name : "Match") : p.name;
   const prev = S.prevVals[p.id], bump = prev != null && prev !== p.value && p.value > prev && !p.final ? " bump" : "";
-  const of = p.line != null && !p.yesno && !isWin(p) ? '<span class="of">/ ' + fmt(p.line) + '</span>' : '';
+  const of = p.line != null && !p.yesno && !isWin(p) && !isCap(p) ? '<span class="of">/ ' + fmt(p.line) + '</span>' : '';
   return '<div class="card pick ' + esc(p.status) + (sel ? " selecting" : "") + '"' + (sel ? ' data-selp="' + esc(p.id) + '"' : '') + '>' +
     (sel ? '<span class="sel' + (S.sel[p.id] ? " on" : "") + '">' + (S.sel[p.id] ? "&#10003;" : "") + '</span>'
       : S.selecting ? '' : (S.armed === p.id ? '<button class="x armed" data-del="' + esc(p.id) + '">Remove</button>' : '<button class="x" data-del="' + esc(p.id) + '" aria-label="Remove">&#x2715;</button>')) +
     '<div class="head">' + avatarHtml(p) + '<div class="grow"><div class="who">' + esc(who) + (p.athlete_id !== "match" && p.team ? ' <span class="muted small">' + esc(p.team) + '</span>' : '') + (p.source === "ladder" ? ' <span class="badge ladder">Ladder</span>' : '') + '</div>' +
     '<div class="what">' + pickWhat(p) + '</div></div></div>' +
-    '<div class="numrow"><span class="val' + bump + '">' + (isWin(p) && +p.value > 0 ? "+" : "") + fmt(p.value) + '</span>' + of + pickChip(p) + '</div>' +
+    '<div class="numrow"><span class="val' + bump + '">' + ((isWin(p) || isCap(p)) && +p.value > 0 ? "+" : "") + fmt(p.value) + '</span>' + of + pickChip(p) + '</div>' +
     (trackHtml(p) || '<div style="height:10px"></div>') + paceHtml(p) +
     '<div class="foot">' + foot.join("") + '</div></div>';
 }
@@ -2044,11 +2142,12 @@ function renderScan(){
 
 /* ---------- game view ---------- */
 async function openGame(id){
-  S.gameId = id; S.game = null; S.psearch = ""; S.open = {}; S.pbpAll = false;
+  S.gameId = id; S.game = null; S.psearch = ""; S.open = {}; S.pbpAll = false; S.gview = "tips";
   $("gamepanel").classList.add("show");
   document.body.style.overflow = "hidden";
   renderGame();
   await refreshGame();
+  if (S.gameId === id && S.game && tipsOn(S.game.game)) loadTips(id);
 }
 function closeGame(){
   S.gameId = null; S.game = null;
@@ -2084,12 +2183,21 @@ function renderGame(keepSearch){
   if (FEAT().screener && ((S.game.plays || []).length || (S.game.winprob || []).length > 2)) h += '<div style="text-align:center;margin-top:8px"><button class="linkbtn" id="topbp" style="padding:0">Win chance and play by play</button></div>';
   if (S.game.lines_note && pre) h += '<div class="small muted" style="text-align:center;margin-top:6px">' + esc(S.game.lines_note) + '</div>';
   const mp = (S.game.props && S.game.props.match) || [];
-  if (mp.length){
+  if (mp.length && !(tipsOn(g) && S.gview === "tips")){
     const nMatch = mine.filter(m => m.athlete_id === "match").length;
     h += '<div class="small muted" style="margin-top:10px">Match bets' + (nMatch ? ' <span class="tracked">' + nMatch + ' tracked</span>' : '') + '</div><div class="mprops">' + mp.map(pr => '<button data-mp="' + esc(pr.key) + '">' + esc(pr.short) + '<small>' + (pre ? matchHint(pr) : esc(matchNow(pr))) + '</small></button>').join("") + '</div>';
   }
   if (!g.demo) h += '<div class="toggle" style="border-top:1px solid var(--line);padding-top:10px;margin-top:12px"><div><b>Score alerts</b><div class="small muted">' + followText(g.sport) + '</div></div><button class="switch' + (g.followed ? " on" : "") + '" id="follow"></button></div>';
   h += '</div>';
+  const showTips = tipsOn(g);
+  if (showTips) h += '<div class="segs gseg">' + [["tips", "Tips"], ["players", "Players"]].map(v => '<button data-gv="' + v[0] + '" class="' + (S.gview === v[0] ? "on" : "") + '">' + v[1] + '</button>').join("") + '</div>';
+  if (showTips && S.gview === "tips"){
+    h += tipsHtml(g);
+    w.innerHTML = h;
+    bindGameTop(g);
+    bindTips(w, g);
+    return;
+  }
   h += '<input class="search" id="psearch" type="search" placeholder="Search players" value="' + esc(S.psearch) + '">';
   if (g.roster_only) h += '<div class="small muted" style="margin:4px 2px 10px">' + (g.sport === "soccer" ? "Line-ups aren't out yet, so these are the full squads." : "Box score isn't out yet, so these are the full team lists.") + ' Pick now and tracking starts at ' + (g.sport === "basketball" ? "tip-off" : "kick-off") + '.</div>';
   const q = norm(S.psearch.trim());
@@ -2124,16 +2232,237 @@ function renderGame(keepSearch){
   });
   if (FEAT().screener) h += wpChart(g) + pbpHtml(g);
   w.innerHTML = h;
-  $("gback").onclick = closeGame;
+  bindGameTop(g);
   const pm = $("pbpmore"); if (pm) pm.onclick = () => { S.pbpAll = !S.pbpAll; renderGame(); };
   const tp = $("topbp"); if (tp) tp.onclick = () => { const t = $("wph") || $("pbph"); if (t) t.scrollIntoView({behavior:"smooth", block:"start"}); };
-  const f = $("follow"); if (f) f.onclick = async () => { await api("/api/follow", {game_id:g.id, on:!g.followed}); await refreshGame(); loadState(); };
   const ps = $("psearch");
   ps.oninput = () => { S.psearch = ps.value; const pos = ps.selectionStart; renderGame(); const n = $("psearch"); n.focus(); try{ n.setSelectionRange(pos, pos); }catch(e){} };
   w.querySelectorAll("[data-grp]").forEach(b => b.onclick = () => { S.open[b.dataset.grp] = !S.open[b.dataset.grp]; renderGame(); });
-  w.querySelectorAll("[data-mp]").forEach(b => b.onclick = () => openSheet(matchEntity(), g, b.dataset.mp));
   w.querySelectorAll("[data-p]").forEach(r => r.onclick = () => {
     for (const t of S.game.teams){ const p = t.players.find(x => x.id === r.dataset.p); if (p) { openSheet(p, g); break; } }
+  });
+}
+// The parts of the game screen both views share: back, alerts switch, match bet buttons, the view switch.
+function bindGameTop(g){
+  const w = $("gamewrap");
+  $("gback").onclick = closeGame;
+  const f = $("follow"); if (f) f.onclick = async () => { await api("/api/follow", {game_id:g.id, on:!g.followed}); await refreshGame(); loadState(); };
+  w.querySelectorAll("[data-mp]").forEach(b => b.onclick = () => openSheet(matchEntity(), g, b.dataset.mp));
+  w.querySelectorAll("[data-gv]").forEach(b => b.onclick = () => { S.gview = b.dataset.gv; renderGame(); if (S.gview === "tips") loadTips(g.id); });
+}
+/* ---------- tips: the calls, the best bets and a same game multi for one game ---------- */
+function tipsOn(g){ return !!(FEAT().tips && g && g.state === "pre" && !g.demo); }
+async function loadTips(id, force){
+  const c = S.tips[id];
+  if (!force && c && (c.loading || (c.data && Date.now() - c.at < 150000))) return;
+  S.tips[id] = {loading:true, data:c && c.data, at:c ? c.at : 0};
+  if (S.gameId === id) rerenderGame();
+  try{ const d = await api("/api/insights?id=" + encodeURIComponent(id) + (force ? "&refresh=1" : "")); S.tips[id] = {data:d, at:Date.now()}; }
+  catch(e){ S.tips[id] = {err:e.message, at:Date.now(), data:c && c.data}; }
+  if (S.gameId === id) rerenderGame();
+}
+// Re-render without losing the player search box mid-word.
+function rerenderGame(){
+  const a = document.activeElement, typing = a && a.id === "psearch", pos = typing ? a.selectionStart : 0;
+  if (S.sheet) return;
+  renderGame();
+  if (typing){ const n = $("psearch"); if (n){ n.focus(); try{ n.setSelectionRange(pos, pos); }catch(e){} } }
+}
+const SETTLE = {HWIN:1, AWIN:1, DRAW:1, HCAP:1, ACAP:1};
+function tipPick(t){
+  const g = S.game.game;
+  return {athlete_id:t.athlete_id, name:t.name, team:t.team, league:g.league, sport:g.sport,
+    game:{home:g.home.abbr, away:g.away.abbr, home_logo:g.home.logo, away_logo:g.away.logo, home_color:g.home.color, away_color:g.away.color,
+          home_name:g.home.short || g.home.name, away_name:g.away.short || g.away.name, sport:g.sport, demo:g.demo}};
+}
+const tipText = t => t.athlete_id === "match" ? t.label : (t.name + " " + t.label.replace(t.name + " ", ""));
+function tipPrice(t){ return t.price ? '<b>' + money(t.price) + '</b>' : t.fair ? 'fair <b>' + money(t.fair) + '</b>' : ''; }
+function tipRow(t, title, extra){
+  const k = "tp" + Object.keys(S.tipMap).length;
+  S.tipMap[k] = t;
+  const done = legTracked(t), match = t.athlete_id === "match", hi = t.p >= 0.6;
+  const sub = (extra || []).filter(Boolean);
+  const lab = title && t.label.indexOf(title + ": ") === 0 ? t.label.slice(title.length + 2) : t.label;
+  const l1 = match || t.label.indexOf(t.name) === 0 ? esc(lab) : esc(t.name) + injBadge(t.injury);
+  const l2 = match || t.label.indexOf(t.name) === 0 ? '' : '<div class="t2">' + esc(t.label) + '</div>';
+  return '<div class="tip" data-tip="' + k + '">' + avatarHtml(tipPick(t)) + '<div class="grow">' + (title ? '<div class="tk">' + esc(title) + '</div>' : '') +
+    '<div class="t1">' + l1 + '</div>' + l2 + sub.map(x => '<div class="t3">' + esc(x) + '</div>').join("") +
+    (title ? '<div class="meter' + (hi ? " hi" : "") + '"><i style="width:' + Math.round(t.p * 100) + '%"></i></div>' : '') + '</div>' +
+    '<div class="r"><div class="pc' + (hi ? " hi" : "") + '">' + pct(t.p) + '</div><div class="pr">' + tipPrice(t) + '</div></div>' +
+    '<button class="iconbtn add' + (done ? " on" : "") + '" data-tadd="' + k + '" aria-label="' + (done ? "Tracking" : "Track this") + '">' + (done ? "&#10003;" : "+") + '</button></div>';
+}
+function barColour(hex){
+  if (!/^[0-9a-f]{6}$/i.test(hex || "")) return null;
+  const c = [0, 2, 4].map(i => parseInt(hex.substr(i, 2), 16));
+  const lum = (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+  const k = lum < 0.18 ? 0.45 : 0;
+  return c.map(v => Math.round(v + (255 - v) * k));
+}
+function predictCard(d, g){
+  const pr = d.predict; if (!pr) return "";
+  const w = pr.win || {}, tennis = g.sport === "tennis", hp = +w.home || 0, ap = +w.away || 0, dp = w.draw == null ? null : +w.draw;
+  let ch = barColour(g.home.color), ca = barColour(g.away.color);
+  if (ch && ca && Math.hypot(ch[0] - ca[0], ch[1] - ca[1], ch[2] - ca[2]) < 90) ca = null;
+  const css = c => c ? "rgb(" + c.join(",") + ")" : null;
+  const colH = css(ch) || "var(--text)", colA = css(ca) || "var(--faint)";
+  const end = (t, p, fav, right) => '<div class="end' + (right ? " r" : "") + (fav ? " fav" : "") + '">' + teamLogo(t, g.sport) + '<div><b>' + pct(p) + '</b><small>' + esc(t.short || t.name) + '</small></div></div>';
+  let h = '<div class="card"><div class="wbar"><div class="ends">' + end(g.home, hp, hp >= ap) + (dp != null ? '<div class="dr"><b>' + pct(dp) + '</b>Draw</div>' : '') + end(g.away, ap, ap > hp, true) + '</div>' +
+    '<div class="bar"><i style="width:' + (hp * 100).toFixed(1) + '%;background:' + colH + '"></i>' + (dp != null ? '<i style="width:' + (dp * 100).toFixed(1) + '%;background:var(--card2)"></i>' : '') + '<i style="width:' + (ap * 100).toFixed(1) + '%;background:' + colA + '"></i></div></div>';
+  const sc = pr.score || {};
+  if (sc.home != null){
+    let sub = "", alsos = [];
+    if (sc.unit === "points"){
+      const by = Math.abs(+sc.margin || 0), lead = (+sc.margin || 0) >= 0 ? g.home : g.away;
+      sub = by < 0.5 ? "Too close to split, total " + fmt(sc.total) : esc(lead.short || lead.name) + " by " + fmt(by) + ", total " + fmt(sc.total);
+    } else if (sc.unit === "goals"){
+      sub = "Expecting " + fmt(sc.exp[0]) + " v " + fmt(sc.exp[1]) + " goals";
+      alsos = (sc.top || []).filter(x => !(x.h === sc.home && x.a === sc.away)).slice(0, 3).map(x => '<span><b>' + x.h + '-' + x.a + '</b>' + pct(x.p) + '</span>');
+    } else if (sc.unit === "sets"){
+      sub = pct(sc.p) + " chance of exactly this";
+      alsos = (sc.sets || []).filter(x => x.s !== sc.home + "-" + sc.away && x.p > 0.005).map(x => '<span><b>' + esc(x.s) + '</b>' + pct(x.p) + '</span>');
+    }
+    h += '<div class="pscore"><div class="lab">Predicted score</div><div class="sc">' + sc.home + '<span>-</span>' + sc.away + '</div><div class="sub">' + sub + '</div></div>';
+    if (alsos.length) h += '<div class="alsos">' + alsos.join("") + '</div>';
+  }
+  if (tennis){
+    const rk = pr.ranks || {}, fs = +pr.first_set || 0, fav = fs >= 0.5 ? g.home : g.away;
+    const rank = r => r ? "No. " + r : "outside 150";
+    h += '<div class="facts"><div><b>' + rank(rk.home) + ' v ' + rank(rk.away) + '</b>World ranking</div><div><b>' + fmt(sc.exp_games) + '</b>Games expected</div>' +
+      '<div><b>' + pct(Math.max(fs, 1 - fs)) + '</b>' + esc(fav.short || fav.name) + ' takes the 1st set</div><div><b>' + pct(pr.tiebreak) + '</b>At least one tiebreak</div></div>';
+  }
+  const fm = d.form || {};
+  if (fm.home || fm.away){
+    const unit = g.sport === "soccer" || g.sport === "hockey" ? "goals" : "points";
+    const row = (t, f) => f ? '<div class="who">' + teamLogo(t, g.sport) + '<span>' + esc(t.abbr) + ' <small>' + fmt(f.pf) + ' for, ' + fmt(f.pa) + ' against</small></span></div><div class="wl">' + f.last.split("").map(c => '<i class="' + c + '">' + c + '</i>').join("") + '</div>' : '';
+    h += '<div class="formrow">' + row(g.home, fm.home) + row(g.away, fm.away) + '</div><div class="small muted" style="margin-top:8px">Last ' + Math.min((fm.home || {}).n || 0, (fm.away || {}).n || 0) + ' results, newest first, average ' + unit + ' a game.</div>';
+  }
+  const src = (pr.sources || []).filter(x => x.home != null);
+  if (src.length > 1) h += '<div class="srcs">' + esc(g.home.short || g.home.name) + ' win chance: ' + src.map(x => esc(x.name === "Bookie" ? "bookie" : x.name.charAt(0) === "L" ? x.name.toLowerCase() : x.name) + ' ' + pct(x.home)).join(", ") + '</div>';
+  return h + '</div>';
+}
+function distOver(arr, off, line){ let s = 0; (arr || []).forEach((v, i) => { if (i - off > line) s += v; }); return s; }
+function distUnder(arr, off, line){ let s = 0; (arr || []).forEach((v, i) => { if (i - off < line) s += v; }); return s; }
+// Tennis has no prices, so let people put in their bookie's line and see the chance.
+function checkerCard(d, g){
+  const ds = d.dist; if (!ds) return "";
+  const c = S.tchk[g.id] || (S.tchk[g.id] = {t:null, h:null});
+  const favHome = (+d.predict.win.home || 0) >= 0.5, fav = favHome ? g.home : g.away, dog = favHome ? g.away : g.home;
+  const call = k => (d.calls || []).find(x => x.title === k);
+  if (c.t == null){ const t = call("Total games"); c.t = t ? +t.line : 21.5; }
+  if (c.h == null){ const t = call("Games handicap"); c.h = t ? +t.line : 2.5; }
+  const po = distOver(ds.total, 0, c.t), pu = 1 - po;
+  const pc = favHome ? distOver(ds.margin, ds.offset, c.h) : distUnder(ds.margin, ds.offset, -c.h), pd = 1 - pc;
+  const fair = p => p > 0.01 ? money(1 / p) : "-";
+  const out = (k, label, p) => '<button data-chk="' + k + '" class="' + (p >= 0.6 ? "hi" : "") + '"><b>' + esc(label) + '</b><span class="v">' + pct(p) + '</span> fair ' + fair(p) + '</button>';
+  const fn = esc(fav.short || fav.name), dn = esc(dog.short || dog.name);
+  return '<h3>Check your bookie\'s line</h3><div class="card checker">' +
+    '<div class="row2"><div><b>Total games</b><div class="small muted">Set it to the line your bookie shows</div></div><div class="stp"><button data-cs="t:-1" aria-label="Lower">&minus;</button><b>' + fmt(c.t) + '</b><button data-cs="t:1" aria-label="Higher">+</button></div>' +
+    '<div class="out">' + out("to", "Over " + fmt(c.t), po) + out("tu", "Under " + fmt(c.t), pu) + '</div></div>' +
+    '<div class="row2"><div><b>Games handicap</b><div class="small muted">' + fn + ' giving games</div></div><div class="stp"><button data-cs="h:-1" aria-label="Lower">&minus;</button><b>' + fmt(c.h) + '</b><button data-cs="h:1" aria-label="Higher">+</button></div>' +
+    '<div class="out">' + out("hf", fn + " -" + fmt(c.h), pc) + out("hd", dn + " +" + fmt(c.h), pd) + '</div></div>' +
+    '<div class="small muted" style="margin-top:6px">Tap one to track it at that line.</div></div>';
+}
+function checkerTip(k, d, g){
+  const c = S.tchk[g.id], favHome = (+d.predict.win.home || 0) >= 0.5, ds = d.dist;
+  const base = {game_id:g.id, athlete_id:"match", name:"", team:"", price:null};
+  if (k === "to" || k === "tu"){ const p = distOver(ds.total, 0, c.t); return Object.assign(base, {stat:"TOTAL", line:c.t, side:k === "to" ? "more" : "less", p:k === "to" ? p : 1 - p, label:(k === "to" ? "Over " : "Under ") + fmt(c.t) + " total games"}); }
+  const fav = favHome ? g.home : g.away, dog = favHome ? g.away : g.home;
+  const p = favHome ? distOver(ds.margin, ds.offset, c.h) : distUnder(ds.margin, ds.offset, -c.h);
+  return Object.assign(base, {stat:favHome ? "HCAP" : "ACAP", line:c.h, side:k === "hf" ? "more" : "less", p:k === "hf" ? p : 1 - p,
+    label:k === "hf" ? (fav.short || fav.name) + " -" + fmt(c.h) + " games" : (dog.short || dog.name) + " +" + fmt(c.h) + " games"});
+}
+function sgmCard(s, i){
+  const k = "sg" + i;
+  S.tipMap[k] = s;
+  const done = s.legs.every(legTracked);
+  let h = '<div class="card sgm"><div class="top"><div class="kind">' + esc(s.title) + (s.price ? ' at ' + money(s.price) : '') +
+    '<small>' + (s.price ? 'The leg prices multiplied, fair ' + money(s.fair) : 'Fair price ' + money(s.fair)) + '</small></div><div class="chance">' + pct(s.p) + '<small>chance</small></div></div>';
+  s.legs.forEach(l => {
+    const match = l.athlete_id === "match" || l.label.indexOf(l.name) === 0;
+    h += '<div class="lg">' + avatarHtml(tipPick(l)) + '<div class="grow">' + (match ? '<b>' + esc(l.label) + '</b>' : '<b>' + esc(l.name) + '</b><small>' + esc(l.label) + '</small>') + '</div><span class="price">' + (l.price ? money(l.price) : '') + '</span></div>';
+  });
+  h += '<button class="btn small' + (done ? '' : ' primary') + '" data-sgm="' + k + '" style="margin-top:8px"' + (done ? ' disabled' : '') + '>' + (done ? "Tracking all legs" : "Track all " + s.legs.length + " legs") + '</button>';
+  return h + '</div>';
+}
+function tipsHtml(g){
+  S.tipMap = {};
+  const c = S.tips[g.id] || {}, d = c.data;
+  if (!d){
+    if (c.err) return '<div class="empty"><b>Couldn\'t work out the tips</b>' + esc(c.err) + '<div style="margin-top:12px"><button class="btn small" id="tipretry">Try again</button></div></div>';
+    return '<div class="spin"></div><div class="small muted" style="text-align:center;margin-top:-14px">Reading the prices and recent games</div>';
+  }
+  if (d.none) return '<div class="empty"><b>No tips for this one</b>' + esc(d.none) + '</div>';
+  let h = predictCard(d, g);
+  const calls = d.calls || [];
+  if (calls.length) h += '<h3>The calls</h3><div class="list">' + calls.map(t => tipRow(t, t.title, [t.other, t.note])).join("") + '</div>';
+  if (g.sport === "tennis") h += checkerCard(d, g);
+  const best = d.best || [];
+  if (best.length) h += '<h3>' + (best[0].tag === "form" ? "Lines they keep clearing" : "Best bets") + '</h3><div class="list">' + best.map(t => tipRow(t, "", [t.why, t.matchup_text])).join("") + '</div>';
+  const val = d.value || [];
+  if (val.length) h += '<h3>Worth a look at the price</h3><div class="list">' + val.map(t => tipRow(t, "", [t.why])).join("") + '</div>';
+  const sg = d.sgm || [];
+  if (sg.length) h += '<h3>Same game multi</h3>' + sg.map(sgmCard).join("") + '<div class="basis">' + (sg[0].joint ? "The chance counts how the legs move together. " : "Legs in one game often move together, so the real chance can sit either side of these. ") +
+    'Bookies price same game multis below the legs multiplied, so go by the price on your slip.</div>';
+  if (!best.length && !sg.length && !(d.notes || []).length) h += '<div class="small muted" style="margin:4px 4px 12px">No player bets stand out for this game yet.</div>';
+  const notes = (d.notes || []).concat(d.basis ? [d.basis] : []);
+  if (notes.length) h += '<div class="basis">' + notes.map(esc).join(" ") + ' Chances are estimates, not promises.</div>';
+  return h;
+}
+async function trackTip(t, btn){
+  if (!t || legTracked(t)) return null;
+  if (btn) btn.disabled = true;
+  try{
+    const r = await api("/api/picks", {game_id:t.game_id, athlete_id:t.athlete_id, name:t.name, team:t.team, stat:t.stat, side:t.side,
+      line:t.line, odds:t.price || null, source:"tips", alerts:SETTLE[t.stat] ? "key" : "all"});
+    return r.pick;
+  }catch(e){ if (btn) btn.disabled = false; toast({kind:"bust", title:"Couldn't add that", body:e.message}); return null; }
+}
+function bindTips(w, g){
+  const rt = $("tipretry"); if (rt) rt.onclick = () => loadTips(g.id, true);
+  w.querySelectorAll("[data-tadd]").forEach(b => b.onclick = async e => {
+    e.stopPropagation();
+    const t = S.tipMap[b.dataset.tadd];
+    if (legTracked(t)) { setTab("picks"); closeGame(); return; }
+    const pk = await trackTip(t, b);
+    if (!pk) return;
+    await loadState();
+    toast({kind:"event", title:"Tracking it", body:tipText(t) + (t.price ? " @ " + money(t.price) : "")});
+    rerenderGame();
+  });
+  w.querySelectorAll("[data-tip]").forEach(r => r.onclick = () => {
+    const t = S.tipMap[r.dataset.tip];
+    if (!t || !S.game) return;
+    if (t.athlete_id === "match") return openSheet(matchEntity(), g, t.stat);
+    for (const tm of S.game.teams){ const p = tm.players.find(x => String(x.id) === String(t.athlete_id)); if (p) return openSheet(p, g, t.stat); }
+  });
+  w.querySelectorAll("[data-sgm]").forEach(b => b.onclick = async () => {
+    const s = S.tipMap[b.dataset.sgm];
+    b.disabled = true; b.textContent = "Adding...";
+    const ids = [];
+    for (const l of s.legs){
+      const have = S.state && S.state.picks.find(p => !p.final && p.game_id === l.game_id && p.athlete_id === l.athlete_id && p.stat === l.stat && p.side === l.side && Math.abs((+p.line || 0) - (+l.line || 0)) < 1e-6);
+      if (have) { ids.push(have.id); continue; }
+      const pk = await trackTip(l, null);
+      if (pk) ids.push(pk.id);
+    }
+    await loadState();
+    rerenderGame();
+    if (FEAT().slips && ids.length === s.legs.length) openSlipSheet(ids, null);
+    else toast({kind:"event", title:"Tracking the multi", body:ids.length + " legs added"});
+  });
+  w.querySelectorAll("[data-cs]").forEach(b => b.onclick = () => {
+    const [k, dv] = b.dataset.cs.split(":"), c = S.tchk[g.id];
+    c[k] = Math.max(k === "t" ? 12.5 : 0.5, Math.min(k === "t" ? 50.5 : 15.5, c[k] + (+dv)));
+    rerenderGame();
+  });
+  w.querySelectorAll("[data-chk]").forEach(b => b.onclick = async () => {
+    const d = (S.tips[g.id] || {}).data, t = checkerTip(b.dataset.chk, d, g);
+    if (legTracked(t)) { toast({kind:"event", title:"Already tracking that", body:t.label}); return; }
+    const pk = await trackTip(t, b);
+    if (!pk) return;
+    await loadState();
+    toast({kind:"event", title:"Tracking it", body:t.label + ", fair " + money(1 / Math.max(0.01, t.p))});
+    rerenderGame();
   });
 }
 function matchEntity(){
@@ -2195,6 +2524,11 @@ function lineChips(m, pr){
   const out = [];
   if (!m) return out;
   if (pr.yesno){ if (m.over) out.push({line:0.5, side:"more", price:m.over, label:"Yes"}); return out; }
+  if ((pr.key === "HCAP" || pr.key === "ACAP") && m.line != null && S.game){
+    const g = S.game.game, gm = {home_name:g.home.short || g.home.name, away_name:g.away.short || g.away.name};
+    ["more", "less"].forEach(sd => { const pz = sd === "more" ? m.over : m.under; if (pz) out.push({line:m.line, side:sd, price:pz, main:true, label:capText({stat:pr.key, side:sd, line:m.line, sport:g.sport, game:gm})}); });
+    return out;
+  }
   const twoWay = (m.alts_under || []).length > 0;
   if (m.line != null){
     if (m.over) out.push({line:m.line, side:"more", price:m.over, label:"Over " + fmt(m.line), main:true});
@@ -2329,14 +2663,18 @@ function renderSheet(){
   if (!pr.yesno){
     h += '<div class="label">Line</div><div class="linebox"><button class="iconbtn" id="lminus">&minus;</button><input id="linein" type="number" inputmode="decimal" step="0.5" min="0" placeholder="No line" value="' + esc(x.line) + '"><button class="iconbtn" id="lplus">+</button></div>';
     h += '<div class="small muted" style="margin-top:6px">Clear the line to just get alerts with no target.</div>';
-    h += '<div class="label">Side</div><div class="seg"><button class="more' + (x.side === "more" ? " on" : "") + '" data-side="more">More (over)</button><button class="less' + (x.side === "less" ? " on" : "") + '" data-side="less">Less (under)</button></div>';
+    if (x.stat === "HCAP" || x.stat === "ACAP"){
+      const cp = side => capText({stat:x.stat, side, line:parseFloat(x.line) || 0, sport:g.sport, game:{home_name:g.home.short || g.home.name, away_name:g.away.short || g.away.name}});
+      h += '<div class="label">Side</div><div class="seg"><button class="more' + (x.side === "more" ? " on" : "") + '" data-side="more">' + esc(cp("more")) + '</button><button class="less' + (x.side === "less" ? " on" : "") + '" data-side="less">' + esc(cp("less")) + '</button></div>';
+    } else h += '<div class="label">Side</div><div class="seg"><button class="more' + (x.side === "more" ? " on" : "") + '" data-side="more">More (over)</button><button class="less' + (x.side === "less" ? " on" : "") + '" data-side="less">Less (under)</button></div>';
   } else {
     h += '<div class="label">' + esc(pr.name) + '</div><div class="seg"><button class="more' + (x.side === "more" ? " on" : "") + '" data-side="more">Yes</button><button class="less' + (x.side === "less" ? " on" : "") + '" data-side="less">No</button></div>';
   }
-  if (!(x.stat === "HWIN" || x.stat === "AWIN")) h += '<div class="label">Alerts</div><div class="seg"><button data-al="all" class="' + (x.alerts === "all" ? "on" : "") + '">' + (p.isMatch && g.sport === "basketball" ? "Every score" : "Every change") + '</button><button data-al="key" class="' + (x.alerts === "key" ? "on" : "") + '">Result only</button></div>';
+  if (!SETTLE[x.stat]) h += '<div class="label">Alerts</div><div class="seg"><button data-al="all" class="' + (x.alerts === "all" ? "on" : "") + '">' + (p.isMatch && g.sport === "basketball" ? "Every score" : "Every change") + '</button><button data-al="key" class="' + (x.alerts === "key" ? "on" : "") + '">Result only</button></div>';
   if (!p.isMatch && FEAT().form && !g.demo && g.sport !== "tennis") h += '<div class="label">Form</div><div class="formbox" id="formbox">' + formInner(x, pr) + '</div>';
-  if (!pr.mono && !pr.yesno) h += '<div class="small muted" style="margin-top:8px">Yards can go back down on a loss, so this one stays open until full time.</div>';
-  if (x.stat === "HWIN" || x.stat === "AWIN") h += '<div class="small muted" style="margin-top:8px">' + (g.sport === "soccer" ? "Settles on the score after 90 minutes." : g.sport === "tennis" ? "Settles on the result. If a player retires it still stands once a set is done." : "Settles on the final score.") + ' You get one alert with the result.</div>';
+  if (x.stat === "HCAP" || x.stat === "ACAP") h += '<div class="small muted" style="margin-top:8px">Settles on the final margin' + (g.sport === "tennis" ? " in games" : "") + '. You get one alert with the result.</div>';
+  else if (!pr.mono && !pr.yesno && !SETTLE[x.stat]) h += '<div class="small muted" style="margin-top:8px">Yards can go back down on a loss, so this one stays open until full time.</div>';
+  if (x.stat === "HWIN" || x.stat === "AWIN" || x.stat === "DRAW") h += '<div class="small muted" style="margin-top:8px">' + (g.sport === "soccer" ? "Settles on the score after 90 minutes." : g.sport === "tennis" ? "Settles on the result. If a player retires it still stands once a set is done." : "Settles on the final score.") + ' You get one alert with the result.</div>';
   else if (g.sport === "tennis") h += '<div class="small muted" style="margin-top:8px">If a player retires, this stands only if it was already decided. Otherwise it\'s void.</div>';
   h += '<div id="sheeterr" class="err" style="margin-top:10px"></div><div class="row" style="margin-top:14px;gap:8px"><button class="btn" id="scancel">Cancel</button><button class="btn primary grow" id="sadd">' + addLabel(x) + '</button></div>';
   $("sheetin").innerHTML = h;
@@ -2351,6 +2689,7 @@ function renderSheet(){
     $("sadd").textContent = addLabel(x);
     $("sheetin").querySelectorAll("[data-lc]").forEach(b => { const c = x.chips[+b.dataset.lc]; b.classList.toggle("on", Math.abs(c.line - parseFloat(x.line)) < 1e-6 && c.side === x.side); });
     updateFormBox();
+    if (x.stat === "HCAP" || x.stat === "ACAP") renderSheetSides();
   };
   if (inp){
     inp.oninput = () => { x.line = inp.value; relook(); };
@@ -2377,6 +2716,12 @@ function renderSheet(){
 }
 
 function addLabel(x){ return "Add pick" + (x && x.odds ? " · " + money(x.odds) : ""); }
+// Keep the line or handicap buttons in step with the line as it's typed.
+function renderSheetSides(){
+  const x = S.sheet; if (!x) return;
+  const g = x.g, gm = {home_name:g.home.short || g.home.name, away_name:g.away.short || g.away.name};
+  $("sheetin").querySelectorAll("[data-side]").forEach(b => { b.textContent = capText({stat:x.stat, side:b.dataset.side, line:parseFloat(x.line) || 0, sport:g.sport, game:gm}); });
+}
 
 /* ---------- loops ---------- */
 loadState(); loadGames();
@@ -2391,7 +2736,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.2.1";
+    s.src = "engine.js?v=4.3";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
