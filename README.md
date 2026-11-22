@@ -7,15 +7,17 @@ Live tracking for your player props, multis and slips. It's free and runs in you
 ## What it does
 
 - **Tracks props live.** Pick a player, a stat and your line, then watch it count up as the game goes. You can see how far off the line they are, the pace they're on and their chance of getting there.
-- **Sends alerts.** You get a notification when a pick lands or busts, or when a multi is one leg away.
+- **Sends alerts.** You get a notification when a pick lands or busts, or when a multi is one leg away. Once a pick is over its line it goes quiet. Quiet hours let you sleep through the overnight games: only results notify, and everything else waits on the Alerts tab.
 - **Sub on, play on.** If your soccer player comes off, the bet moves to the player who replaced him and both their numbers count, the same as bet365's Sub On Play On. It moves once, and only for bets on More. You can turn it off in Settings or on any pick.
-- **Follows your slips.** Group your legs into the slip you actually placed. It tracks every leg, settles the slip when the games finish and keeps your profit and hit rate on the Results tab. Picks and slips are listed by start time, so whatever goes first is at the top.
+- **Follows your slips.** Group your legs into the slip you actually placed. It tracks every leg, ticks each one off as it goes over its line, settles the slip when the games finish and keeps your profit and hit rate on the Results tab. Picks and slips are listed by start time, so whatever goes first is at the top.
+- **Shows what a slip's worth.** Once a game starts, each open slip shows its chance of landing and what it's worth right now, so you can tell if a cash out offer is any good. Tap a player on a slip or a pick to open their game.
+- **Team news.** Before a game, you get a heads up if a player in your picks is ruled out or questionable, and in soccer if they're on the bench once the line-up is out.
 - **Adds bets from a screenshot.** Screenshot your bet slip and ClutchUp reads it and adds the legs. It knows the layouts of Sportsbet, Bet365, Neds, Ladbrokes, Dabble, Betr and TAB slips, in light or dark mode. The screenshot is read on your phone and never uploaded anywhere.
 - **Reads every game.** Open a game and the Tips view gives a predicted score, each side's chance, the calls on the main markets, the best bets and a same game multi. It weighs the prices, recent form, rest, who's out and, for outdoor games, the weather.
 - **Finds plays.** The Plays tab has seven tools:
   - **Tips** lists the best bets across every game in the next day and a half, with the chance of each and the best price found. Tap one to see the rest of that game.
   - **Multi** builds a multi to the price you want, one leg per game, picked for the best chance of landing.
-  - **Check** rates a bet before you place it. Upload a screenshot of your slip, or pick one you're tracking, and it breaks down each leg: the chance it lands, its fair price, the bookies' price and whether that's good value. Then it does the same for the whole bet and points out the weakest leg.
+  - **Check** rates a bet before you place it. Upload a screenshot of your slip, or pick one you're tracking, and it breaks down each leg: the chance it lands, its fair price, the bookies' price and whether that's good value. Then it does the same for the whole bet, points out the weakest leg and suggests a better one from the same game.
   - **Ladder** finds the next step for your ladder, a single or double in your price range with the best chance of landing.
   - **Screener** lists every prop on the next day's games, filtered by hit rate, price and average.
   - **Pick'em** builds More/Less entries for pick'em apps, one player per game.
@@ -23,7 +25,7 @@ Live tracking for your player props, multis and slips. It's free and runs in you
 - **Keeps score on its tips.** Every tip is saved before its game and marked after, so you can see how often they land and whether the chances hold up.
 - **Covers lots of sports.** NBA, WNBA, NBL, NFL, NHL, AFL, NRL, soccer (EPL, A-League, Champions League and plenty more) and tennis (ATP and WTA singles).
 - **Compares prices.** DraftKings and Bet365 prices come through ESPN. Add your own free key from [The Odds API](https://the-odds-api.com) to compare Sportsbet, TAB, Ladbrokes, Neds and the other Aussie bookies, or from [PropLine](https://prop-line.com) for Pinnacle. Each tip then shows the best price and which bookie has it. Pick'em apps like PrizePicks pay a flat amount rather than real odds, so their numbers are left out.
-- **Posts its best bets to Discord.** Add a webhook and it posts the day's best bets each morning, then edits the post with a tick or a cross as each one lands. You can also post a multi, a pick'em entry or a screener prop it found. Your own picks and slips stay off the channel.
+- **Posts its best bets to Discord.** Add a webhook and it posts the day's best bets each morning, then edits the post with a tick or a cross as each one lands. When they're all done it posts a recap with the day's record and the week's. You can also post a multi, a pick'em entry or a screener prop it found. Your own picks and slips stay off the channel.
 - **Helps you stick to a budget.** Set a weekly limit and the Slips tab shows what's left, with a heads up before a slip goes past it.
 
 ## How to use it

@@ -141,6 +141,8 @@ nav.tabs svg{width:22px;height:22px}
 .pick .what{color:var(--muted);font-size:13.5px;margin-top:2px}
 .pick .what .price{color:var(--text)}
 .pick .subl{font-size:12.5px;color:var(--blue);margin-top:3px}
+.pick .head[data-gopen]{cursor:pointer}
+.player.focus{background:rgba(255,138,61,.14);border-radius:12px;transition:background .8s}
 .pick .foot .linkbtn.subon{color:var(--blue)}
 .numrow{display:flex;align-items:flex-end;gap:8px;margin-top:12px}
 .pick .val{font:800 48px/.86 var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.005em}
@@ -429,6 +431,7 @@ ol.steps li{margin:5px 0}
 .rule input[type=time]{width:118px}
 /* check a bet */
 .vchip{flex:none;font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap;background:var(--card2);color:var(--muted)}
+.ckswap{border-color:rgba(78,163,255,.45)}
 .vchip.good{background:rgba(52,199,89,.16);color:var(--green)}
 .vchip.fair{background:rgba(255,179,64,.16);color:var(--amber)}
 .vchip.poor{background:rgba(255,90,90,.16);color:var(--red)}
@@ -462,6 +465,10 @@ ol.steps li{margin:5px 0}
 .lm.open{box-shadow:inset 0 0 0 2px var(--faint)}
 .lm.live{box-shadow:inset 0 0 0 2px var(--amber)}
 .slip .tally{font-size:13px;color:var(--muted)}
+.slip .live{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--card2)}
+.slip .live .big{font:700 15px/1.3 var(--ui)}
+.slip .live .big b{font-size:18px}
+.slip .legrow .who{cursor:pointer}
 .slip .money{display:flex;align-items:flex-end;gap:16px;margin-top:10px}
 .slip .money div{display:flex;flex-direction:column;gap:3px}
 .slip .money small{font-size:12px;color:var(--muted);font-weight:600}
@@ -731,7 +738,7 @@ async function loadState(){
     S.state = st;
     if (S.lastAlertSeen == null) S.lastAlertSeen = LS.get("seen", st.last_alert_id);
     if (prevLast != null && st.last_alert_id > prevLast){
-      const fresh = st.alerts.filter(a => a.id > prevLast);
+      const fresh = st.alerts.filter(a => a.id > prevLast && !a.quiet);
       if (fresh.length){
         const top = fresh.find(a => a.kind === "hit" || a.kind === "bust") || fresh[fresh.length-1];
         toast(top); beep(top.kind);
@@ -998,7 +1005,7 @@ function pickCard(p){
   return '<div class="card pick ' + esc(p.status) + (sel ? " selecting" : "") + '"' + (sel ? ' data-selp="' + esc(p.id) + '"' : '') + '>' +
     (sel ? '<span class="sel' + (S.sel[p.id] ? " on" : "") + '">' + (S.sel[p.id] ? "&#10003;" : "") + '</span>'
       : S.selecting ? '' : (S.armed === p.id ? '<button class="x armed" data-del="' + esc(p.id) + '">Remove</button>' : '<button class="x" data-del="' + esc(p.id) + '" aria-label="Remove">&#x2715;</button>')) +
-    '<div class="head">' + avatarHtml(p) + '<div class="grow"><div class="who">' + esc(who) + (p.athlete_id !== "match" && p.team ? ' <span class="muted small">' + esc(p.team) + '</span>' : '') + (p.source === "ladder" ? ' <span class="badge ladder">Ladder</span>' : '') + '</div>' +
+    '<div class="head" data-gopen="' + esc(p.game_id) + '" data-aid="' + esc(p.athlete_id) + '">' + avatarHtml(p) + '<div class="grow"><div class="who">' + esc(who) + (p.athlete_id !== "match" && p.team ? ' <span class="muted small">' + esc(p.team) + '</span>' : '') + (p.source === "ladder" ? ' <span class="badge ladder">Ladder</span>' : '') + '</div>' +
     '<div class="what">' + pickWhat(p) + '</div>' + (p.sub ? '<div class="subl">Off ' + esc(p.sub.min || "") + ', ' + esc(p.sub.short || p.sub.name) + ' took over the bet</div>' : '') + '</div></div>' +
     '<div class="numrow"><span class="val' + bump + '">' + ((isWin(p) || isCap(p)) && +p.value > 0 ? "+" : "") + fmt(p.value) + '</span>' + of + pickChip(p) + '</div>' +
     (trackHtml(p) || '<div style="height:10px"></div>') + paceHtml(p) +
@@ -1086,6 +1093,26 @@ function renderPicks(){
   const s = $("gosetup"); if (s) s.onclick = () => setTab("settings");
   appBanners();
 }
+// Tapping a player in a pick, slip or check opens his game, on the players list with him in view.
+async function openPlayerGame(gid, aid){
+  if (!gid) return;
+  const player = aid && aid !== "match" ? String(aid) : "";
+  S.gameId = gid; S.game = null; S.psearch = ""; S.open = {}; S.pbpAll = false;
+  S.gview = player ? "players" : "tips"; S.focusPlayer = player;
+  $("gamepanel").classList.add("show");
+  document.body.style.overflow = "hidden";
+  renderGame();
+  await refreshGame();
+  if (S.gameId === gid && S.game && S.gview === "tips" && tipsOn(S.game.game)) loadTips(gid);
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest && e.target.closest("[data-gopen]");
+  if (!t || !t.dataset.gopen || S.selecting) return;
+  const ctl = e.target.closest("button, a, input, select, textarea");
+  if (ctl && t.contains(ctl)) return;
+  e.stopPropagation();
+  openPlayerGame(t.dataset.gopen, t.dataset.aid);
+}, true);
 // After a crash the app keeps the details, so they can be copied and sent over.
 function crashCard(){
   const an = S.state && S.state.android;
@@ -1588,11 +1615,16 @@ function slipCard(s){
         : paid ? '<div><small>Paid</small><b class="pos">' + money(s.ret) + '</b></div>'
         : s.status === "void" ? '<div><small>Back</small><b>' + money(s.stake) + '</b></div>' : '<div><small>Lost</small><b class="neg">' + money(s.stake) + '</b></div>') + '</div>';
   if (tally) h += '<div class="tally" style="margin-top:8px">' + esc(tally[0].toUpperCase() + tally.slice(1)) + '</div>';
+  if (open && s.chance != null){
+    const c = +s.chance;
+    h += '<div class="live"><div class="big"><b>' + (c > 0 && c < 0.01 ? "Under 1%" : pct(c)) + '</b> to land, worth about <b>' + money(s.worth) + '</b> now</div>' +
+      (c > 0.02 && c < 0.98 ? '<div class="small muted" style="margin-top:3px">A cash out above ' + money(s.worth) + ' beats holding on, going by our numbers' + (s.chance_rough ? '. Rough until every game starts' : '') + '.</div>' : '') + '</div>';
+  }
   h += '<div class="tear"></div>';
   s.legs.forEach(l => {
     const st = l.state || l.result || "";
-    h += '<div class="legrow">' + legMark(st, open && !st && l.status === "live") + '<div class="grow"><div>' + esc((l.short || l.name) + " " + l.label) + (l.odds ? ' <span class="muted small">@ ' + (+l.odds).toFixed(2) + '</span>' : '') + '</div>' +
-      (open && !st && l.progress ? '<div class="small muted">' + esc(l.progress) + '</div>' : '') + '</div></div>';
+    h += '<div class="legrow">' + legMark(st, open && !st && l.status === "live") + '<div class="grow"><div><span class="who" data-gopen="' + esc(l.game_id || "") + '" data-aid="' + esc(l.athlete_id || "") + '">' + esc((l.short || l.name) + " " + l.label) + '</span>' + (l.odds ? ' <span class="muted small">@ ' + (+l.odds).toFixed(2) + '</span>' : '') + '</div>' +
+      (open && !st && l.progress ? '<div class="small muted">' + esc(l.progress + (l.chance != null && l.status === "live" ? " · " + pct(l.chance) : "")) + '</div>' : '') + '</div></div>';
   });
   const armed = S.armed === "s:" + s.id;
   h += '<div class="acts">';
@@ -1636,7 +1668,7 @@ function renderSlips(el, top){
 async function loadResults(){
   if (S.resLoading) return;
   S.resLoading = true;
-  try{ S.results = await api("/api/results"); S.resErr = ""; }catch(e){ S.resErr = e.message; }
+  try{ S.results = await api("/api/results?days=" + (S.resDays || 0)); S.resErr = ""; }catch(e){ S.resErr = e.message; }
   S.resAt = Date.now(); S.resLoading = false;
   if (S.tab === "picks" && S.picksSeg === "results") renderPicks();
 }
@@ -1649,9 +1681,10 @@ function renderResults(el, top){
     return;
   }
   const sl = R.slips, pk = R.picks, L = R.ladder || {};
-  let h = top;
+  let h = top + '<div class="segs" style="margin-bottom:10px">' + [["0", "All time"], ["30", "Last 30 days"], ["7", "Last 7 days"]].map(v => '<button data-rdays="' + v[0] + '" class="' + (String(S.resDays || 0) === v[0] ? "on" : "") + '">' + v[1] + '</button>').join("") + '</div>';
   if (!sl.n && !pk.n && !L.total_runs){
-    h += '<div class="empty"><b>No results yet</b>Finished picks and settled slips add up here: profit, your hit rate on each market, and how your ladder runs went.</div>';
+    h += S.resDays ? '<div class="empty"><b>Nothing settled in the last ' + S.resDays + ' days</b>Switch to All time to see everything.</div>'
+      : '<div class="empty"><b>No results yet</b>Finished picks and settled slips add up here: profit, your hit rate on each market, and how your ladder runs went.</div>';
   } else {
     if (sl.n){
       h += '<h2>Slips</h2><div class="card"><div class="statgrid">' +
@@ -1662,6 +1695,11 @@ function renderResults(el, top){
       const KN = {single:"Singles", multi:"Multis", sgm:"Same game multis", ladder:"Ladder steps"};
       if (R.kinds.length > 1) h += '<table class="mk" style="margin-top:10px"><tr><th>Type</th><th>Slips</th><th>Landed</th><th>Profit</th></tr>' +
         R.kinds.map(k => '<tr><td>' + esc(KN[k.kind] || k.kind) + '</td><td>' + k.n + '</td><td>' + k.won + '</td><td class="' + (k.profit >= 0 ? "pos" : "neg") + '">' + smoney(k.profit) + '</td></tr>').join("") + '</table>';
+      const LN = {"1":"Singles", "2":"2 legs", "3":"3 legs", "4-5":"4 or 5 legs", "6+":"6 legs or more"};
+      if ((R.legs || []).length > 1) h += '<table class="mk" style="margin-top:12px"><tr><th>Legs</th><th>Slips</th><th>Landed</th><th>Profit</th></tr>' +
+        R.legs.map(k => '<tr><td>' + esc(LN[k.legs] || k.legs) + '<small>' + (k.roi == null ? "" : (k.roi > 0 ? "+" : "") + k.roi + "% on stake") + '</small></td><td>' + k.n + '</td><td>' + k.won + '</td><td class="' + (k.profit >= 0 ? "pos" : "neg") + '">' + smoney(k.profit) + '</td></tr>').join("") + '</table>';
+      if ((R.sports || []).length > 1) h += '<table class="mk" style="margin-top:12px"><tr><th>Sport</th><th>Slips</th><th>Landed</th><th>Profit</th></tr>' +
+        R.sports.map(k => '<tr><td>' + esc(k.sport === "mixed" ? "Mixed sports" : k.sport === "other" ? "Other" : SPORT_NAME(k.sport)) + '<small>' + (k.roi == null ? "" : (k.roi > 0 ? "+" : "") + k.roi + "% on stake") + '</small></td><td>' + k.n + '</td><td>' + k.won + '</td><td class="' + (k.profit >= 0 ? "pos" : "neg") + '">' + smoney(k.profit) + '</td></tr>').join("") + '</table>';
       h += '</div>';
     }
     if (pk.n){
@@ -1684,6 +1722,7 @@ function renderResults(el, top){
   }
   el.innerHTML = h;
   bindSegs(el, "ks", setPicksSeg);
+  el.querySelectorAll("[data-rdays]").forEach(b => b.onclick = () => { S.resDays = +b.dataset.rdays; S.results = null; S.resAt = 0; renderPicks(); });
   const rc = $("resclear");
   if (rc) rc.onclick = async () => {
     if (S.armed !== "results"){ S.armed = "results"; clearTimeout(S.armTimer); S.armTimer = setTimeout(() => { S.armed = null; renderPicks(); }, 4000); renderPicks(); return; }
@@ -2291,7 +2330,8 @@ function morningSettings(s){
   if (s.morning_on){
     h += '<div class="rule" style="margin-top:8px"><span>Post at</span><input id="mtime" type="time" value="' + esc(s.morning_time || "10:00") + '"></div>' +
       '<div class="rule"><span>How many bets</span><select id="mcount">' + [3, 4, 5, 6, 7, 8, 10].map(n => '<option value="' + n + '"' + (+s.morning_count === n ? " selected" : "") + '>' + n + '</option>').join("") + '</select></div>' +
-      '<div style="margin-top:6px">' + tog("mmulti", "Add a 3-leg multi", "Built from different games, at about $3.50 or more", s.morning_multi) + '</div>';
+      '<div style="margin-top:6px">' + tog("mmulti", "Add a 3-leg multi", "Built from different games, at about $3.50 or more", s.morning_multi) + '</div>' +
+      '<div style="margin-top:12px">' + tog("mrecap", "Post a results recap", "Once every bet in the post is done: how many landed, and the record for the week", s.morning_recap !== false) + '</div>';
   }
   h += '<button class="btn small" id="mnow" style="margin-top:10px">Post today\'s tips now</button>';
   if (posts.length) h += '<div style="margin-top:10px">' + posts.map(p => '<div class="mrow"><span>' + esc(p.title || p.day) + '</span><span class="small ' + (p.error ? "neg" : "muted") + '">' +
@@ -2309,6 +2349,7 @@ function limitSettings(s){
 function bindNewSettings(s){
   const t = (id, key) => { const b = $(id); if (b) b.onclick = async () => { await api("/api/settings", {[key]: !s[key]}); await loadState(); renderSettings(); }; };
   t("aup", "au_props"); t("mon", "morning_on"); t("mmulti", "morning_multi");
+  const mr = $("mrecap"); if (mr) mr.onclick = async () => { await api("/api/settings", {morning_recap: s.morning_recap === false}); await loadState(); renderSettings(); };
   const ks = $("ksave");
   if (ks) ks.onclick = async () => {
     ks.disabled = true;
@@ -2424,7 +2465,7 @@ function chkLegCard(l, i){
   const pr = l.price ? money(l.price) + (l.book ? ' <small>' + esc(l.book) + '</small>' : '') : '-';
   const stats = l.p == null ? '' : '<div class="ckstats"><div><small>Chance</small><b>' + pct(l.p) + '</b></div><div><small>Fair</small><b>' + (l.fair ? money(l.fair) : '-') + '</b></div>' +
     '<div><small>Price</small><b>' + pr + '</b></div><div><small>Value</small><b class="' + (l.ev == null ? '' : l.ev >= 0 ? 'pos' : 'neg') + '">' + (l.ev == null ? '-' : evText(l.ev)) + '</b></div></div>';
-  return '<div class="card ckleg">' + '<div class="row" style="gap:10px;align-items:flex-start">' + avatarHtml(feedPick(l)) +
+  return '<div class="card ckleg">' + '<div class="row" style="gap:10px;align-items:flex-start" data-gopen="' + esc(l.game_id || "") + '" data-aid="' + esc(l.athlete_id || "") + '">' + avatarHtml(feedPick(l)) +
     '<div class="grow" style="min-width:0"><div class="t1">' + esc(l.athlete_id === "match" ? l.label : l.name) + '</div>' + (l.athlete_id === "match" ? '' : '<div class="t2">' + esc(l.label) + '</div>') +
     '<div class="t3">' + esc([l.matchup, l.start ? startText(l.start) : "", l.league_short].filter(Boolean).join(" · ")) + '</div></div>' + vchip(l.verdict) + '</div>' + stats +
     (why ? '<ul class="ckwhy">' + why + '</ul>' : '') + '</div>';
@@ -2477,6 +2518,11 @@ function renderCheck(el){
     if (R.weakest && R.weakest.without > R.p) h += '<div class="small muted" style="margin-top:8px">Weakest leg: ' + esc((R.weakest.name && !/ v /.test(R.weakest.name) ? R.weakest.name + " " : "") + R.weakest.label) + ' at ' + pct(R.weakest.p) + '. Without it the chance goes from ' + pct(R.p) + ' to ' + pct(R.weakest.without) + '.</div>';
     (R.notes || []).forEach(n => { h += '<div class="small muted" style="margin-top:6px">' + esc(n) + '</div>'; });
     h += '</div>';
+    const sw = R.weakest && R.weakest.swap;
+    if (sw) h += '<div class="card ckswap"><div class="small muted">A better leg from the same game</div>' +
+      '<div style="margin:4px 0 2px;font-weight:700">Swap ' + esc((R.weakest.name && !/ v /.test(R.weakest.name) ? R.weakest.name + " " : "") + R.weakest.label) + ' for ' + esc((sw.athlete_id !== "match" && sw.name ? sw.name + " " : "") + sw.label) + '</div>' +
+      '<div class="small">' + esc("That leg lands " + pct(sw.p) + " of the time" + (sw.price ? " at " + money(sw.price) + (sw.book ? " with " + sw.book : "") : "") + ". The chance goes from " + pct(sw.p_from) + " to " + pct(sw.p_to) + (sw.price_to ? " and the price to about " + money(sw.price_to) : "") + ".") + '</div>' +
+      '<button class="btn small primary" id="chkswap" style="margin-top:10px">Use this swap</button></div>';
     h += R.legs.map(chkLegCard).join("");
     h += chkFixHtml(j);
     const tracked = j.fromSlip;
@@ -2491,6 +2537,18 @@ function renderCheck(el){
   on("chkcancel", () => { S.chk = chkFresh(); renderLadder(); });
   on("chknew", () => { S.chk = chkFresh(); renderLadder(); });
   on("chkagain", () => runCheck(j));
+  on("chkswap", () => {
+    const w = j.res && j.res.weakest, sw = w && w.swap;
+    if (!sw || w.i == null) return;
+    // the rated legs are the ready ones, in order
+    const ready = j.legs.filter(chkReady), old = ready[w.i];
+    const k = j.legs.indexOf(old);
+    if (k < 0) return;
+    j.legs[k] = {game_id:sw.game_id, athlete_id:sw.athlete_id, name:sw.name, team:sw.team, stat:sw.stat, side:sw.side, line:sw.line, label:sw.label, odds:sw.price || null};
+    if (sw.price_to) j.price = sw.price_to;
+    j.fromSlip = null;
+    runCheck(j);
+  });
   el.querySelectorAll("[data-chkslip]").forEach(r => r.onclick = () => checkSlip(r.dataset.chkslip));
   const pi = $("chkprice");
   if (pi) pi.oninput = () => {
@@ -2607,7 +2665,14 @@ function extraSettings(s){
   let h = "";
   if (FEAT().pace) h += '<h2>Extra alerts</h2><div class="card">' +
     tog("htc", "Half time check", "At the break, tells you which picks are well behind", s.halftime_check) +
-    '<div style="height:12px"></div>' + tog("lna", "Price moves", "Before the game, tells you when the DraftKings price on a pick moves 8% or more", s.line_alerts) + '</div>';
+    '<div style="height:12px"></div>' + tog("lna", "Price moves", "Before the game, tells you when the DraftKings price on a pick moves 8% or more", s.line_alerts) +
+    '<div style="height:12px"></div>' + tog("nws", "Team news", "Before the game, tells you if a player in your picks is ruled out or questionable, and in soccer if they're on the bench once the line-up is out", s.news_alerts !== false) + '</div>';
+  if (FEAT().quiet){
+    h += '<h2>Quiet hours</h2><div class="card">' + tog("qon", "Only results overnight", "Between these times you're only notified when a game finishes or a slip settles. Everything else still shows on the Alerts tab.", s.quiet_on);
+    if (s.quiet_on) h += '<div class="rule" style="margin-top:8px"><span>From</span><input id="qfrom" type="time" value="' + esc(s.quiet_from || "23:00") + '"></div>' +
+      '<div class="rule"><span>Until</span><input id="qto" type="time" value="' + esc(s.quiet_to || "06:00") + '"></div>';
+    h += '</div>';
+  }
   if (FEAT().subs) h += '<h2>Soccer</h2><div class="card">' +
     tog("subon", "Sub on, play on", "If your player comes off, the bet moves to the player who replaced him and both their numbers count, like bet365's offer. It moves once. Turn this off if your bookie doesn't do it. You can also change it on each pick.", s.sub_on !== false) + '</div>';
   if (FEAT().discord){
@@ -2622,7 +2687,12 @@ function extraSettings(s){
 }
 function bindExtraSettings(s){
   const t = (id, key) => { const b = $(id); if (b) b.onclick = async () => { await api("/api/settings", {[key]: !s[key]}); await loadState(); renderSettings(); }; };
-  t("htc", "halftime_check"); t("lna", "line_alerts");
+  t("htc", "halftime_check"); t("lna", "line_alerts"); t("qon", "quiet_on");
+  const nw = $("nws"); if (nw) nw.onclick = async () => { await api("/api/settings", {news_alerts: s.news_alerts === false}); await loadState(); renderSettings(); };
+  ["qfrom", "qto"].forEach(id => { const el = $(id); if (el) el.onchange = async () => {
+    try{ await api("/api/settings", {[id === "qfrom" ? "quiet_from" : "quiet_to"]: el.value}); await loadState(); toast({kind:"event", title:"Quiet hours saved", body:"Only results notify from " + (S.state.settings.quiet_from || "23:00") + " until " + (S.state.settings.quiet_to || "06:00")}); }
+    catch(err){ toast({kind:"bust", title:"Couldn't save that", body:err.message}); }
+  }; });
   const so = $("subon"); if (so) so.onclick = async () => { await api("/api/settings", {sub_on: s.sub_on === false}); await loadState(); renderSettings(); };
   const ds = $("dsave");
   if (ds) ds.onclick = async () => {
@@ -2975,6 +3045,7 @@ function renderGame(keepSearch){
   const q = norm(S.psearch.trim());
   if (q && !S.game.teams.some(t => t.players.some(p => norm(p.name).includes(q) || String(p.jersey) === q))) h += '<div class="empty"><b>No players match that</b>Check the spelling, or search by shirt number.</div>';
   const teams = tennis ? [{name:"Players", side:"all", players:[].concat(...S.game.teams.map(t => t.players))}] : S.game.teams;
+  if (S.focusPlayer) teams.forEach(t => t.players.forEach(p => { if (String(p.id) === S.focusPlayer) S.open[t.side + ":" + p.group] = true; }));
   teams.forEach(t => {
     const players = t.players.filter(p => !q || norm(p.name).includes(q) || String(p.jersey) === q);
     if (q && !players.length) return;
@@ -3005,6 +3076,15 @@ function renderGame(keepSearch){
   if (FEAT().screener) h += wpChart(g) + pbpHtml(g);
   w.innerHTML = h;
   bindGameTop(g);
+  if (S.focusPlayer && S.game){
+    const row = w.querySelector('[data-p="' + CSS.escape(S.focusPlayer) + '"]');
+    S.focusPlayer = "";
+    if (row){
+      row.classList.add("focus");
+      setTimeout(() => row.scrollIntoView({block:"center"}), 60);
+      setTimeout(() => row.classList.remove("focus"), 2400);
+    }
+  }
   const pm = $("pbpmore"); if (pm) pm.onclick = () => { S.pbpAll = !S.pbpAll; renderGame(); };
   const tp = $("topbp"); if (tp) tp.onclick = () => { const t = $("wph") || $("pbph"); if (t) t.scrollIntoView({behavior:"smooth", block:"start"}); };
   const ps = $("psearch");
@@ -3533,7 +3613,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.6.2";
+    s.src = "engine.js?v=4.7";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
