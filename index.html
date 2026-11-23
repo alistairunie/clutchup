@@ -349,6 +349,51 @@ ol.steps li{margin:5px 0}
 .mutab .bar i{display:block;height:100%;border-radius:99px}
 .mutab .v{width:44px;flex:none;text-align:right;font:800 16px/1 var(--num);font-variant-numeric:tabular-nums}
 .mutab .nx{width:56px;flex:none;font-size:12px;color:var(--muted);text-align:right}
+/* the projection beside a graded spot */
+.mupj{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px;margin-left:8px;text-align:right}
+.mupj .pj{font:800 21px/1 var(--num);font-variant-numeric:tabular-nums}
+.mupj .pl{font-size:11px;line-height:1.2;color:var(--muted);white-space:nowrap}
+.mupj .pl.up{color:var(--green)}.mupj .pl.down{color:var(--red)}
+.muchip{display:inline-block;margin-left:6px;padding:3px 7px;border-radius:999px;font:800 10.5px/1.15 var(--ui);vertical-align:1px;cursor:pointer}
+.muchip.elite{background:linear-gradient(135deg,#f7dd85,#d9a92f);color:#2a1f05}
+.muchip.great{background:rgba(61,220,151,.16);color:var(--mu-great)}
+.mubox{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--card);font-size:13px;line-height:1.45;color:var(--muted)}
+.mubox .t{font-weight:750;color:var(--text)}
+.mubox.elite{background:linear-gradient(100deg,rgba(242,201,76,.13),rgba(242,201,76,0) 70%),var(--card);box-shadow:inset 0 0 0 1.5px rgba(242,201,76,.85)}
+.mubox.elite .t{color:var(--mu-elite)}.mubox.great .t{color:var(--mu-great)}.mubox.good .t{color:var(--mu-good)}.mubox.tough .t{color:var(--mu-tough)}
+.mubox.great{box-shadow:inset 3px 0 0 var(--mu-great)}.mubox.good{box-shadow:inset 3px 0 0 var(--mu-good)}.mubox.tough{box-shadow:inset 3px 0 0 var(--mu-tough)}
+.mubox .pj{margin-top:6px;color:var(--text);font-weight:650}
+.card.ckleg.mu-elite{background:linear-gradient(100deg,rgba(242,201,76,.10),rgba(242,201,76,0) 62%),var(--card);box-shadow:inset 0 0 0 1.5px rgba(242,201,76,.85)}
+.card.ckleg.mu-great{box-shadow:inset 3px 0 0 var(--mu-great)}.card.ckleg.mu-good{box-shadow:inset 3px 0 0 var(--mu-good)}.card.ckleg.mu-tough{box-shadow:inset 3px 0 0 var(--mu-tough)}
+.ckmu{display:flex;gap:9px;align-items:flex-start;margin-top:10px;font-size:13px;line-height:1.4;color:var(--muted)}
+.ckmu .mutier{margin-top:1px}
+.murec{cursor:pointer}
+.murec .hd{display:flex;align-items:center;gap:10px}
+.murecs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.murecs > div{background:var(--sunk);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.murecs b{font:800 22px/1 var(--num);font-variant-numeric:tabular-nums}
+.murecs small{color:var(--muted);font-size:11.5px;line-height:1.2}
+.murr{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px}
+.murr + .murr{border-top:1px solid var(--line)}
+.murr .res{flex:none;width:38px;text-align:center;font:800 10.5px/1.6 var(--ui);border-radius:999px;background:var(--card2);color:var(--muted)}
+.murr .res.won{background:rgba(47,224,138,.14);color:var(--green)}.murr .res.lost{background:rgba(255,77,99,.14);color:var(--red)}
+.murr .v{flex:none;font:800 15px/1 var(--num);font-variant-numeric:tabular-nums}
+/* hit rates on the pick sheet */
+.hrt{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:2px 0 10px}
+.hrt.n3{grid-template-columns:repeat(3,1fr)}.hrt.n2{grid-template-columns:repeat(2,1fr)}
+.hr{background:var(--card);border-radius:10px;padding:8px 4px 7px;text-align:center;min-width:0}
+.hr b{display:block;font:800 19px/1.05 var(--num);font-variant-numeric:tabular-nums}
+.hr span{display:block;font-size:11px;line-height:1.2;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hr.hot b{color:var(--green)}.hr.warm b{color:#a3e7c8}.hr.cold b{color:var(--red)}.hr.none b{color:var(--faint)}
+.hbars{position:relative;display:flex;gap:3px;margin:10px 0 2px}
+.hb{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center}
+.hb .hv{height:15px;font:700 11px/15px var(--num);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hb.hit .hv{color:var(--green)}
+.hb .ha{height:64px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.hb .ha i{display:block;width:80%;max-width:24px;border-radius:3px 3px 1px 1px;background:var(--blue)}
+.hb.hit .ha i{background:var(--green)}.hb.miss .ha i{background:#33456b}.hb.prev .ha i{opacity:.55}
+.hb .ho{margin-top:4px;font-size:9.5px;line-height:12px;color:var(--faint);white-space:nowrap;overflow:hidden;max-width:100%}
+.hbars .hl{position:absolute;left:0;right:0;height:0;border-top:1.5px dashed rgba(238,243,250,.8);pointer-events:none}
 .sel{position:absolute;top:16px;left:14px;width:24px;height:24px;border-radius:8px;border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#1d0c00}
 .sel.on{background:var(--accent);border-color:var(--accent)}
 .pick.selecting{padding-left:50px;cursor:pointer}
@@ -2128,10 +2173,22 @@ function feedGame(t){ return (t.away_abbr || t.away_name) + " @ " + (t.home_abbr
 // The matchup grade on a tip: the row's border, and one line on why.
 const TIER_NAME = {elite:"Elite", great:"Great", good:"Good", even:"Even", tough:"Tough"};
 function muClass(t){ const m = t.mu; return m && ["elite", "great", "good", "tough"].includes(m.tier) ? " mu-" + m.tier : ""; }
+// small projections keep two places: 0.43 goals, not 0.4
+const pjf = v => { v = +v || 0; return v < 3 ? String(+v.toFixed(2)) : fmt(v); };
+// What a graded spot projects to, against the line where there is one.
+function muProj(m, line){
+  if (!m || m.proj == null) return "";
+  if (m.chance != null) return "About a " + pct(m.chance) + " chance of one or more";
+  const ln = parseFloat(line);
+  if (isNaN(ln)) return "Projects " + pjf(m.proj);
+  const gap = +(m.proj - ln).toFixed(1);
+  return "Projects " + pjf(m.proj) + ", " + (gap === 0 ? "right on" : fmt(Math.abs(gap)) + (gap > 0 ? " over" : " under")) + " the line of " + fmt(ln);
+}
 function muLine(t){
   const m = t.mu;
   if (!m || !TIER_NAME[m.tier] || m.tier === "even") return "";
-  return '<div class="t3 mut ' + m.tier + '"><b>' + TIER_NAME[m.tier] + ' matchup.</b> ' + esc(m.text) + '</div>';
+  const pj = muProj(m, t.line);
+  return '<div class="t3 mut ' + m.tier + '"><b>' + TIER_NAME[m.tier] + ' matchup.</b> ' + esc(m.text) + (pj ? ". " + esc(pj) + "." : "") + '</div>';
 }
 function feedRow(t){
   const k = "fd" + Object.keys(S.tipMap).length;
@@ -2235,17 +2292,38 @@ function muPick(x){
   return {athlete_id:x.athlete_id, name:x.name, team:x.team, league:x.league, sport:x.sport,
     game:{home:x.home_abbr, away:x.away_abbr, home_logo:x.home_logo, away_logo:x.away_logo, home_color:x.home_color, away_color:x.away_color, sport:x.sport}};
 }
-function muRow(x, i){
-  return '<div class="tip mu-' + esc(x.tier) + '" data-mu="' + i + '">' + avatarHtml(muPick(x)) + '<div class="grow">' +
+// One graded spot: who, why, and on the right the grade with what he projects to against the line (or his average).
+function muRow(x, i, attr, inGame){
+  const once = x.chance != null;
+  let sub;
+  if (once) sub = '<span class="pl">chance of 1+</span>';
+  else if (x.line != null){ const gap = +(x.proj - x.line).toFixed(1); sub = '<span class="pl ' + (gap > 0 ? "up" : gap < 0 ? "down" : "") + '">line ' + fmt(x.line) + '</span>'; }
+  else sub = '<span class="pl">avg ' + fmt(x.avg) + '</span>';
+  return '<div class="tip mu-' + esc(x.tier) + '" data-' + (attr || "mu") + '="' + i + '">' + avatarHtml(muPick(x)) + '<div class="grow">' +
     '<div class="tk">' + esc(x.stat_name) + '</div>' +
     '<div class="t1">' + esc(x.name) + ' <span class="muted small">' + esc(x.bucket + " · " + x.team) + '</span>' + injBadge(x.injury) + '</div>' +
-    '<div class="t3">' + esc((x.home ? "v " : "@ ") + x.opp + " · " + startText(x.start)) + '</div>' +
+    (inGame ? '' : '<div class="t3">' + esc((x.home ? "v " : "@ ") + x.opp + " · " + startText(x.start)) + '</div>') +
     '<div class="t3">' + esc(x.def_text) + '</div><div class="t3">' + esc(x.me_text) + '</div></div>' +
-    '<span class="mutier ' + esc(x.tier) + '">' + esc(TIER_NAME[x.tier] || x.tier) + '</span></div>';
+    '<div class="mupj"><span class="mutier ' + esc(x.tier) + '">' + esc(TIER_NAME[x.tier] || x.tier) + '</span><span class="pj">' + (once ? pct(x.chance) : pjf(x.proj)) + '</span>' + sub + '</div></div>';
+}
+// How the saved elite and great spots have gone, with the latest results when it's opened up.
+function muRecord(rec){
+  if (!rec) return "";
+  const e = rec.elite || {}, g = rec.great || {}, any = e.n || g.n, list = rec.recent || [];
+  const tile = (k, x) => '<div><span class="mutier ' + k + '">' + TIER_NAME[k] + '</span><span><b>' + (x.n ? pct(x.won / x.n) : "-") + '</b><br><small>' + (x.n ? x.won + " of " + x.n + " beat the mark" : "None done yet") + '</small></span></div>';
+  let h = '<div class="card murec" id="murec"><div class="hd"><div class="grow"><div style="font-weight:700">How these spots have gone</div><div class="small muted">' +
+    (any ? "Last " + rec.days + " days. The mark is the bookie's line, or the player's average where there wasn't one." : "Elite and great spots are saved before each game and checked after it.") + '</div></div>' +
+    (list.length ? '<span class="small muted">' + (S.muRecOpen ? "Hide" : "Results") + '</span>' : '') + '</div>';
+  if (any) h += '<div class="murecs">' + tile("elite", e) + tile("great", g) + '</div>';
+  else h += '<div class="small muted" style="margin-top:6px">Results show here once some of those games are done.' + (rec.pending ? " " + rec.pending + " waiting on games now." : "") + '</div>';
+  if (S.muRecOpen && list.length) h += '<div style="margin-top:8px">' + list.map(x => '<div class="murr"><span class="res ' + esc(x.result) + '">' + (x.result === "won" ? "Hit" : x.result === "lost" ? "Miss" : "Void") + '</span>' +
+    '<span class="grow" style="min-width:0">' + esc((x.short || x.name) + " " + (x.yes ? x.stat_name : "over " + fmt(x.mark) + " " + x.stat_name.toLowerCase())) + ' <span class="muted small">' + esc(TIER_NAME[x.tier] + ", " + x.game) + '</span></span>' +
+    '<span class="v">' + (x.v == null ? "-" : fmt(x.v)) + '</span></div>').join("") + '</div>';
+  return h + '</div>';
 }
 function muTable(T){
   const max = Math.max(...T.rows.map(r => r.allowed), 0.1);
-  return '<div class="small muted" style="margin:0 2px 8px">' + esc(T.stat_name[0].toUpperCase() + T.stat_name.slice(1)) + ' given up to ' + esc(T.pos_name) + ' a game, most first. League average ' + esc(String(T.avg)) + '.</div>' +
+  return '<div class="small muted" style="margin:0 2px 8px">' + esc(T.title || (T.stat_name[0].toUpperCase() + T.stat_name.slice(1) + ' given up to ' + T.pos_name + ' a game')) + ', most first. League average ' + esc(String(T.avg)) + '.</div>' +
     '<div class="card mutab" style="padding:4px 14px">' + T.rows.map(r => '<div class="row"><span class="rk">' + r.rank + '</span><span class="tm">' + esc(r.team) + '</span>' +
       '<span class="bar"><i style="width:' + Math.max(4, Math.round(r.allowed / max * 100)) + '%;background:var(--mu-' + esc(r.tier) + ')"></i></span>' +
       '<span class="v">' + esc(String(r.allowed)) + '</span><span class="nx">' + esc(r.next || "") + '</span></div>').join("") + '</div>';
@@ -2261,8 +2339,9 @@ function renderMatchups(el){
     return;
   }
   if (R.none){
-    el.innerHTML = h + '<div class="empty"><b>No matchups to read</b>' + esc(R.none) + '</div>';
+    el.innerHTML = h + '<div class="empty"><b>No matchups to read</b>' + esc(R.none) + '</div>' + muRecord(R.record);
     bindSegs(el, "ps", setPlaysSeg);
+    const rc = $("murec"); if (rc) rc.onclick = () => { S.muRecOpen = !S.muRecOpen; renderLadder(); };
     return;
   }
   if (R.leagues.length > 1) h += '<div class="fchips">' + R.leagues.map(l => '<button data-mul="' + esc(l.key) + '" class="' + (R.league === l.key ? "on" : "") + '">' + esc(l.short) + ' <span style="opacity:.6">' + l.games + '</span></button>').join("") + '</div>';
@@ -2282,10 +2361,12 @@ function renderMatchups(el){
     else {
       const spots = R.spots || [];
       S.muList = spots;
-      if (spots.length) h += '<div class="list">' + spots.map(muRow).join("") + '</div>';
+      h += muRecord(R.record);
+      if (spots.length) h += '<div class="list">' + spots.map((x, i) => muRow(x, i)).join("") + '</div>';
       else h += '<div class="empty"><b>Nothing stands out</b>' + (q.prop || q.pos ? "Try all stats or all positions." : "No player has a soft spot in this slate.") + '</div>';
     }
-    h += '<div class="card small muted" style="margin-top:12px">From the last ' + Math.round(R.days / 7) + ' weeks of box scores (' + R.games_read + ' games). A defence\'s number is what players at that position put up against it, a game. A player\'s rank is his own average at his position. Elite means both are near the top. Tap one to pick a line.</div>';
+    h += '<div class="card small muted" style="margin-top:12px">From the last ' + Math.round(R.days / 7) + ' weeks of box scores (' + R.games_read + ' games). A defence\'s number is what players at that position put up against it, a game. A player\'s rank is his own average at his position' +
+      (R.sport === "soccer" ? ", from his starts" : "") + '. Elite means both are near the top. The big number is the projection: his average, moved by how much this defence gives up. Green line means he projects over it. Tap one to pick a line.</div>';
   }
   el.innerHTML = h;
   bindSegs(el, "ps", setPlaysSeg);
@@ -2295,6 +2376,7 @@ function renderMatchups(el){
   const ps = $("mu_pos"); if (ps) ps.onchange = () => { S.muQ.pos = ps.value; const b = (R.buckets || []).find(x => x.key === ps.value); if (b && S.muQ.prop && !b.props.includes(S.muQ.prop)) S.muQ.prop = ""; save(); };
   const pr = $("mu_prop"); if (pr) pr.onchange = () => { S.muQ.prop = pr.value; save(); };
   el.querySelectorAll("[data-mu]").forEach(r => r.onclick = () => { const x = (S.muList || [])[+r.dataset.mu]; if (x) openMatchup(x); });
+  const rc = $("murec"); if (rc) rc.onclick = () => { S.muRecOpen = !S.muRecOpen; renderLadder(); };
 }
 // Opens the game on that player with the stat ready to pick a line.
 async function openMatchup(x){
@@ -2504,6 +2586,7 @@ function morningSettings(s){
     h += '<div class="rule" style="margin-top:8px"><span>Post at</span><input id="mtime" type="time" value="' + esc(s.morning_time || "10:00") + '"></div>' +
       '<div class="rule"><span>How many bets</span><select id="mcount">' + [3, 4, 5, 6, 7, 8, 10].map(n => '<option value="' + n + '"' + (+s.morning_count === n ? " selected" : "") + '>' + n + '</option>').join("") + '</select></div>' +
       '<div style="margin-top:6px">' + tog("mmulti", "Add a 3-leg multi", "Built from different games, at about $3.50 or more", s.morning_multi) + '</div>' +
+      '<div style="margin-top:12px">' + tog("mmu", "Add the elite matchups", "Soft defences against players near the top at their position, ticked off as they land. From leagues you've opened Matchups for.", s.morning_mu !== false) + '</div>' +
       '<div style="margin-top:12px">' + tog("mrecap", "Post a results recap", "Once every bet in the post is done: how many landed, and the record for the week", s.morning_recap !== false) + '</div>';
   }
   h += '<button class="btn small" id="mnow" style="margin-top:10px">Post today\'s tips now</button>';
@@ -2522,6 +2605,7 @@ function limitSettings(s){
 function bindNewSettings(s){
   const t = (id, key) => { const b = $(id); if (b) b.onclick = async () => { await api("/api/settings", {[key]: !s[key]}); await loadState(); renderSettings(); }; };
   t("aup", "au_props"); t("mon", "morning_on"); t("mmulti", "morning_multi");
+  const mm = $("mmu"); if (mm) mm.onclick = async () => { await api("/api/settings", {morning_mu: s.morning_mu === false}); await loadState(); renderSettings(); };
   const mr = $("mrecap"); if (mr) mr.onclick = async () => { await api("/api/settings", {morning_recap: s.morning_recap === false}); await loadState(); renderSettings(); };
   const ks = $("ksave");
   if (ks) ks.onclick = async () => {
@@ -2638,9 +2722,11 @@ function chkLegCard(l, i){
   const pr = l.price ? money(l.price) + (l.book ? ' <small>' + esc(l.book) + '</small>' : '') : '-';
   const stats = l.p == null ? '' : '<div class="ckstats"><div><small>Chance</small><b>' + pct(l.p) + '</b></div><div><small>Fair</small><b>' + (l.fair ? money(l.fair) : '-') + '</b></div>' +
     '<div><small>Price</small><b>' + pr + '</b></div><div><small>Value</small><b class="' + (l.ev == null ? '' : l.ev >= 0 ? 'pos' : 'neg') + '">' + (l.ev == null ? '-' : evText(l.ev)) + '</b></div></div>';
-  return '<div class="card ckleg">' + '<div class="row" style="gap:10px;align-items:flex-start" data-gopen="' + esc(l.game_id || "") + '" data-aid="' + esc(l.athlete_id || "") + '">' + avatarHtml(feedPick(l)) +
+  const m = l.mu, mu = m && TIER_NAME[m.tier] ? '<div class="ckmu"><span class="mutier ' + esc(m.tier) + '">' + esc(TIER_NAME[m.tier]) + '</span><span>' +
+    esc(m.text + ". " + (muProj(m, l.line) || m.me) + ".") + '</span></div>' : '';
+  return '<div class="card ckleg' + (m && ["elite", "great", "good", "tough"].includes(m.tier) ? " mu-" + m.tier : "") + '">' + '<div class="row" style="gap:10px;align-items:flex-start" data-gopen="' + esc(l.game_id || "") + '" data-aid="' + esc(l.athlete_id || "") + '">' + avatarHtml(feedPick(l)) +
     '<div class="grow" style="min-width:0"><div class="t1">' + esc(l.athlete_id === "match" ? l.label : l.name) + '</div>' + (l.athlete_id === "match" ? '' : '<div class="t2">' + esc(l.label) + '</div>') +
-    '<div class="t3">' + esc([l.matchup, l.start ? startText(l.start) : "", l.league_short].filter(Boolean).join(" · ")) + '</div></div>' + vchip(l.verdict) + '</div>' + stats +
+    '<div class="t3">' + esc([l.matchup, l.start ? startText(l.start) : "", l.league_short].filter(Boolean).join(" · ")) + '</div></div>' + vchip(l.verdict) + '</div>' + stats + mu +
     (why ? '<ul class="ckwhy">' + why + '</ul>' : '') + '</div>';
 }
 function chkVerdictFor(R, price){
@@ -3219,9 +3305,12 @@ function renderGame(keepSearch){
   }
   h += '<input class="search" id="psearch" type="search" placeholder="Search players" value="' + esc(S.psearch) + '">';
   if (g.roster_only) h += '<div class="small muted" style="margin:4px 2px 10px">' + esc(rosterNote(g)) + '</div>';
+  if (Object.values((S.game.matchups && S.game.matchups.best) || {}).some(b => b.tier === "elite" || b.tier === "great"))
+    h += '<div class="small muted" style="margin:0 2px 10px">A gold or green tag is that player\'s best matchup in this game. Tap it to pick a line for that stat.</div>';
   const q = norm(S.psearch.trim());
   if (q && !S.game.teams.some(t => t.players.some(p => norm(p.name).includes(q) || String(p.jersey) === q))) h += '<div class="empty"><b>No players match that</b>Check the spelling, or search by shirt number.</div>';
   const teams = tennis ? [{name:"Players", side:"all", players:[].concat(...S.game.teams.map(t => t.players))}] : S.game.teams;
+  const muBest = (S.game.matchups && S.game.matchups.best) || {};
   // the player you came to see stays in view, even if a refresh moves him to a folded group
   const keep = S.focusPlayer || S.keepOpen;
   if (keep) teams.forEach(t => t.players.forEach(p => {
@@ -3250,8 +3339,9 @@ function renderGame(keepSearch){
       const ls = pre || g.roster_only ? lineSummary(p.id, g.sport) : "";
       const face = g.demo ? "" : faceUrl(g.league, p.id, 96);
       const flag = tennis ? [g.home, g.away].find(x => String(x.id) === String(p.id)) : null;
+      const mb = muBest[p.id], chip = mb && (mb.tier === "elite" || mb.tier === "great") ? '<span class="muchip ' + mb.tier + '" data-mustat="' + esc(mb.stat) + '" title="' + esc(TIER_NAME[mb.tier] + " matchup") + '">' + esc(mb.short) + '</span>' : '';
       h += '<div class="player' + (p.dnp ? " dnp" : "") + '" data-p="' + esc(p.id) + '"><div class="num' + (face ? " img" : "") + '">' + esc(tennis ? initials(p.name) : p.jersey || "-") + (face ? '<img src="' + esc(face) + '" alt="" ' + NOIMG + '>' : '') + '</div><div class="grow"><div class="nm">' + esc(p.name) +
-        (flag ? ' ' + teamLogo(flag, "tennis") : '') + (p.pos ? ' <span class="muted small">' + esc(p.pos) + '</span>' : '') + (face && p.jersey ? '<span class="jn">#' + esc(p.jersey) + '</span>' : '') + (FEAT().screener ? injBadge(p.inj) : '') + (n ? ' <span class="tracked">' + n + ' tracked</span>' : '') + '</div>' +
+        (flag ? ' ' + teamLogo(flag, "tennis") : '') + (p.pos ? ' <span class="muted small">' + esc(p.pos) + '</span>' : '') + (face && p.jersey ? '<span class="jn">#' + esc(p.jersey) + '</span>' : '') + (FEAT().screener ? injBadge(p.inj) : '') + chip + (n ? ' <span class="tracked">' + n + ' tracked</span>' : '') + '</div>' +
         (p.line ? '<div class="ln">' + esc(p.line) + '</div>' : '') + (p.last ? '<div class="ln">' + esc(p.last) + '</div>' : '') + (ls ? '<div class="ln" style="color:var(--accent2)">' + esc(ls) + '</div>' : '') + '</div><span class="iconbtn" aria-hidden="true">+</span></div>';
     });
     h += '</div>';
@@ -3273,8 +3363,9 @@ function renderGame(keepSearch){
   const ps = $("psearch");
   ps.oninput = () => { S.psearch = ps.value; const pos = ps.selectionStart; renderGame(); const n = $("psearch"); n.focus(); try{ n.setSelectionRange(pos, pos); }catch(e){} };
   w.querySelectorAll("[data-grp]").forEach(b => b.onclick = () => { S.open[b.dataset.grp] = !S.open[b.dataset.grp]; renderGame(); });
-  w.querySelectorAll("[data-p]").forEach(r => r.onclick = () => {
-    for (const t of S.game.teams){ const p = t.players.find(x => x.id === r.dataset.p); if (p) { openSheet(p, g); break; } }
+  w.querySelectorAll("[data-p]").forEach(r => r.onclick = e => {
+    const chip = e.target.closest("[data-mustat]");
+    for (const t of S.game.teams){ const p = t.players.find(x => x.id === r.dataset.p); if (p) { openSheet(p, g, chip ? chip.dataset.mustat : undefined); break; } }
   });
 }
 // Groups on the team list that fold away once they're longer than this.
@@ -3475,6 +3566,7 @@ function tipsHtml(g){
   if (best.length) h += '<h3>' + (best[0].tag === "form" ? "Lines they keep clearing" : "Best bets") + '</h3><div class="list">' + best.map(t => tipRow(t, "", [t.why, t.matchup_text])).join("") + '</div>';
   const val = d.value || [];
   if (val.length) h += '<h3>Worth a look at the price</h3><div class="list">' + val.map(t => tipRow(t, "", [t.why])).join("") + '</div>';
+  h += gameMatchups(g);
   const sg = d.sgm || [];
   if (sg.length) h += '<h3>Same game multi</h3>' + sg.map(sgmCard).join("") + '<div class="basis">' + (sg[0].joint ? "The chance counts how the legs move together. " : "Legs in one game often move together, so the real chance can sit either side of these. ") +
     'Bookies price same game multis below the legs multiplied, so go by the price on your slip.</div>';
@@ -3482,6 +3574,16 @@ function tipsHtml(g){
   const notes = (d.notes || []).concat(d.basis ? [d.basis] : []);
   if (notes.length) h += '<div class="basis">' + notes.map(esc).join(" ") + ' Chances are estimates, not promises.</div>';
   return h;
+}
+// The game's best matchups: what each side gives up at each position, against the players who fill it.
+function gameMatchups(g){
+  const M = S.game && S.game.matchups;
+  if (!M) return "";
+  if (!M.ready) return M.building ? '<h3>Matchups</h3><div class="small muted" style="margin:0 4px 12px">Reading the last few weeks of ' + esc(g.league_short) + ' box scores' + (M.total ? ' (' + M.done + ' of ' + M.total + ')' : '') + '. The grades show here once that\'s done.</div>' : "";
+  const list = (M.spots || []).slice(0, 6);
+  if (!list.length) return "";
+  S.gmuList = list;
+  return '<h3>Matchups</h3><div class="list">' + list.map((x, i) => muRow(x, i, "gmu", true)).join("") + '</div>';
 }
 async function trackTip(t, btn){
   if (!t || legTracked(t)) return null;
@@ -3509,6 +3611,11 @@ function bindTips(w, g){
     if (!t || !S.game) return;
     if (t.athlete_id === "match") return openSheet(matchEntity(), g, t.stat);
     for (const tm of S.game.teams){ const p = tm.players.find(x => String(x.id) === String(t.athlete_id)); if (p) return openSheet(p, g, t.stat); }
+  });
+  w.querySelectorAll("[data-gmu]").forEach(r => r.onclick = () => {
+    const x = (S.gmuList || [])[+r.dataset.gmu];
+    if (!x || !S.game) return;
+    for (const tm of S.game.teams){ const p = tm.players.find(q => String(q.id) === String(x.athlete_id)); if (p) return openSheet(p, g, x.stat); }
   });
   w.querySelectorAll("[data-sgm]").forEach(b => b.onclick = async () => {
     const s = S.tipMap[b.dataset.sgm];
@@ -3635,52 +3742,91 @@ function updateFormBox(){
 function formInner(x, pr){
   const base = S.forms[x.g.id + "|" + x.p.id];
   if (!base || base.loading) return '<div class="small muted">Loading recent games...</div>';
-  if (base.error || !base.games || !base.games.length) return '<div class="small muted">No recent games to go on.</div>';
+  if (base.error || !base.games || !base.games.length) return '<div class="small muted">No recent games to go on.</div>' + dvpBox(base, x, pr);
   let top = formFilters(x, base);
   if (base.injury && FEAT().screener) top = '<div class="small" style="color:var(--amber);margin-bottom:6px">' + esc(base.injury + (base.injury_note ? ": " + base.injury_note : "")) + '</div>' + top;
   const ff = x.ff || "all";
+  const line = parseFloat(x.line), more = x.side === "more", hasLine = !isNaN(line);
+  // the tiles always cover every game: the last 5, the last 10, the season and tonight's opponent
+  const tiles = hitTiles(base, pr, line, more, hasLine);
   let games = base.games, tag = "";
   if (ff === "home"){ games = games.filter(gm => gm.at === "v"); tag = " at home"; }
   else if (ff === "away"){ games = games.filter(gm => gm.at === "@"); tag = " away"; }
-  else if (ff === "opp"){ games = games.filter(gm => gm.opp === base.opp); tag = " v " + base.opp; }
+  else if (ff === "opp"){ games = games.filter(gm => gm.opp === base.opp).concat(base.vs_prev || []); tag = " v " + base.opp; }
   else if (ff === "without"){
-    if (!x.wo) return top + '<div class="small muted">Pick the teammate to leave out.</div>';
+    if (!x.wo) return top + tiles + '<div class="small muted">Pick the teammate to leave out.</div>';
     const fw = S.forms[formKey(x)];
-    if (!fw || fw.loading) return top + '<div class="small muted">Checking which games they missed...</div>';
-    if (fw.error || !fw.games) return top + '<div class="small muted">Couldn\'t check that teammate.</div>';
+    if (!fw || fw.loading) return top + tiles + '<div class="small muted">Checking which games they missed...</div>';
+    if (fw.error || !fw.games) return top + tiles + '<div class="small muted">Couldn\'t check that teammate.</div>';
     games = fw.games.filter(gm => gm.tm === false);
-    if (!games.length) return top + '<div class="small muted">' + esc(fw.without_name || "They") + ' played in all of the last ' + fw.games.length + ' games, so there\'s nothing to compare yet.</div>';
+    if (!games.length) return top + tiles + '<div class="small muted">' + esc(fw.without_name || "They") + ' played in all of the last ' + fw.games.length + ' games, so there\'s nothing to compare yet.</div>';
     tag = " without " + String(fw.without_name || "them").split(" ").slice(-1)[0];
   }
-  const mu = FEAT().screener && base.matchup && base.matchup[pr.key] ? '<div class="mu">' + esc(base.matchup[pr.key].text) + '</div>' : '';
-  const vals = games.map(gm => gm.v[pr.key]).filter(v => v != null);
-  if (!vals.length) return top + '<div class="small muted">' + (ff === "all" ? "No recent numbers for this stat." : "None of the last " + base.games.length + " games fit that.") + '</div>' + mu;
-  const line = parseFloat(x.line), more = x.side === "more", hasLine = !isNaN(line);
+  const mu = dvpBox(base, x, pr) || (FEAT().screener && base.matchup && base.matchup[pr.key] ? '<div class="mu">' + esc(base.matchup[pr.key].text) + '</div>' : '');
+  games = games.filter(gm => gm.v[pr.key] != null);
+  const vals = games.map(gm => gm.v[pr.key]);
+  if (!vals.length) return top + tiles + '<div class="small muted">' + (ff === "all" ? "No recent numbers for this stat." : "None of the last " + base.games.length + " games fit that.") + '</div>' + mu;
   const hit = v => more ? v > line : v < line;
   const n10 = Math.min(10, vals.length), n5 = Math.min(5, vals.length);
   const last10 = vals.slice(0, n10), last5 = vals.slice(0, n5);
   const avg = a => a.reduce((t, v) => t + v, 0) / a.length;
   let head;
-  if (!hasLine) head = "Averaging " + fmt(+avg(last10).toFixed(1)) + " over the last " + n10 + tag;
-  else if (pr.yesno) head = (more ? "Happened in " : "Didn't happen in ") + last10.filter(hit).length + " of the last " + n10 + tag;
-  else head = "Hit in " + last10.filter(hit).length + " of the last " + n10 + tag + " · last 5: " + last5.filter(hit).length + "/" + n5;
-  const sub = pr.yesno ? "" : "Avg " + fmt(+avg(last5).toFixed(1)) + " last 5 · " + fmt(+avg(last10).toFixed(1)) + " last 10";
-  return top + '<div class="big">' + head + '</div>' + (sub ? '<div class="small muted">' + sub + '</div>' : '') + spark(last10.slice().reverse(), hasLine ? line : NaN, more) +
-    '<div class="small muted" style="display:flex;justify-content:space-between"><span>' + n10 + ' games ago</span><span>Last game</span></div>' + mu;
+  const some = ff === "all" ? "the last " + n10 : n10 === vals.length ? n10 + (n10 === 1 ? " game" : " games") + tag : "the last " + n10 + tag;
+  if (!hasLine) head = "Averaging " + fmt(+avg(last10).toFixed(1)) + " over " + some;
+  else if (pr.yesno) head = (more ? "Happened in " : "Didn't happen in ") + last10.filter(hit).length + " of " + some;
+  else head = "Hit in " + last10.filter(hit).length + " of " + some;
+  const sub = pr.yesno ? "" : vals.length < 5 ? "Avg " + fmt(+avg(vals).toFixed(1)) + " in " + (vals.length === 1 ? "that game" : "those " + vals.length)
+    : "Avg " + fmt(+avg(last5).toFixed(1)) + " last 5 · " + fmt(+avg(last10).toFixed(1)) + (n10 < 10 ? " in all " + n10 : " last 10") + (base.season && ff === "all" && vals.length > 10 ? " · " + fmt(+avg(vals).toFixed(1)) + " season" : "");
+  const shown = games.slice(0, n10).reverse();
+  return top + tiles + '<div class="big">' + head + '</div>' + (sub ? '<div class="small muted">' + sub + '</div>' : '') +
+    hitBars(shown, pr.key, hasLine ? line : NaN, more, ff === "opp") + mu;
 }
-function spark(vals, line, more){
-  const W = 300, H = 54, n = vals.length;
+// Hit rate tiles: last 5, last 10, the season and against tonight's side (this season and last). Averages when there's no line.
+function hitTiles(base, pr, line, more, hasLine){
+  const all = (base.games || []).filter(gm => gm.v[pr.key] != null), key = pr.key;
+  const vs = all.filter(gm => gm.opp === base.opp).concat((base.vs_prev || []).filter(gm => gm.v[key] != null));
+  const tile = (gs, label) => {
+    if (!gs.length) return '<div class="hr none"><b>-</b><span>' + esc(label) + '</span></div>';
+    const v = gs.map(gm => gm.v[key]);
+    if (!hasLine) return '<div class="hr"><b>' + fmt(+(v.reduce((t, x) => t + x, 0) / v.length).toFixed(1)) + '</b><span>' + esc(label) + '</span></div>';
+    const h = v.filter(x => more ? x > line : x < line).length, r = h / v.length;
+    return '<div class="hr ' + (r >= 0.7 ? "hot" : r >= 0.55 ? "warm" : r < 0.4 ? "cold" : "") + '"><b>' + h + '/' + v.length + '</b><span>' + esc(label) + '</span></div>';
+  };
+  if (!all.length) return "";
+  const ts = [tile(all.slice(0, 5), "Last 5"), tile(all.slice(0, 10), "Last 10")];
+  if (base.season && all.length > 10) ts.push(tile(all, "Season"));
+  if (base.opp) ts.push(tile(vs, "v " + base.opp + (base.vs_prev && base.vs_prev.length ? "*" : "")));
+  const note = base.vs_prev && base.vs_prev.length ? '<div class="small muted" style="margin:-4px 0 8px">*v ' + esc(base.opp) + ' takes in last season' + (base.prev_season ? " (" + esc(base.prev_season) + ")" : "") + ' too.</div>' : '';
+  return '<div class="hrt' + (ts.length < 4 ? " n" + ts.length : "") + '">' + ts.join("") + '</div>' + note;
+}
+// The games as bars against the line, each with its number and who it was against (or the date, when it's one opponent).
+function hitBars(games, key, line, more, byDate){
+  const n = games.length;
   if (!n) return "";
-  const max = Math.max(1, ...vals, isNaN(line) ? 0 : line + 1);
-  const bw = W / n, gap = Math.min(6, bw * 0.25);
-  let s = '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">';
-  vals.forEach((v, i) => {
-    const h = Math.max(2, v / max * (H - 4));
-    const col = isNaN(line) ? "#5ca8ff" : (more ? v > line : v < line) ? "#2fe08a" : "#33456b";
-    s += '<rect x="' + (i * bw + gap / 2).toFixed(1) + '" y="' + (H - h).toFixed(1) + '" width="' + (bw - gap).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="2" fill="' + col + '"/>';
+  const vals = games.map(gm => +gm.v[key] || 0);
+  const H = 64, max = Math.max(1, ...vals, isNaN(line) ? 0 : line * 1.15);
+  let s = '<div class="hbars">';
+  games.forEach((gm, i) => {
+    const v = vals[i], h = Math.max(2, Math.round(v / max * H));
+    const cls = isNaN(line) ? "" : (more ? v > line : v < line) ? " hit" : " miss";
+    const d = new Date(gm.date);
+    const lab = byDate ? (isNaN(d) ? "" : d.getDate() + "/" + (d.getMonth() + 1)) : (gm.at === "@" ? "@" : "") + (gm.opp || "");
+    s += '<div class="hb' + cls + (gm.prev ? " prev" : "") + '"><span class="hv">' + fmt(v) + '</span><span class="ha"><i style="height:' + h + 'px"></i></span><span class="ho">' + esc(lab) + '</span></div>';
   });
-  if (!isNaN(line)){ const y = H - line / max * (H - 4); s += '<line x1="0" x2="' + W + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="#eef3fa" stroke-width="1.5" stroke-dasharray="5 4"/>'; }
-  return s + '</svg>';
+  if (!isNaN(line)) s += '<div class="hl" style="top:' + (15 + H - Math.round(Math.min(line, max) / max * H)) + 'px"></div>';
+  return s + '</div><div class="small muted" style="display:flex;justify-content:space-between"><span>' + (n > 1 ? "Oldest" : "") + '</span><span>Most recent</span></div>';
+}
+// The grade at his position for the stat picked, which way it's picked, and what he projects to against the line.
+function dvpBox(base, x, pr){
+  const D = base && base.dvp;
+  if (!D || !FEAT().screener) return "";
+  if (!D.ready) return D.building ? '<div class="small muted" style="margin-top:10px">Reading the league\'s box scores for the matchup grade...</div>' : "";
+  const m = D.props && D.props[pr.key];
+  if (!m) return "";
+  const tier = x.side === "less" ? m.tier_less : m.tier;
+  const pj = muProj(m, x.line);
+  return '<div class="mubox ' + esc(tier) + '"><span class="t">' + esc((TIER_NAME[tier] || "Even") + " matchup" + (x.side === "less" ? " for the under" : "")) + '.</span> ' + esc(m.text) + '. ' + esc(m.me) + '.' +
+    (pj ? '<div class="pj">' + esc(pj) + '.</div>' : '') + '</div>';
 }
 
 /* ---------- pick sheet ---------- */
@@ -3817,7 +3963,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.8";
+    s.src = "engine.js?v=4.9";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
