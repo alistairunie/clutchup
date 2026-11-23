@@ -323,6 +323,32 @@ ol.steps li{margin:5px 0}
 .fchips::-webkit-scrollbar{display:none}
 .fchips button{flex:none;padding:7px 12px;border-radius:999px;background:var(--card2);font-size:12.5px;font-weight:700;color:var(--muted)}
 .fchips button.on{background:var(--text);color:var(--bg)}
+/* matchups: a heat scale from gold (elite) down to red (tough) */
+:root{--mu-elite:#f2c94c;--mu-great:#3ddc97;--mu-good:#a3e7c8;--mu-even:#5d6a83;--mu-tough:#ff6b7d}
+.tip.mu-elite{background:linear-gradient(100deg,rgba(242,201,76,.13),rgba(242,201,76,0) 62%);box-shadow:inset 0 0 0 1.5px rgba(242,201,76,.85),0 0 22px rgba(242,201,76,.10);border-radius:14px}
+.tip.mu-great{box-shadow:inset 3px 0 0 var(--mu-great)}
+.tip.mu-good{box-shadow:inset 3px 0 0 var(--mu-good)}
+.tip.mu-tough{box-shadow:inset 3px 0 0 var(--mu-tough)}
+.list > .tip.mu-elite + .tip,.list > .tip + .tip.mu-elite{border-top-color:transparent}
+.mut{color:var(--muted)}
+.mut b{font-weight:750}
+.mut.elite b{color:var(--mu-elite)}.mut.great b{color:var(--mu-great)}.mut.good b{color:var(--mu-good)}.mut.tough b{color:var(--mu-tough)}
+.mutier{flex:none;font:800 11.5px/1 var(--ui);letter-spacing:.02em;padding:6px 9px;border-radius:999px;background:var(--card2);color:var(--muted)}
+.mutier.elite{background:linear-gradient(135deg,#f7dd85,#d9a92f);color:#2a1f05}
+.mutier.great{background:rgba(61,220,151,.16);color:var(--mu-great)}
+.mutier.good{background:rgba(163,231,200,.12);color:var(--mu-good)}
+.mutier.tough{background:rgba(255,107,125,.14);color:var(--mu-tough)}
+.mukey{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);margin:2px 2px 12px}
+.mukey span{display:inline-flex;align-items:center;gap:5px}
+.mukey i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.mutab .row{gap:10px;padding:8px 0;font-size:14px}
+.mutab .row + .row{border-top:1px solid var(--line)}
+.mutab .rk{width:26px;flex:none;font:800 16px/1 var(--num);color:var(--muted);text-align:right}
+.mutab .tm{width:52px;flex:none;font-weight:750}
+.mutab .bar{flex:1;height:8px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.mutab .bar i{display:block;height:100%;border-radius:99px}
+.mutab .v{width:44px;flex:none;text-align:right;font:800 16px/1 var(--num);font-variant-numeric:tabular-nums}
+.mutab .nx{width:56px;flex:none;font-size:12px;color:var(--muted);text-align:right}
 .sel{position:absolute;top:16px;left:14px;width:24px;height:24px;border-radius:8px;border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#1d0c00}
 .sel.on{background:var(--accent);border-color:var(--accent)}
 .pick.selecting{padding-left:50px;cursor:pointer}
@@ -473,6 +499,15 @@ ol.steps li{margin:5px 0}
 .slip .money div{display:flex;flex-direction:column;gap:3px}
 .slip .money small{font-size:12px;color:var(--muted);font-weight:600}
 .slip .money b{font:800 26px/1 var(--num);font-variant-numeric:tabular-nums}
+.slip .legrow.voided .who{text-decoration:line-through;text-decoration-color:var(--faint);color:var(--muted)}
+.vtag{display:inline-block;font:700 11px/1.55 var(--ui);color:var(--muted);background:var(--card2);border-radius:6px;padding:0 6px;margin-left:5px;vertical-align:1px}
+.slip .was{font-size:12.5px;color:var(--muted);margin-top:7px}
+.slip .reprice{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(255,197,61,.08);box-shadow:inset 0 0 0 1px rgba(255,197,61,.32);display:flex;gap:10px;align-items:center;font-size:13.5px}
+.vlegs{margin-top:10px;border-radius:12px;background:var(--sunk);padding:2px 12px}
+.vleg{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:14px}
+.vleg + .vleg{border-top:1px solid var(--line)}
+.vleg .t{flex:1;min-width:0}
+.vleg.off .t{text-decoration:line-through;text-decoration-color:var(--faint);color:var(--muted)}
 .slip .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .btn.danger{color:var(--red);background:rgba(255,77,99,.12)}
 .slip.won,.slip.cashout{box-shadow:inset 0 0 0 1.5px rgba(47,224,138,.4)}
@@ -609,7 +644,8 @@ const LS = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.p
             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 S.filter = LS.get("filter", "all");
 S.picksSeg = ["picks","slips","results"].includes(LS.get("picksSeg", "picks")) ? LS.get("picksSeg", "picks") : "picks";
-S.playsSeg = ["tips","multi","check","ladder","screener","pickem","perfect"].includes(LS.get("playsSeg", "tips")) ? LS.get("playsSeg", "tips") : "tips";
+S.playsSeg = ["tips","matchups","multi","check","ladder","screener","pickem","perfect"].includes(LS.get("playsSeg", "tips")) ? LS.get("playsSeg", "tips") : "tips";
+S.muQ = Object.assign({league:"", prop:"", pos:"", view:"spots"}, LS.get("muQ", {}));
 S.feedQ = Object.assign({sport:"", sort:"picks", kind:"", min:1.3}, LS.get("feedQ", {}));
 S.mQ = Object.assign({legs:3, target:3, sport:""}, LS.get("mQ", {}));
 S.scoreQ = Object.assign({days:30, sport:"all"}, LS.get("scoreQ", {}));
@@ -1385,6 +1421,7 @@ function renderLadder(){
   const el = $("tab-ladder");
   if (FEAT().screener && !playsList().some(x => x[0] === S.playsSeg)) S.playsSeg = playsList()[0][0];
   if (FEAT().screener && S.playsSeg === "tips") return renderFeed(el);
+  if (FEAT().matchups && S.playsSeg === "matchups") return renderMatchups(el);
   if (FEAT().screener && S.playsSeg === "multi") return renderMulti(el);
   if (FEAT().screener && S.playsSeg === "check") return renderCheck(el);
   if (FEAT().screener && S.playsSeg === "screener") return renderScreener(el);
@@ -1527,17 +1564,22 @@ function updateSlipBar(){
 }
 function plainWhat(p){ return pickWhat(Object.assign({}, p, {odds:null})).replace(/<[^>]+>/g, "").trim(); }
 function openSheetPanel(){ $("sheetbg").classList.add("show"); $("sheet").classList.add("show"); }
-function openSlipSheet(ids, slip){
+function openSlipSheet(ids, slip, focus){
   const picks = S.state.picks;
-  const legs = slip ? slip.legs.map(l => ({label:(l.short || l.name) + " " + l.label, odds:l.odds}))
+  const legs = slip ? slip.legs.map(l => ({pick:l.pick, label:(l.short || l.name) + " " + l.label, odds:l.odds, state:l.state || "", hand:!!l.void_hand, can:!!l.can_void}))
                     : ids.map(id => { const p = picks.find(q => q.id === id) || {}; return {label:(p.short || p.name) + " " + plainWhat(p), odds:p.odds}; });
   const prod = legs.length && legs.every(l => l.odds) ? legs.reduce((a, l) => a * l.odds, 1) : null;
   S.sheet = {slip:true};
   updateSlipBar();
+  // legs the bookie voided, by your say-so (the app's own voids can't be undone here)
+  const vset = new Set(slip ? legs.filter(l => l.hand).map(l => l.pick) : []);
+  const vstart = [...vset].sort().join(",");
+  const isVoid = l => vset.has(l.pick) || (!l.hand && (l.state === "void" || l.state === "push"));
   let h = '<div class="grab"></div><div style="font-weight:700;font-size:18px">' + (slip ? "Edit slip" : legs.length === 1 ? "New single" : "New " + legs.length + "-leg slip") + '</div>';
-  h += '<div class="small muted" style="margin-top:4px">' + legs.map(l => esc(l.label) + (l.odds ? " @ " + (+l.odds).toFixed(2) : "")).join("<br>") + '</div>';
+  h += slip ? '<div class="vlegs" id="vlegs"></div><div class="small muted" id="vhint" style="margin-top:6px"></div>'
+            : '<div class="small muted" style="margin-top:4px">' + legs.map(l => esc(l.label) + (l.odds ? " @ " + (+l.odds).toFixed(2) : "")).join("<br>") + '</div>';
   h += '<div class="label">Stake</div><div class="linebox"><span class="muted" style="font-size:22px">$</span><input id="sstake" type="number" inputmode="decimal" step="1" min="0.5" value="' + (slip ? slip.stake : LS.get("lastStake", 10)) + '"></div>';
-  h += '<div class="label">Price</div><div class="linebox"><span class="muted" style="font-size:22px">$</span><input id="sprice" type="number" inputmode="decimal" step="0.01" min="1.01" placeholder="Price on your slip" value="' + (slip ? (+slip.price).toFixed(2) : prod ? (Math.round(prod * 100) / 100).toFixed(2) : "") + '"></div>';
+  h += '<div class="label" id="splbl">Price</div><div class="linebox"><span class="muted" style="font-size:22px">$</span><input id="sprice" type="number" inputmode="decimal" step="0.01" min="1" placeholder="Price on your slip" value="' + (slip ? (+slip.price).toFixed(2) : prod ? (Math.round(prod * 100) / 100).toFixed(2) : "") + '"></div>';
   if (!slip && legs.length > 1) h += '<div class="small muted" style="margin-top:6px">' + (prod ? "That's the legs multiplied together. " : "") + 'Bookies price same game multis lower, so put in the price on your slip.</div>';
   h += '<div class="label">Name (optional)</div><input class="inp" id="sname" maxlength="40" placeholder="Saturday NBA multi" value="' + esc(slip ? slip.name : "") + '">';
   h += '<div class="small" id="sret" style="margin-top:10px"></div><div id="swarn" class="warn" style="margin-top:6px"></div><div id="sheeterr" class="err" style="margin-top:8px"></div>';
@@ -1545,35 +1587,64 @@ function openSlipSheet(ids, slip){
   $("sheetin").innerHTML = h;
   const ret = () => {
     const s = parseFloat($("sstake").value), p = parseFloat($("sprice").value), ov = s > 0 ? overLimit(s, slip) : 0;
-    $("sret").textContent = s > 0 && p > 1 ? "Returns " + money(s * p) + " if it lands" : "";
+    const allVoid = slip && legs.every(isVoid);
+    $("sret").textContent = allVoid ? "Every leg is void, so your stake comes back." : s > 0 && p > 1 ? "Returns " + money(s * p) + " if it lands" : "";
     $("swarn").textContent = ov > 0.004 ? "That takes you " + money(ov) + " past your " + money(S.state.weekly.limit) + " weekly limit." : "";
     if (S.sheet) S.sheet.okOver = false;
     $("ssave").textContent = slip ? "Save" : "Add slip";
   };
+  const drawLegs = () => {
+    if (!slip) return;
+    $("vlegs").innerHTML = legs.map((l, i) => {
+      const off = isVoid(l);
+      const act = l.can ? '<button class="btn small" data-vleg="' + i + '">' + (vset.has(l.pick) ? "Put back" : "Void") + '</button>'
+        : off ? '<span class="vtag">' + (l.state === "push" ? "Push" : "Void") + '</span>' : '';
+      return '<div class="vleg' + (off ? " off" : "") + '">' + legMark(off ? "void" : l.state) + '<div class="t">' + esc(l.label) + (l.odds ? ' <span class="muted small">@ ' + (+l.odds).toFixed(2) + '</span>' : '') + '</div>' + act + '</div>';
+    }).join("");
+    $("vlegs").querySelectorAll("[data-vleg]").forEach(b => b.onclick = () => {
+      const l = legs[+b.dataset.vleg], on = !vset.has(l.pick), p = parseFloat($("sprice").value);
+      if (on) vset.add(l.pick); else vset.delete(l.pick);
+      // a multi drops by the void leg's price, the way bookies work it out
+      if (l.odds > 1 && p > 0) $("sprice").value = Math.max(1, Math.round((on ? p / l.odds : p * l.odds) * 100) / 100).toFixed(2);
+      else if (on) S.sheet.noOdds = true;
+      drawLegs(); ret();
+    });
+    const changed = [...vset].sort().join(",") !== vstart;
+    $("splbl").textContent = legs.some(isVoid) ? "Price now" : "Price";
+    $("vhint").textContent = changed || slip.price_check
+      ? "A void leg comes out of the slip and your bookie works out a new price. Check it on your bookie's slip and type it in." + (S.sheet && S.sheet.noOdds ? " That leg had no price here, so the app can't work it out for you." : "")
+      : legs.some(l => l.can) ? "Bookie voided a leg? Tap Void on it." : "";
+  };
+  drawLegs();
   $("sstake").oninput = ret; $("sprice").oninput = ret; ret();
   $("scancel").onclick = () => { closeSheet(); updateSlipBar(); };
   $("ssave").onclick = async () => {
     const stake = parseFloat($("sstake").value), price = parseFloat($("sprice").value), name = $("sname").value.trim();
+    const allVoid = slip && legs.every(isVoid);
     if (!(stake > 0)) { $("sheeterr").textContent = "Put in your stake."; return; }
-    if (!(price >= 1.01)) { $("sheeterr").textContent = "Put in the price on your slip."; return; }
+    if (!allVoid && !(price >= (slip ? 1 : 1.01))) { $("sheeterr").textContent = "Put in the price on your slip."; return; }
     if (overLimit(stake, slip) > 0.004 && S.sheet && !S.sheet.okOver){ S.sheet.okOver = true; $("ssave").textContent = slip ? "Save anyway" : "Add anyway"; return; }
     $("ssave").disabled = true;
     try{
-      if (slip) await api("/api/slips/update", {id:slip.id, stake, price, name});
+      if (slip) await api("/api/slips/update", Object.assign({id:slip.id, stake, name, void:[...vset]}, price >= 1 ? {price} : {}));
       else { await api("/api/slips", {legs:ids, stake, price, name}); LS.set("lastStake", stake); }
       closeSheet(); S.selecting = false; S.sel = {};
       await loadState();
       setPicksSeg("slips");
-      toast({kind:"event", title:slip ? "Slip saved" : "Slip added", body:"Returns " + money(stake * price) + " if it lands"});
+      const now = slip && (S.state.slips || []).find(x => x.id === slip.id);
+      // a slip that settled just now gets its own alert
+      if (!slip || (now && now.status === "open")) toast({kind:"event", title:slip ? "Slip saved" : "Slip added", body:"Returns " + money(stake * price) + " if it lands"});
     }catch(e){ $("sheeterr").textContent = e.message; $("ssave").disabled = false; }
   };
   openSheetPanel();
+  if (focus === "price"){ const el = $("sprice"); el.focus(); el.select(); }
 }
 function openSettleSheet(s){
   S.sheet = {slip:true};
   let h = '<div class="grab"></div><div style="font-weight:700;font-size:18px">Settle this slip</div><div class="small muted">' + esc(slipName(s)) + ' · ' + money(s.stake) + ' @ ' + (+s.price).toFixed(2) + '</div>';
   h += '<div class="small muted" style="margin-top:8px">The app settles slips by itself when the games finish. Use this for a cash out, or a leg it can\'t settle.</div>';
   h += '<div class="lgrid" style="margin-top:12px"><button data-res="won">Landed</button><button data-res="lost">Lost</button><button data-res="void">Void, stake back</button><button data-res="cashout">Cashed out</button></div>';
+  if (s.legs.some(l => l.can_void)) h += '<button class="btn small block" id="svoid" style="margin-top:10px">Just one leg voided? Void that leg instead</button>';
   h += '<div id="cobox" hidden><div class="label">Cash out amount</div><div class="linebox"><span class="muted" style="font-size:22px">$</span><input id="coamt" type="number" inputmode="decimal" step="0.01" min="0"></div><button class="btn primary block" id="cosave" style="margin-top:10px">Save cash out</button></div>';
   h += '<div id="sheeterr" class="err" style="margin-top:8px"></div><button class="btn block" id="scancel" style="margin-top:12px">Cancel</button>';
   $("sheetin").innerHTML = h;
@@ -1585,6 +1656,7 @@ function openSettleSheet(s){
     if (b.dataset.res === "cashout"){ $("cobox").hidden = false; $("coamt").focus(); } else go(b.dataset.res);
   });
   $("cosave").onclick = () => { const v = parseFloat($("coamt").value); if (!(v >= 0)) { $("sheeterr").textContent = "Put in the cash out amount."; return; } go("cashout", v); };
+  if ($("svoid")) $("svoid").onclick = () => { closeSheet(); openSlipSheet(null, s); };
   $("scancel").onclick = closeSheet;
   openSheetPanel();
 }
@@ -1597,7 +1669,7 @@ function legMark(st, live){
 }
 // A slip reads like a bet ticket: what it is and its status, the money, a tear line, then the legs.
 function slipCard(s){
-  const t = s.tally || {}, open = s.status === "open", oneToGo = open && t.live === 1 && t.won > 0;
+  const t = s.tally || {}, open = s.status === "open", oneToGo = open && t.live === 1 && t.won > 0, held = open && s.price_check && !t.live;
   const bits = [];
   if (open){
     if (t.won) bits.push(t.won + " of " + s.legs.length + " landed");
@@ -1608,12 +1680,14 @@ function slipCard(s){
   const kind = s.name ? '<div class="small muted">' + esc(slipKind(s)) + '</div>' : '';
   let h = '<div class="card slip ' + esc(open ? "" : s.status) + '">';
   h += '<div class="row"><div class="grow"><div style="font-weight:700;font-size:16px">' + esc(slipName(s)) + (s.ladder ? ' <span class="badge ladder">Ladder</span>' : '') + '</div>' + kind + '</div>' +
-       '<span class="chip ' + (open ? "open" : esc(s.status)) + '">' + esc(open ? (oneToGo ? "One to go" : "Open") : SLIP_STATUS[s.status] || s.status) + '</span></div>';
+       '<span class="chip ' + (open ? "open" : esc(s.status)) + '">' + esc(open ? (held ? "Price needed" : oneToGo ? "One to go" : "Open") : SLIP_STATUS[s.status] || s.status) + '</span></div>';
   const paid = s.status === "won" || s.status === "cashout";
   h += '<div class="money"><div><small>Stake</small><b>' + money(s.stake) + '</b></div><div><small>Price</small><b>' + (+s.price).toFixed(2) + '</b></div>' +
        (open ? '<div><small>Returns</small><b>' + money(s.returns) + '</b></div>'
         : paid ? '<div><small>Paid</small><b class="pos">' + money(s.ret) + '</b></div>'
         : s.status === "void" ? '<div><small>Back</small><b>' + money(s.stake) + '</b></div>' : '<div><small>Lost</small><b class="neg">' + money(s.stake) + '</b></div>') + '</div>';
+  if (s.price_was && (open || paid)) h += '<div class="was">Placed at ' + (+s.price_was).toFixed(2) + ', now ' + (+s.price).toFixed(2) + ' with the void leg out.</div>';
+  if (open && s.price_check) h += '<div class="reprice"><div class="grow">' + (held ? "It landed with a leg void. Type in the price your slip paid at and it settles." : "A leg went void. Check the new price on your bookie\'s slip and type it in.") + '</div><button class="btn small primary" data-sprice="' + esc(s.id) + '">Type it in</button></div>';
   if (tally) h += '<div class="tally" style="margin-top:8px">' + esc(tally[0].toUpperCase() + tally.slice(1)) + '</div>';
   if (open && s.chance != null){
     const c = +s.chance;
@@ -1622,8 +1696,8 @@ function slipCard(s){
   }
   h += '<div class="tear"></div>';
   s.legs.forEach(l => {
-    const st = l.state || l.result || "";
-    h += '<div class="legrow">' + legMark(st, open && !st && l.status === "live") + '<div class="grow"><div><span class="who" data-gopen="' + esc(l.game_id || "") + '" data-aid="' + esc(l.athlete_id || "") + '">' + esc((l.short || l.name) + " " + l.label) + '</span>' + (l.odds ? ' <span class="muted small">@ ' + (+l.odds).toFixed(2) + '</span>' : '') + '</div>' +
+    const st = l.state || l.result || "", off = st === "void" || st === "push";
+    h += '<div class="legrow' + (off ? " voided" : "") + '">' + legMark(st, open && !st && l.status === "live") + '<div class="grow"><div><span class="who" data-gopen="' + esc(l.game_id || "") + '" data-aid="' + esc(l.athlete_id || "") + '">' + esc((l.short || l.name) + " " + l.label) + '</span>' + (l.odds ? ' <span class="muted small">@ ' + (+l.odds).toFixed(2) + '</span>' : '') + (off ? '<span class="vtag">' + (st === "push" ? "Push" : "Void") + '</span>' : '') + '</div>' +
       (open && !st && l.progress ? '<div class="small muted">' + esc(l.progress + (l.chance != null && l.status === "live" ? " · " + pct(l.chance) : "")) + '</div>' : '') + '</div></div>';
   });
   const armed = S.armed === "s:" + s.id;
@@ -1658,6 +1732,7 @@ function renderSlips(el, top){
   const find = id => slips.find(s => s.id === id);
   el.querySelectorAll("[data-schk]").forEach(b => b.onclick = () => checkSlip(b.dataset.schk));
   el.querySelectorAll("[data-sedit]").forEach(b => b.onclick = () => openSlipSheet(null, find(b.dataset.sedit)));
+  el.querySelectorAll("[data-sprice]").forEach(b => b.onclick = () => openSlipSheet(null, find(b.dataset.sprice), "price"));
   el.querySelectorAll("[data-sset]").forEach(b => b.onclick = () => openSettleSheet(find(b.dataset.sset)));
   el.querySelectorAll("[data-sdel]").forEach(b => b.onclick = async () => {
     const k = "s:" + b.dataset.sdel;
@@ -1734,6 +1809,7 @@ function renderResults(el, top){
 function playsList(){
   const list = [];
   if (FEAT().feed) list.push(["tips", "Tips"]);
+  if (FEAT().matchups) list.push(["matchups", "Matchups"]);
   if (FEAT().multi) list.push(["multi", "Multi"]);
   if (FEAT().check) list.push(["check", "Check"]);
   list.push(["ladder", "Ladder"], ["screener", "Screener"], ["pickem", "Pick'em"]);
@@ -2049,6 +2125,14 @@ function feedSports(){
   return out;
 }
 function feedGame(t){ return (t.away_abbr || t.away_name) + " @ " + (t.home_abbr || t.home_name) + " · " + startText(t.start) + " · " + t.league_short; }
+// The matchup grade on a tip: the row's border, and one line on why.
+const TIER_NAME = {elite:"Elite", great:"Great", good:"Good", even:"Even", tough:"Tough"};
+function muClass(t){ const m = t.mu; return m && ["elite", "great", "good", "tough"].includes(m.tier) ? " mu-" + m.tier : ""; }
+function muLine(t){
+  const m = t.mu;
+  if (!m || !TIER_NAME[m.tier] || m.tier === "even") return "";
+  return '<div class="t3 mut ' + m.tier + '"><b>' + TIER_NAME[m.tier] + ' matchup.</b> ' + esc(m.text) + '</div>';
+}
 function feedRow(t){
   const k = "fd" + Object.keys(S.tipMap).length;
   S.tipMap[k] = t;
@@ -2057,9 +2141,9 @@ function feedRow(t){
   const own = t.athlete_id === "match" || lab.indexOf(t.name) === 0;
   const tag = t.kind_tip === "call" ? t.title : t.kind_tip === "value" ? "Value at the price" : "";
   const why = t.why || t.note || "";
-  return '<div class="tip" data-ftip="' + k + '">' + avatarHtml(feedPick(t)) + '<div class="grow">' + (tag ? '<div class="tk">' + esc(tag) + '</div>' : '') +
+  return '<div class="tip' + muClass(t) + '" data-ftip="' + k + '">' + avatarHtml(feedPick(t)) + '<div class="grow">' + (tag ? '<div class="tk">' + esc(tag) + '</div>' : '') +
     '<div class="t1">' + (own ? esc(lab) : esc(t.name) + injBadge(t.injury)) + '</div>' + (own ? '' : '<div class="t2">' + esc(lab) + '</div>') +
-    '<div class="t3">' + esc(feedGame(t)) + '</div>' + (why ? '<div class="t3">' + esc(why) + '</div>' : '') + '</div>' +
+    '<div class="t3">' + esc(feedGame(t)) + '</div>' + (why ? '<div class="t3">' + esc(why) + '</div>' : '') + muLine(t) + '</div>' +
     '<div class="r"><div class="pc' + (hi ? " hi" : "") + '">' + pct(t.p) + '</div><div class="pr">' + tipPrice(t) + '</div></div>' +
     '<button class="iconbtn add' + (done ? " on" : "") + '" data-fadd="' + k + '" aria-label="' + (done ? "Tracking" : "Track this") + '">' + (done ? "&#10003;" : "+") + '</button></div>';
 }
@@ -2128,6 +2212,95 @@ function renderFeed(el){
     toast({kind:"event", title:"Tracking it", body:tipText(t) + (t.price ? " @ " + money(t.price) : "")});
     renderLadder();
   });
+}
+
+/* matchups: what each team gives up to each position, and the best spots in the next day and a half */
+function muQuery(){ const q = S.muQ; return ["league", "prop", "pos"].filter(k => q[k]).map(k => k + "=" + encodeURIComponent(q[k])).join("&"); }
+async function loadMatchups(){
+  if (S.muLoading){ S.muAgain = true; return; }
+  S.muLoading = true;
+  try{ S.mu = await api("/api/matchups?" + muQuery()); S.muErr = ""; S.muAt = Date.now(); }
+  catch(e){ S.muErr = e.message; }
+  S.muLoading = false;
+  if (S.muAgain){ S.muAgain = false; return loadMatchups(); }
+  clearTimeout(S.muTimer);
+  if (S.mu && S.mu.building) S.muTimer = setTimeout(() => { if (S.tab === "ladder" && S.playsSeg === "matchups") loadMatchups(); }, 2500);
+  if (S.tab === "ladder" && S.playsSeg === "matchups" && !busyTyping()) renderLadder();
+}
+function muKey(){
+  return '<div class="mukey">' + [["elite", "Elite: soft defence and a top player at the spot"], ["great", "Great"], ["good", "Good"], ["even", "Even"], ["tough", "Tough"]]
+    .map(([k, l]) => '<span><i style="background:var(--mu-' + k + ')"></i>' + esc(l) + '</span>').join("") + '</div>';
+}
+function muPick(x){
+  return {athlete_id:x.athlete_id, name:x.name, team:x.team, league:x.league, sport:x.sport,
+    game:{home:x.home_abbr, away:x.away_abbr, home_logo:x.home_logo, away_logo:x.away_logo, home_color:x.home_color, away_color:x.away_color, sport:x.sport}};
+}
+function muRow(x, i){
+  return '<div class="tip mu-' + esc(x.tier) + '" data-mu="' + i + '">' + avatarHtml(muPick(x)) + '<div class="grow">' +
+    '<div class="tk">' + esc(x.stat_name) + '</div>' +
+    '<div class="t1">' + esc(x.name) + ' <span class="muted small">' + esc(x.bucket + " · " + x.team) + '</span>' + injBadge(x.injury) + '</div>' +
+    '<div class="t3">' + esc((x.home ? "v " : "@ ") + x.opp + " · " + startText(x.start)) + '</div>' +
+    '<div class="t3">' + esc(x.def_text) + '</div><div class="t3">' + esc(x.me_text) + '</div></div>' +
+    '<span class="mutier ' + esc(x.tier) + '">' + esc(TIER_NAME[x.tier] || x.tier) + '</span></div>';
+}
+function muTable(T){
+  const max = Math.max(...T.rows.map(r => r.allowed), 0.1);
+  return '<div class="small muted" style="margin:0 2px 8px">' + esc(T.stat_name[0].toUpperCase() + T.stat_name.slice(1)) + ' given up to ' + esc(T.pos_name) + ' a game, most first. League average ' + esc(String(T.avg)) + '.</div>' +
+    '<div class="card mutab" style="padding:4px 14px">' + T.rows.map(r => '<div class="row"><span class="rk">' + r.rank + '</span><span class="tm">' + esc(r.team) + '</span>' +
+      '<span class="bar"><i style="width:' + Math.max(4, Math.round(r.allowed / max * 100)) + '%;background:var(--mu-' + esc(r.tier) + ')"></i></span>' +
+      '<span class="v">' + esc(String(r.allowed)) + '</span><span class="nx">' + esc(r.next || "") + '</span></div>').join("") + '</div>';
+}
+function renderMatchups(el){
+  const top = playsTop(), R = S.mu, q = S.muQ;
+  if (!S.muLoading && !S.muErr && (!R || (!R.building && Date.now() - (S.muAt || 0) > 10 * 60e3))) loadMatchups();
+  let h = top;
+  if (!R){
+    el.innerHTML = h + (S.muErr ? '<div class="empty"><b>Couldn\'t load matchups</b>' + esc(S.muErr) + '</div><button class="btn block" id="muretry">Try again</button>' : '<div class="spin"></div>');
+    bindSegs(el, "ps", setPlaysSeg);
+    const rt = $("muretry"); if (rt) rt.onclick = () => { S.muErr = ""; loadMatchups(); renderLadder(); };
+    return;
+  }
+  if (R.none){
+    el.innerHTML = h + '<div class="empty"><b>No matchups to read</b>' + esc(R.none) + '</div>';
+    bindSegs(el, "ps", setPlaysSeg);
+    return;
+  }
+  if (R.leagues.length > 1) h += '<div class="fchips">' + R.leagues.map(l => '<button data-mul="' + esc(l.key) + '" class="' + (R.league === l.key ? "on" : "") + '">' + esc(l.short) + ' <span style="opacity:.6">' + l.games + '</span></button>').join("") + '</div>';
+  // the team view always shows one position and one stat: the ones picked, or the first
+  const teams = q.view === "teams" && R.table;
+  const pos = teams && !q.pos ? R.table.bucket : q.pos, prop = teams && !q.prop ? R.table.stat : q.prop;
+  const bk = (R.buckets || []).find(b => b.key === pos);
+  const props = (R.props || []).filter(p => !bk || bk.props.includes(p.key));
+  h += '<div class="filters"><select id="mu_view">' + fopt("spots", "Best spots", q.view) + fopt("teams", "Every team", q.view) + '</select>' +
+    '<select id="mu_pos">' + (teams ? "" : fopt("", "All positions", pos)) + (R.buckets || []).map(b => fopt(b.key, b.name[0].toUpperCase() + b.name.slice(1), pos)).join("") + '</select>' +
+    '<select id="mu_prop">' + (teams ? "" : fopt("", "All stats", prop)) + props.map(p => fopt(p.key, p.name, prop)).join("") + '</select></div>';
+  if (R.building){
+    h += readingHtml({done:R.done || 0, total:R.total || 0}, "Reading box scores: ") + '<div class="empty" style="padding-top:6px">The first read of ' + esc(R.league.toUpperCase()) + ' takes a minute. After that only new games are read.</div>';
+  } else {
+    h += muKey();
+    if (q.view === "teams" && R.table) h += muTable(R.table);
+    else {
+      const spots = R.spots || [];
+      S.muList = spots;
+      if (spots.length) h += '<div class="list">' + spots.map(muRow).join("") + '</div>';
+      else h += '<div class="empty"><b>Nothing stands out</b>' + (q.prop || q.pos ? "Try all stats or all positions." : "No player has a soft spot in this slate.") + '</div>';
+    }
+    h += '<div class="card small muted" style="margin-top:12px">From the last ' + Math.round(R.days / 7) + ' weeks of box scores (' + R.games_read + ' games). A defence\'s number is what players at that position put up against it, a game. A player\'s rank is his own average at his position. Elite means both are near the top. Tap one to pick a line.</div>';
+  }
+  el.innerHTML = h;
+  bindSegs(el, "ps", setPlaysSeg);
+  const save = () => { LS.set("muQ", S.muQ); loadMatchups(); renderLadder(); };
+  el.querySelectorAll("[data-mul]").forEach(b => b.onclick = () => { S.muQ.league = b.dataset.mul; S.muQ.prop = ""; S.muQ.pos = ""; S.mu = null; save(); });
+  const vw = $("mu_view"); if (vw) vw.onchange = () => { S.muQ.view = vw.value; save(); };
+  const ps = $("mu_pos"); if (ps) ps.onchange = () => { S.muQ.pos = ps.value; const b = (R.buckets || []).find(x => x.key === ps.value); if (b && S.muQ.prop && !b.props.includes(S.muQ.prop)) S.muQ.prop = ""; save(); };
+  const pr = $("mu_prop"); if (pr) pr.onchange = () => { S.muQ.prop = pr.value; save(); };
+  el.querySelectorAll("[data-mu]").forEach(r => r.onclick = () => { const x = (S.muList || [])[+r.dataset.mu]; if (x) openMatchup(x); });
+}
+// Opens the game on that player with the stat ready to pick a line.
+async function openMatchup(x){
+  await openPlayerGame(x.game_id, x.athlete_id);
+  if (S.gameId !== x.game_id || !S.game) return;
+  for (const tm of S.game.teams){ const p = tm.players.find(q => String(q.id) === String(x.athlete_id)); if (p) return openSheet(p, S.game.game, x.stat); }
 }
 
 /* the multi builder: one leg a game, picked for the best chance at the price you want */
@@ -2453,7 +2626,7 @@ async function checkSlip(id){
   if (!s) return;
   const byId = {};
   (S.state.picks || []).forEach(p => { byId[p.id] = p; });
-  const legs = (s.legs || []).map(l => byId[l.pick]).filter(Boolean).map(p => ({game_id:p.game_id, athlete_id:p.athlete_id, name:p.name, team:p.team, stat:p.stat, side:p.side, line:p.line, odds:p.odds, yesno:p.yesno, label:p.label || ""}));
+  const legs = (s.legs || []).filter(l => l.state !== "void" && l.state !== "push").map(l => byId[l.pick]).filter(Boolean).map(p => ({game_id:p.game_id, athlete_id:p.athlete_id, name:p.name, team:p.team, stat:p.stat, side:p.side, line:p.line, odds:p.odds, yesno:p.yesno, label:p.label || ""}));
   if (!legs.length) return;
   const job = S.chk = Object.assign(chkFresh(), {legs, price:s.price || "", stake:s.stake || "", fromSlip:s.id, bookie:s.book || ""});
   S.playsSeg = "check"; LS.set("playsSeg", "check");
@@ -3168,8 +3341,8 @@ function tipRow(t, title, extra){
   const lab = title && t.label.indexOf(title + ": ") === 0 ? t.label.slice(title.length + 2) : t.label;
   const l1 = match || t.label.indexOf(t.name) === 0 ? esc(lab) : esc(t.name) + injBadge(t.injury);
   const l2 = match || t.label.indexOf(t.name) === 0 ? '' : '<div class="t2">' + esc(t.label) + '</div>';
-  return '<div class="tip" data-tip="' + k + '">' + avatarHtml(tipPick(t)) + '<div class="grow">' + (title ? '<div class="tk">' + esc(title) + '</div>' : '') +
-    '<div class="t1">' + l1 + '</div>' + l2 + sub.map(x => '<div class="t3">' + esc(x) + '</div>').join("") +
+  return '<div class="tip' + muClass(t) + '" data-tip="' + k + '">' + avatarHtml(tipPick(t)) + '<div class="grow">' + (title ? '<div class="tk">' + esc(title) + '</div>' : '') +
+    '<div class="t1">' + l1 + '</div>' + l2 + sub.map(x => '<div class="t3">' + esc(x) + '</div>').join("") + muLine(t) +
     (title ? '<div class="meter' + (hi ? " hi" : "") + '"><i style="width:' + Math.round(t.p * 100) + '%"></i></div>' : '') + '</div>' +
     '<div class="r"><div class="pc' + (hi ? " hi" : "") + '">' + pct(t.p) + '</div><div class="pr">' + tipPrice(t) + '</div></div>' +
     '<button class="iconbtn add' + (done ? " on" : "") + '" data-tadd="' + k + '" aria-label="' + (done ? "Tracking" : "Track this") + '">' + (done ? "&#10003;" : "+") + '</button></div>';
@@ -3644,7 +3817,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden){ loa
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.7.1";
+    s.src = "engine.js?v=4.8";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
