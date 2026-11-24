@@ -1,4 +1,4 @@
-ClutchUp (web) uses:
+Overline (web) uses:
 - TeaVM runtime, Apache License 2.0 (https://teavm.org)
 - org.json from the Android Open Source Project, Apache License 2.0
 - Tesseract.js and Tesseract core, Apache License 2.0 (licences in ocr/)

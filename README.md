@@ -1,8 +1,10 @@
-# ClutchUp
+# Overline
 
 Live tracking for your player props, multis and slips. It's free and runs in your browser, so there's nothing to install.
 
-**[Open ClutchUp](https://alistairunie.github.io/clutchup/)**
+**[Open Overline](https://alistairunie.github.io/clutchup/)**
+
+Overline was called ClutchUp up to version 4.10. Your picks, slips and settings carry over.
 
 ## What it does
 
@@ -15,7 +17,7 @@ Live tracking for your player props, multis and slips. It's free and runs in you
 - **Handles void legs.** If your bookie voids a leg, tap **Edit** on the slip and void it there. The leg comes out of the slip and you can type in the new price your bookie gives you. When the app voids a leg itself (a player who didn't play, say), a multi's price drops by that leg's price straight away. A same game multi gets repriced by the bookie, so the app asks you to type in the new price before it settles.
 - **Team news.** Before a game, you get a heads up if a player in your picks is ruled out or questionable, and in soccer if they're on the bench once the line-up is out.
 - **Team lists before the start.** Until the line-ups are out, each team is grouped by what its players did last game: who started, who came off the bench and who didn't play. Anyone ruled out is listed at the bottom, along with soccer players sent off in their last game in that competition. Soccer counts cup and European games, so the last game really is the last one.
-- **Adds bets from a screenshot.** Screenshot your bet slip and ClutchUp reads it and adds the legs. It knows the layouts of Sportsbet, Bet365, Neds, Ladbrokes, Dabble, Betr and TAB slips, in light or dark mode. The screenshot is read on your phone and never uploaded anywhere.
+- **Adds bets from a screenshot.** Screenshot your bet slip and Overline reads it and adds the legs. It knows the layouts of Sportsbet, Bet365, Neds, Ladbrokes, Dabble, Betr and TAB slips, in light or dark mode. The screenshot is read on your phone and never uploaded anywhere.
 - **Reads every game.** Open a game and the Tips view gives a predicted score, each side's chance, the calls on the main markets, the best bets, the best matchups and a same game multi. It weighs the prices, recent form, rest, who's out and, for outdoor games, the weather. On the team lists, a gold or green tag marks each player's best matchup.
 - **Shows a player's hit rates.** When you pick a line, the player's games show as bars against it, each with the number and who it was against. Above them is how often he's cleared it in the last 5, the last 10, the whole season and against tonight's opponent, last season's games included. Below is his matchup grade for that stat and what he projects to.
 - **Finds plays.** The Plays tab reads every sport, not just the leagues on your Games tab (you can switch it to just yours), and has eight tools:
@@ -64,7 +66,7 @@ A few more things to try:
 
 ## Privacy
 
-There are no accounts, ads or analytics. ClutchUp only connects to ESPN's public scores feeds, ESPN's image server for logos and headshots, Open-Meteo for the weather at outdoor games, Discord if you add a webhook, and The Odds API or PropLine if you add a key. Your keys stay on your device.
+There are no accounts, ads or analytics. Overline only connects to ESPN's public scores feeds, ESPN's image server for logos and headshots, Open-Meteo for the weather at outdoor games, Discord if you add a webhook, and The Odds API or PropLine if you add a key. Your keys stay on your device.
 
 ## Bet responsibly
 
@@ -72,7 +74,7 @@ There are no accounts, ads or analytics. ClutchUp only connects to ESPN's public
 
 ## Credits
 
-- Live scores, stats and prices come from ESPN's public feeds. ClutchUp isn't affiliated with ESPN, any league or any bookmaker.
+- Live scores, stats and prices come from ESPN's public feeds. Overline isn't affiliated with ESPN, any league or any bookmaker.
 - Weather forecasts come from [Open-Meteo](https://open-meteo.com) (CC BY 4.0).
 - Screenshots are read with [Tesseract.js](https://github.com/naptha/tesseract.js) (Apache 2.0).
 - The fonts are Big Shoulders Display and Figtree (SIL Open Font License).

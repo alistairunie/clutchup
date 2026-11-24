@@ -1,4 +1,4 @@
-// ClutchUp web: this worker only shows notifications. It doesn't cache anything,
+// Overline web: this worker only shows notifications. It doesn't cache anything,
 // so a new version of the page is picked up on the next load.
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));

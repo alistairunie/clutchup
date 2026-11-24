@@ -1,6 +1,6 @@
 {
-  "name": "ClutchUp",
-  "short_name": "ClutchUp",
+  "name": "Overline",
+  "short_name": "Overline",
   "description": "Live tracking for your player props, multis and slips.",
   "start_url": "./",
   "scope": "./",

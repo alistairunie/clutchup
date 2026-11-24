@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0c1424">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ClutchUp</title>
+<title>Overline</title>
 <style>
 @font-face{font-family:"Big Shoulders";src:url(fonts/big-shoulders-display-latin-600-normal.woff2) format("woff2");font-weight:600;font-display:swap}
 @font-face{font-family:"Big Shoulders";src:url(fonts/big-shoulders-display-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
@@ -36,7 +36,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,[data-game]:focus-
 header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:10px 2px 14px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 #ptitle{margin:0;font:800 34px/0.95 var(--num);letter-spacing:.005em;white-space:nowrap}
-.ball{width:26px;height:26px;flex:none;margin-bottom:3px}
+.brandmark{width:17.8px;height:28px;flex:none;margin-bottom:2px}
 .pill{font-size:12px;padding:5px 10px 5px 9px;border-radius:999px;background:var(--card);color:var(--muted);display:flex;align-items:center;gap:7px;white-space:nowrap;margin-bottom:2px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(47,224,138,.16)}
 .dot.bad{background:var(--red);box-shadow:0 0 0 3px rgba(255,77,99,.16)}
@@ -642,11 +642,11 @@ table.mk td small{display:block;color:var(--muted);font-size:11.5px}
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Live tracking for your player props, multis and slips.">
-<meta name="apple-mobile-web-app-title" content="ClutchUp">
-<meta name="application-name" content="ClutchUp">
+<meta name="apple-mobile-web-app-title" content="Overline">
+<meta name="application-name" content="Overline">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="ClutchUp">
-<meta property="og:title" content="ClutchUp">
+<meta property="og:site_name" content="Overline">
+<meta property="og:title" content="Overline">
 <meta property="og:description" content="Live tracking for your player props, multis and slips. Free, and runs in your browser.">
 <meta property="og:url" content="https://alistairunie.github.io/clutchup/">
 <meta property="og:image" content="https://alistairunie.github.io/clutchup/og.png">
@@ -657,7 +657,7 @@ table.mk td small{display:block;color:var(--muted);font-size:11.5px}
 <body>
 <div class="wrap" id="main">
   <header class="top">
-    <div class="brand"><svg class="ball" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#ff7a1a"/><g fill="none" stroke="#0c1424" stroke-width="1.6" stroke-linecap="round"><path d="M13 1v24M1 13h24"/><path d="M4.6 4.6c3.4 3.4 3.4 13.4 0 16.8M21.4 4.6c-3.4 3.4-3.4 13.4 0 16.8"/></g></svg><h1 id="ptitle">Games</h1></div>
+    <div class="brand"><svg class="brandmark" viewBox="0 0 40 63" aria-hidden="true"><path fill-rule="evenodd" fill="#ff7a1a" d="M17,19H23A13,13 0 0 1 36,32V50A13,13 0 0 1 23,63H17A13,13 0 0 1 4,50V32A13,13 0 0 1 17,19ZM20,28A6,6 0 0 0 14,34V48A6,6 0 0 0 20,54H20A6,6 0 0 0 26,48V34A6,6 0 0 0 20,28Z"/><path fill="#ff7a1a" d="M5,4H35A5,5 0 0 1 40,9V9A5,5 0 0 1 35,14H5A5,5 0 0 1 0,9V9A5,5 0 0 1 5,4Z"/><path fill="#eef3fa" d="M32,0H32A1.7,1.7 0 0 1 33.7,1.7V16.3A1.7,1.7 0 0 1 32,18H32A1.7,1.7 0 0 1 30.3,16.3V1.7A1.7,1.7 0 0 1 32,0Z"/></svg><h1 id="ptitle">Games</h1></div>
     <div class="pill" id="feedpill"><span class="dot" id="feeddot"></span><span id="feedtxt">Connecting</span></div>
   </header>
   <section id="tab-games"></section>
@@ -1241,7 +1241,7 @@ document.addEventListener("click", e => {
 function crashCard(){
   const an = S.state && S.state.android;
   if (!APP || !an || !an.crash) return "";
-  return '<div class="card" style="border-color:rgba(255,77,99,.5)"><b>ClutchUp closed unexpectedly last time</b><div class="small muted" style="margin:4px 0 10px">Copy the details and send them through so it can be fixed.</div>' +
+  return '<div class="card" style="border-color:rgba(255,77,99,.5)"><b>Overline closed unexpectedly last time</b><div class="small muted" style="margin:4px 0 10px">Copy the details and send them through so it can be fixed.</div>' +
     '<div class="row" style="gap:8px"><button class="btn small primary" id="crashcopy">Copy details</button><button class="btn small" id="crashhide">Dismiss</button></div></div>';
 }
 document.addEventListener("click", async e => {
@@ -1307,7 +1307,7 @@ function renderSettings(){
   h += '<h2>Update speed</h2><div class="card toggle"><div><b>Check live stats every</b><div class="small muted">Faster means quicker alerts</div></div><select id="interval">' +
     [10,15,20,30].map(v => '<option value="' + v + '"' + (s.interval == v ? " selected" : "") + '>' + v + ' sec</option>').join("") + '</select></div>';
   h += '<h2>Try it out</h2><div class="card"><div class="small muted" style="margin-bottom:10px">Runs a fake three minute basketball game in fast motion. Add a few picks from it and you\'ll get real alerts, so you can check everything works before a real game.</div><button class="btn block" id="demo">Start demo game</button></div>';
-  h += '<h2>About</h2><div class="card small muted">Live stats come from ESPN\'s public feeds and can lag the broadcast by up to a minute. Bookies settle on official stats, which occasionally differ. Soccer picks settle on 90 minutes, so extra time doesn\'t count. NFL yardage picks can still drop on a loss, so they only settle at full time. Weather forecasts come from Open-Meteo. ClutchUp ' + esc(S.state.version) + (WEB ? ', web version' : '') + '.' + (WEB ? ' Your picks, slips and settings are saved in this browser only.' : '') + '</div>';
+  h += '<h2>About</h2><div class="card small muted">Live stats come from ESPN\'s public feeds and can lag the broadcast by up to a minute. Bookies settle on official stats, which occasionally differ. Soccer picks settle on 90 minutes, so extra time doesn\'t count. NFL yardage picks can still drop on a loss, so they only settle at full time. Weather forecasts come from Open-Meteo. Overline ' + esc(S.state.version) + (WEB ? ', web version' : '') + '.' + (WEB ? ' Your picks, slips and settings are saved in this browser only.' : '') + '</div>';
   el.innerHTML = h;
   if (APP) bindAppSettings(s);
   if (WEB) bindWebSettings();
@@ -1390,7 +1390,7 @@ function webSettings(){
   let h = '<h2>Alerts</h2><div class="card"><div class="toggle"><div><b>Notifications</b><div class="small muted">' + say + '</div></div>' +
     (perm === "default" ? '<button class="btn small primary" id="webnotif2">Turn on</button>' : perm === "granted" ? '<span class="chip won">On</span>' : '') + '</div>' +
     '<div class="row" style="gap:8px;margin-top:12px"><button class="btn small" id="testpush">Send test alert</button></div>' +
-    '<div class="small muted" style="margin-top:10px">The web version only tracks while this page is open, so leave it open in a tab during games. The Android app keeps going with your phone locked' + (ios ? '' : ': <a href="ClutchUp.apk">get the app</a>') + '.</div></div>';
+    '<div class="small muted" style="margin-top:10px">The web version only tracks while this page is open, so leave it open in a tab during games. The Android app keeps going with your phone locked' + (ios ? '' : ': <a href="Overline.apk">get the app</a>') + '.</div></div>';
   if (!isStandalone()) h += '<h2>Put it on your home screen</h2><div class="card small muted">' + (ios
       ? 'In Safari tap the Share button, then Add to Home Screen. It opens full screen like an app.'
       : 'Open your browser\'s menu and tap Install app or Add to Home screen. It opens full screen like an app.') + '</div>';
@@ -3242,7 +3242,7 @@ function extraSettings(s){
     tog("subon", "Sub on, play on", "If your player comes off, the bet moves to the player who replaced him and both their numbers count, like bet365's offer. It moves once. Turn this off if your bookie doesn't do it. You can also change it on each pick.", s.sub_on !== false) + '</div>';
   if (FEAT().discord){
     const hook = s.discord_webhook || "";
-    h += '<h2>Discord</h2><div class="card"><div class="small muted" style="margin-bottom:8px">Posts ClutchUp\'s best bets to your Discord channel and ticks them off as they land. Your own picks and slips never go there. In Discord open Server Settings, Integrations, Webhooks, make a new webhook for the channel, then Copy Webhook URL and paste it here.</div>' +
+    h += '<h2>Discord</h2><div class="card"><div class="small muted" style="margin-bottom:8px">Posts Overline\'s best bets to your Discord channel and ticks them off as they land. Your own picks and slips never go there. In Discord open Server Settings, Integrations, Webhooks, make a new webhook for the channel, then Copy Webhook URL and paste it here.</div>' +
       '<input class="inp" id="dhook" type="url" autocomplete="off" spellcheck="false" placeholder="https://discord.com/api/webhooks/..." value="' + esc(hook) + '">' +
       '<div class="row" style="gap:8px;margin-top:8px"><button class="btn small primary" id="dsave">Save</button>' + (hook ? '<button class="btn small" id="dtest">Send a test post</button>' : '') + '</div><div class="err" id="derr" style="margin-top:6px"></div>' +
       morningSettings(s) +
@@ -3461,7 +3461,7 @@ function renderScan(){
     h += '<div class="small muted" style="margin:6px 0 14px">Pick screenshots of your bet slip or My Bets. The app reads them on your phone, finds the players and games, then shows you what it found before anything is added.</div>';
     if (j.phase === "error") h += '<div class="card err" style="margin-bottom:12px">' + esc(j.err || "Something went wrong reading that.") + '</div>';
     h += '<button class="btn primary block" id="scanpick">Choose screenshots</button>';
-    h += '<div class="small muted" style="margin-top:10px">Tip: from your bookie app, take a screenshot, then tap Share and pick ClutchUp. Works best with the whole slip on screen, including the stake.</div>';
+    h += '<div class="small muted" style="margin-top:10px">Tip: from your bookie app, take a screenshot, then tap Share and pick Overline. Works best with the whole slip on screen, including the stake.</div>';
     h += '<button class="btn block" id="scanclose" style="margin-top:12px">Close</button>';
   } else if (j.phase === "reading" || j.phase === "matching"){
     h += '<div class="prog" style="margin-top:16px"><i id="scanbar" style="width:' + (j.phase === "matching" ? 100 : 0) + '%"></i></div><div class="small muted" id="scantxt">' + (j.phase === "matching" ? "Finding the players and games..." : "Getting the reader ready...") + '</div>';
@@ -4264,12 +4264,12 @@ setInterval(() => { if (S.gameId && !S.sheet && document.activeElement !== $("ps
 setInterval(() => { if (S.state) setFeed(S.state.feed); }, 5000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden){ loadState(); if (S.tab === "games") loadGames(); } });
 </script>
-<div id="othertab" style="display:none;position:fixed;inset:0;z-index:90;background:#0c1424;align-items:center;justify-content:center;padding:24px;text-align:center"><div style="max-width:340px"><div style="font-weight:700;font-size:18px;margin-bottom:8px">ClutchUp is open in another tab</div><div style="color:#8d9ab2;font-size:15px">Use that one, or close it and this tab takes over.</div></div></div>
+<div id="othertab" style="display:none;position:fixed;inset:0;z-index:90;background:#0c1424;align-items:center;justify-content:center;padding:24px;text-align:center"><div style="max-width:340px"><div style="font-weight:700;font-size:18px;margin-bottom:8px">Overline is open in another tab</div><div style="color:#8d9ab2;font-size:15px">Use that one, or close it and this tab takes over.</div></div></div>
 <script>
 (function(){
   function start(){
     var s = document.createElement("script");
-    s.src = "engine.js?v=4.10";
+    s.src = "engine.js?v=4.11";
     s.onload = function(){ try { window.main([]); } catch (e) { window.__engineFailed(); } };
     s.onerror = function(){ window.__engineFailed(); };
     document.body.appendChild(s);
